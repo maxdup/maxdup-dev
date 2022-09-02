@@ -1,8 +1,44 @@
+canvas {
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+#main {
+    height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+
+    font-family: Tahoma, sans-serif;
+
+    h1 {
+        font-size: 48px;
+        margin-bottom: 0;
+    }
+    .message {
+        text-align: left;
+        font-size: 24px;
+    }
+    p {
+        font-size: 20px;
+    }
+
+}
 body {
     background: black;
-    text-align: center;
-    h1 {
-        color: gray;
-        font-size: 40px;
-    }
+    margin: 0;
+}
+
+#contact {
+    min-height: 250px;
+    background: #444;
+    color: #ddd;
+    top: calc(100% - 50px);
+    bottom: -240px
 }
