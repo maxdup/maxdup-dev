@@ -1,38 +1,38 @@
 <html>
-	<head>
-		<title>Allorithmique</title>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
-	</head>
-	<body>
-		<canvas id="c"></canvas>
-		
-		<div id="main">
-			<div class="message">
-				<h1>Allo-</h1>
-				<i>/ˈalō/</i> <b>préfixe</b>
-				<p>1. Indique une nature ou un état différent, autre.</p>
-			</div>
-		</div>
-		
-		<div id="about" class="container">
-			<h2>About</h2>
-		</div>
-		
-		<div id="team" class="container">
-			<h2>Équipe</h2>
-		</div>
-		
-		<div id="services" class="container">
-			<h2>Services</h2>
-		</div>
-		
-		<div id="contact" class="container">
-			<h2>
-				Contactez-nous
-			</h2>
-		</div>
-		
-		<script id="vs" type="x-shader/x-vertex">
+  <head>
+    <title>Allorithmique</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+
+    <div id="main">
+      <div class="message">
+        <h1>Allo-</h1>
+        <i>/ˈalō/</i> <b>préfixe</b>
+        <p>1. Indique une nature ou un état différent, autre.</p>
+      </div>
+    </div>
+
+    <div id="about" class="container">
+      <h2>About</h2>
+    </div>
+
+    <div id="team" class="container">
+      <h2>Équipe</h2>
+    </div>
+
+    <div id="services" class="container">
+      <h2>Services</h2>
+    </div>
+
+    <div id="contact" class="container">
+      <h2>
+        Contactez-nous
+      </h2>
+    </div>
+
+    <script id="vs" type="x-shader/x-vertex">
 			attribute vec3 position;
 			attribute vec3 color;
 			varying   vec4 vColor;
@@ -45,9 +45,9 @@
 			gl_Position = pjMatrix * mvMatrix * vec4(position, 1.0);
 			gl_PointSize = 2.0;
 			}
-		</script>
-		<script id="fs"
-						type="x-shader/x-fragment">
+    </script>
+    <script id="fs"
+            type="x-shader/x-fragment">
 			precision mediump float;
 			varying   vec4 vColor;
 			
@@ -55,7 +55,7 @@
 			{
 			gl_FragColor  = vColor;
 			}
-		</script>
-		<script src="./background.js"></script>
-	</body>
+    </script>
+    <script src="./background.js"></script>
+  </body>
 </html>
