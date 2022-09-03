@@ -12,6 +12,7 @@ devConfig = {
   devtool: 'source-map',
   devServer: {
     port: 8000,
+    watchFiles: ['src/**/*']
   },
   watchOptions: {
     ignored: ['**/node_modules/**/*', '**/\.\#*',
