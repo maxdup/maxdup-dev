@@ -291,7 +291,7 @@ let sequence = () => {
 
   clonetent.classList.add('stand-in');
   document.getElementById("main-content").appendChild(clonetent);
-  const DELAY = 2000;
+  const DELAY = 1000;
 
   Scrambler({
     target: '.stand-in .scramble-stage-1',

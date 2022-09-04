@@ -31,18 +31,22 @@ canvas {
     }
 
     #main-content {
+        font-size: 24px;
+        @media (min-width: 768px) {
+            font-size: 32px;
+        }
         position: relative;
         text-align: left;
         .main-title {
-            font-size: 48px;
+            font-size: 2em;
             margin-bottom: 0;
         }
         .main-subtitle {
-            font-size: 24px;
+            font-size: 1em;
             margin-top: 0;
         }
         .main-blurb {
-            font-size: 20px;
+            font-size: 0.75em;
         }
     }
 
@@ -54,6 +58,8 @@ canvas {
         transform: scale(1.4);
     }
 }
+
+
 body {
     background: black;
     margin: 0;
