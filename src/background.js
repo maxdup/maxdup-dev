@@ -18,14 +18,10 @@ let pMatrix = mat4.create();
 let vertexBuffer;
 let colorBuffer;
 
-let inertiaFactor = 0.98;
-
 function inertia(val){
   //return Math.min(val * 0.95, val-0.01);
   return val * inertiaFactor;
 }
-
-let rad = 0;
 let theta = 0;
 
 let scrollProgress = 0; // 0-1
@@ -34,14 +30,18 @@ window.addEventListener('scroll', () => {
     (document.body.scrollHeight - document.body.clientHeight);
 });
 
+
+const FPS = 60;
+let frameTiming = Date.now();
+let frameInterval =  1000 / FPS;
+let inertiaFactor;
+
 //Size of two-dimensional square lattice
-//let N = 100;
-//let l = 1.0;
 let N = 50;
 let l = 6;
 
-//let dt = 0.1; // delta time
-let dt = 0.075
+let dt = 0.15 / (FPS / 30);
+dt = dt /3 *2;
 let dd = 1.0; // space spacing
 let v = 4; // velocity
 
@@ -57,8 +57,8 @@ let initialPosition = {
 let initialPeakPosition = {
   x: 0,
   y: 0,
-  z: 75,
-  sigma2: 100
+  z: 50,
+  sigma2: 300
 };
 
 let postPeakPosition = {
@@ -180,25 +180,33 @@ function initBuffers() {
 }
 
 function render(){
-  rad = 0.6 - 1 * scrollProgress;;
-
-  mat4.perspective(pMatrix, 45, window.innerWidth / window.innerHeight, 0.1, 1000.0);
-  mat4.identity(mvMatrix);
-  let translation = vec3.create();
-
-  //vec3.set(translation, -0.5, 0, -2.0);
-  vec3.set(translation, -0.5, 0, -2);
-  mat4.translate(mvMatrix, mvMatrix, translation);
-
-  mat4.rotate(mvMatrix, mvMatrix, rad, [1.5, 0, 0]);
-  mat4.rotate(mvMatrix, mvMatrix, 1, [0, 1.5, 0]);
-
-  gl.uniformMatrix4fv(uLoc[0], false, pMatrix);
-  gl.uniformMatrix4fv(uLoc[1], false, mvMatrix);
-
-  draw();
 
   requestAnimationFrame(render);
+
+  let now = Date.now();
+  let elapsed = now - frameTiming;
+  if (elapsed > frameInterval) {
+
+    frameTiming = now - (elapsed % frameInterval);
+
+    let rad = 0.6 - 1 * scrollProgress;
+    let rad2 = 1 - 0.4 * scrollProgress;
+
+    mat4.perspective(pMatrix, 45, window.innerWidth / window.innerHeight, 0.1, 1000.0);
+    mat4.identity(mvMatrix);
+    let translation = vec3.create();
+
+    vec3.set(translation, -0.5, 0, -2);
+    mat4.translate(mvMatrix, mvMatrix, translation);
+
+    mat4.rotate(mvMatrix, mvMatrix, rad, [1, 0, 0]);
+    mat4.rotate(mvMatrix, mvMatrix, rad2, [0, 1, 0]);
+
+    gl.uniformMatrix4fv(uLoc[0], false, pMatrix);
+    gl.uniformMatrix4fv(uLoc[1], false, mvMatrix);
+
+    draw();
+  }
 }
 
 function draw() {
@@ -249,9 +257,12 @@ function draw() {
       positions[k * 3 + 1] = inertia(y);
       positions[k * 3 + 2] = z;
 
-      /*colors[k * 3 + 0] = x + 0.5;
-      colors[k * 3 + 1] = y + 0.5;
-      colors[k * 3 + 2] = z + 0.5;*/
+      /*
+        colors[k * 3 + 0] = x + 0.5;
+        colors[k * 3 + 1] = y + 0.5;
+        colors[k * 3 + 2] = z + 0.5;
+      */
+
       colors[k * 3 + 0] = 0.5;
       colors[k * 3 + 1] = 0.5;
       colors[k * 3 + 2] = 0.5;
@@ -284,7 +295,7 @@ window.onload = function() {
 
 let sequence = () => {
 
-  inertiaFactor = 0.97;
+  inertiaFactor = 1 - 0.01 * FPS / 30;
 
   let content = document.querySelectorAll(".reserved-space")[0];
   let clonetent = content.cloneNode(true);
@@ -313,19 +324,21 @@ let sequence = () => {
 
   setTimeout(() => {
     document.querySelector(".stand-in .scramble-stage-1").style.opacity = 1;
-    document.querySelector(".stand-in .scramble-stage-1").style.transform = 'scale(1)';
     document.querySelector(".stand-in .scramble-stage-2").style.opacity = 1;
-    document.querySelector(".stand-in .scramble-stage-2").style.transform = 'scale(1)';
+    document.querySelectorAll(".scramble-stage-1").forEach((e) => {
+      e.style.transform = 'scale(1)'});
+    document.querySelectorAll(".scramble-stage-2").forEach((e) => {
+      e.style.transform = 'scale(1)'});
     initCondition(initialPeakPosition);
   }, DELAY);
   setTimeout(() => {
     document.querySelector(".stand-in .scramble-stage-3").style.opacity = 1;
-    document.querySelector(".stand-in .scramble-stage-3").style.transform = 'scale(1)';
+    document.querySelectorAll(".scramble-stage-3").forEach((e) => {
+      e.style.transform = 'scale(1)'});
     inertiaFactor = 1;
 
   }, DELAY + 2000);
   setTimeout(() => {
-    dt = 0.05;
     initCondition(postPeakPosition);
   }, DELAY + 2100);
 }

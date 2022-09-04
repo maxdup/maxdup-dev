@@ -3,20 +3,23 @@ canvas {
     position: fixed;
     top: 0;
     left: 0;
+    right: 0;
+
     z-index: -1;
 }
 
 #main {
-    height: 100vh;
     position: relative;
-
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 100vh;
 
     color: white;
 
-    font-family: Tahoma, sans-serif;
+    overflow-y: hidden;
+    padding: 24px;
+
     .reserved-space {
         opacity: 0;
         position: relative;
@@ -26,12 +29,13 @@ canvas {
             position: absolute;
             top: 0;
             left: 0;
-            right: -200px;
+            width: 120%;
         }
     }
 
     #main-content {
         font-size: 24px;
+
         @media (min-width: 768px) {
             font-size: 32px;
         }
@@ -52,7 +56,7 @@ canvas {
 
     .scramble-stage-1,
     .scramble-stage-2,
-    .scramble-stage-3{
+    .scramble-stage-3 {
         opacity: 0;
         transition: opacity 0.5s ease, transform 0.5s ease;
         transform: scale(1.4);
@@ -63,6 +67,7 @@ canvas {
 body {
     background: black;
     margin: 0;
+    font-family: Tahoma, sans-serif;
 }
 
 #contact {
