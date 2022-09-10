@@ -19,7 +19,6 @@ let vertexBuffer;
 let colorBuffer;
 
 function inertia(val){
-  //return Math.min(val * 0.95, val-0.01);
   return val * inertiaFactor;
 }
 let theta = 0;
@@ -123,19 +122,20 @@ function initCondition(parameter) {
 }
 
 function initWebGL() {
-    c = document.getElementById("c");
-    gl = c.getContext("experimental-webgl");
+  c = document.createElement("CANVAS");
+  document.body.prepend(c);
+  gl = c.getContext("experimental-webgl");
 
+  resizeCanvas();
+  window.addEventListener("resize", function(){
     resizeCanvas();
-    window.addEventListener("resize", function(){
-        resizeCanvas();
-    });
+  });
 }
 
 function resizeCanvas() {
-    c.width = window.innerWidth;
-    c.height = window.innerHeight;
-    gl.viewport(0, 0, c.width, c.height);
+  c.width = window.innerWidth;
+  c.height = window.innerHeight;
+  gl.viewport(0, 0, c.width, c.height);
 }
 
 function initShaders() {

@@ -17,7 +17,7 @@ canvas {
 
     color: white;
 
-    overflow-y: hidden;
+    overflow: hidden;
     padding: 24px;
 
     .reserved-space {
@@ -69,11 +69,187 @@ body {
     margin: 0;
     font-family: Tahoma, sans-serif;
 }
-
-#contact {
+.container {
+    color: #eee;
     min-height: 250px;
-    background: #444;
-    color: #ddd;
-    top: calc(100% - 50px);
-    bottom: -240px
+    padding: 2rem 2rem 6rem;
+    .content {
+        max-width: 800px;
+        margin: auto;
+    }
+}
+#about {
+    background: #111c;
+}
+#contact {
+    background: #999a;
+}
+
+$baseColor: black;
+$midsColor: #07060e;
+$highColor: red;
+
+$imageSrcJac: url("~/images/jac_nobg.png");
+$imageSrcMax: url("~/images/max_nobg.png");
+
+$img-height: 250px;
+$img-width: 250px;
+$img-size: $img-height $img-width;
+
+.img-container {
+    display: block;
+    text-align: center;
+    .img-box {
+        margin: 0 -55px;
+    }
+}
+
+.img-box-pos {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.img-box {
+    display: inline-block;
+    height: $img-height;
+    width: $img-width;
+    position: relative;
+    background-repeat: no-repeat;
+    background-size: $img-size;
+    mix-blend-mode: lighten;
+}
+.img-box.jac,
+.img-box-filter.jac {
+    background-image: $imageSrcJac;
+    background-repeat: no-repeat;
+    background-size: $img-size;
+
+    .clr-blend {
+        mask: $imageSrcJac;
+        mask-repeat: no-repeat;
+        mask-size: $img-size;
+
+        &:after {
+            background-image: $imageSrcJac;
+            background-repeat: no-repeat;
+            background-size: $img-size;
+        }
+    }
+    .clr-image {
+        //background-image: $imageSrcJac;
+        background-repeat: no-repeat;
+        background-size: $img-size;
+    }
+    .clr-base{
+        //background-image: $imageSrcJac;
+        //background-repeat: no-repeat;
+        //background-size: $img-size;
+    }
+    .clr-base { background: $baseColor; }
+    /*.clr-mids { background: #523960; }
+    .clr-high { background: #e54c4c; }*/
+    .clr-mids { background: #555; }
+    .clr-high { background: #ccc; }
+}
+
+.img-box.max {
+    background-image: $imageSrcMax;
+    background-repeat: no-repeat;
+    background-size: $img-size;
+
+    .clr-blend {
+        mask: $imageSrcMax;
+        mask-repeat: no-repeat;
+        mask-size: $img-size;
+
+        &:after {
+            background-image: $imageSrcMax;
+            background-repeat: no-repeat;
+            background-size: $img-size;
+        }
+    }
+    .clr-image {
+        background-image: $imageSrcMax;
+        background-repeat: no-repeat;
+        background-size: $img-size;
+    }
+    .clr-base{
+        //background-image: $imageSrcMax;
+        //background-repeat: no-repeat;
+        //background-size: $img-size;
+    }
+    .clr-base { background: $baseColor; }
+    /*.clr-mids { background: #1f4c62 }
+    .clr-high { background: #ddbdff; }*/
+    .clr-mids { background: #555; }
+    .clr-high { background: #ccc; }
+}
+
+.img-box-filter {
+    display: inline-block;
+    height: $img-height;
+    width: $img-width;
+    position: relative;
+    mix-blend-mode: lighten;
+}
+.clr-blend {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    &:after {
+        content: " ";
+        display:block;
+        z-index: 4;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        mix-blend-mode: multiply;
+    }
+}
+.clr-image {
+    background-repeat: no-repeat;
+    background-size: $img-size;
+}
+
+.clr-base {
+    z-index: 1;
+    &:after {
+        z-index: 2;
+        filter: brightness(0.4);
+    }
+}
+.clr-mids {
+    z-index: 3;
+    mix-blend-mode: screen;
+    &:after {
+        z-index: 4;
+        filter: brightness(2.7) grayscale(1) contrast(100%);
+    }
+}
+.clr-high {
+    z-index: 5;
+    mix-blend-mode: color-dodge;
+    &:after {
+        z-index: 6;
+        filter: brightness(0.8) grayscale(1) contrast(200%);
+    }
+}
+
+body {
+    font-size: 20px;
+    h2 {
+        font-size: 32px;
+        margin: 0.8em 0;
+    }
+    p {
+        margin: 0.8em 0;
+    }
 }

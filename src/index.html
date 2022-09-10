@@ -4,7 +4,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
   </head>
   <body>
-    <canvas id="c"></canvas>
 
     <div id="main">
       <div id="main-content">
@@ -16,11 +15,28 @@
       </div>
     </div>
 
-    <!--div id="about" class="container">
-      <h2>About</h2>
+    <div id="about" class="container">
+      <div class="content">
+        <h2>About</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <div class="img-container">
+          <div class="img-box jac">
+            <div class="clr-image"></div>
+            <div class="clr-blend clr-base"></div>
+            <div class="clr-blend clr-mids"></div>
+            <div class="clr-blend clr-high"></div>
+          </div>
+          <div class="img-box max">
+            <div class="clr-image"></div>
+            <div class="clr-blend clr-base"></div>
+            <div class="clr-blend clr-mids"></div>
+            <div class="clr-blend clr-high"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div id="team" class="container">
+    <!--div id="team" class="container">
       <h2>Équipe</h2>
     </div>
 
@@ -29,9 +45,9 @@
     </div-->
 
     <div id="contact" class="container">
-      <h2>
-        Contactez-nous
-      </h2>
+      <div class="content">
+        <h2>Contactez-nous</h2>
+      </div>
     </div>
 
     <script id="vs" type="x-shader/x-vertex">
@@ -40,7 +56,7 @@
 			varying   vec4 vColor;
 			uniform mat4 pjMatrix;
 			uniform mat4 mvMatrix;
-			
+
 			void main()
 			{
 			vColor = vec4(color, 1.0);
@@ -52,7 +68,7 @@
             type="x-shader/x-fragment">
 			precision mediump float;
 			varying   vec4 vColor;
-			
+
 			void main()
 			{
 			gl_FragColor  = vColor;
