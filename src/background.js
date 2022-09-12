@@ -25,8 +25,8 @@ let theta = 0;
 
 let scrollProgress = 0; // 0-1
 window.addEventListener('scroll', () => {
-  scrollProgress = document.body.scrollTop /
-    (document.body.scrollHeight - document.body.clientHeight);
+  scrollProgress = document.documentElement.scrollTop /
+    (document.documentElement.scrollHeight - document.documentElement.clientHeight);
 });
 
 
@@ -283,25 +283,9 @@ function draw() {
 }
 let init = false
 
-window.onload = function() {
-  initWebGL();
-  initShaders();
-
-  sequence();
-  initBuffers();
-  render();
-
-};
-
 let sequence = () => {
 
   inertiaFactor = 1 - 0.01 * FPS / 30;
-
-  let content = document.querySelectorAll(".reserved-space")[0];
-  let clonetent = content.cloneNode(true);
-
-  clonetent.classList.add('stand-in');
-  document.getElementById("main-content").appendChild(clonetent);
   const DELAY = 1000;
 
   Scrambler({
@@ -342,3 +326,27 @@ let sequence = () => {
     initCondition(postPeakPosition);
   }, DELAY + 2100);
 }
+
+
+let content = document.querySelectorAll(".reserved-space")[0];
+let clonetent = content.cloneNode(true);
+content.style.opacity = 0;
+
+clonetent.querySelector(".scramble-stage-1").style.opacity = 0;
+clonetent.querySelector(".scramble-stage-2").style.opacity = 0;
+clonetent.querySelector(".scramble-stage-3").style.opacity = 0;
+
+
+clonetent.classList.add('stand-in');
+document.getElementById("main-content").appendChild(clonetent);
+
+window.onload = function() {
+
+  initWebGL();
+  initShaders();
+
+  sequence();
+  initBuffers();
+  render();
+
+};

@@ -126,6 +126,8 @@ $img-size: $img-height $img-width;
     .clr-mids { background: #555; }
     .clr-high { background: #ccc; }
 }
+.img-box.jac { margin-right: -7%; }
+.img-box.max { margin-left: -7%; }
 
 .img-box-filter {
     display: inline-block;

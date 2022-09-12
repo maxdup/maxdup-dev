@@ -1,0 +1,21 @@
+#contact {
+    h2 {
+        margin-bottom: 3rem;
+    }
+    h3 {
+        margin: 0 0 0.75rem;
+    }
+    .column {
+        display: inline-block;
+        margin-right: 2rem;
+        vertical-align: top;
+        margin-left: 1rem;
+        margin-bottom: 2rem;
+        >* {
+            display: block;
+        }
+        a {
+            margin-top: 0.25rem;
+        }
+    }
+}

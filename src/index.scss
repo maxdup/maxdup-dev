@@ -1,23 +1,17 @@
-@import './about';
 @import './main';
+@import './about';
+@import './contact';
 
 html {
     font-size: 18px;
-    overflow-x: hidden;
 }
-canvas {
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
 
-    z-index: -1;
-}
 body {
+    color: #eee;
     background: black;
     margin: 0;
     font-family: Tahoma, sans-serif;
+    overflow-x: hidden;
     h1, h2, h3 {
         display: block;
         font-weight: bold;
@@ -32,10 +26,12 @@ body {
     p {
         margin: 1rem 0;
     }
+    a {
+        color: #eee;
+    }
 }
+
 .container {
-    color: #eee;
-    min-height: 250px;
     padding: 2rem 2rem 6rem;
     max-width: 800px;
     margin: auto;
@@ -49,12 +45,22 @@ body {
         left: -100vw;
         right: -100vw;
         bottom: 0;
-        background: inherit;
+
+        max-width: 100vw;
+        margin: auto;
     }
 }
 
 #contact:after { background: #999b; }
 #about:after { background: #111b; }
 
+canvas {
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
 
-#contact {}
+    z-index: -1;
+}
+
