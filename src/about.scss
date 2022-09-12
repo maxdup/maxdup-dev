@@ -1,0 +1,183 @@
+#about:after { background: #111c; }
+
+#about {
+    #about-titles {
+        transition: opacity 1s ease;
+
+        height: 7vw;
+        overflow: visible;
+        margin-top: -7vw;
+        .titles-left, .titles-right {
+            display: inline-block;
+        }
+        .titles-left {
+            text-align: left;
+            float: left;
+        }
+        .titles-right {
+            text-align: right;
+            float: right;
+        }
+        h3 {
+            margin-bottom: 0;
+        }
+        span {
+            color: #aaa;
+        }
+    }
+}
+
+$baseColor: black;
+$midsColor: #07060e;
+$highColor: red;
+
+$imageSrcJac: url("~/images/jac_nobg.png");
+$imageSrcMax: url("~/images/max_nobg.png");
+
+$img-height: 100%;
+$img-width: 100%;
+
+$img-size: $img-height $img-width;
+
+.img-container {
+    display: block;
+    text-align: center;
+}
+
+.img-box-pos {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.img-box {
+    display: inline-block;
+    padding-bottom: 40%;
+    width: 40%;
+    position: relative;
+    background-repeat: no-repeat;
+    background-size: $img-size;
+    mix-blend-mode: lighten;
+}
+.img-box.jac,
+.img-box-filter.jac {
+    background-image: $imageSrcJac;
+    background-repeat: no-repeat;
+    background-size: $img-size;
+
+    .clr-blend {
+        mask: $imageSrcJac;
+        mask-repeat: no-repeat;
+        mask-size: $img-size;
+
+        &:after {
+            background-image: $imageSrcJac;
+            background-repeat: no-repeat;
+            background-size: $img-size;
+        }
+    }
+    .clr-image {
+        //background-image: $imageSrcJac;
+        background-repeat: no-repeat;
+        background-size: $img-size;
+    }
+    .clr-base{
+        //background-image: $imageSrcJac;
+        //background-repeat: no-repeat;
+        //background-size: $img-size;
+    }
+    .clr-base { background: $baseColor; }
+    /*.clr-mids { background: #523960; }
+    .clr-high { background: #e54c4c; }*/
+    .clr-mids { background: #555; }
+    .clr-high { background: #ccc; }
+}
+
+.img-box.max {
+    background-image: $imageSrcMax;
+    background-repeat: no-repeat;
+    background-size: $img-size;
+
+    .clr-blend {
+        mask: $imageSrcMax;
+        mask-repeat: no-repeat;
+        mask-size: $img-size;
+
+        &:after {
+            background-image: $imageSrcMax;
+            background-repeat: no-repeat;
+            background-size: $img-size;
+        }
+    }
+    .clr-image {
+        background-image: $imageSrcMax;
+        background-repeat: no-repeat;
+        background-size: $img-size;
+    }
+    .clr-base{
+        //background-image: $imageSrcMax;
+        //background-repeat: no-repeat;
+        //background-size: $img-size;
+    }
+    .clr-base { background: $baseColor; }
+    /*.clr-mids { background: #1f4c62 }
+    .clr-high { background: #ddbdff; }*/
+    .clr-mids { background: #555; }
+    .clr-high { background: #ccc; }
+}
+
+.img-box-filter {
+    display: inline-block;
+    height: $img-height;
+    width: $img-width;
+    position: relative;
+    mix-blend-mode: lighten;
+}
+.clr-blend {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    &:after {
+        content: " ";
+        display:block;
+        z-index: 4;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        mix-blend-mode: multiply;
+    }
+}
+.clr-image {
+    background-repeat: no-repeat;
+    background-size: $img-size;
+}
+
+.clr-base {
+    z-index: 1;
+    &:after {
+        z-index: 2;
+        filter: brightness(0.4);
+    }
+}
+.clr-mids {
+    z-index: 3;
+    mix-blend-mode: screen;
+    &:after {
+        z-index: 4;
+        filter: brightness(2.7) grayscale(1) contrast(100%);
+    }
+}
+.clr-high {
+    z-index: 5;
+    mix-blend-mode: color-dodge;
+    &:after {
+        z-index: 6;
+        filter: brightness(0.8) grayscale(1) contrast(200%);
+    }
+}
