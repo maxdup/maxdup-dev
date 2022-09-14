@@ -310,20 +310,26 @@ let sequence = () => {
 
   initCondition(initialPosition);
 
+  let scramble1 = document.querySelector(".stand-in .scramble-stage-1");
+  let scramble2 = document.querySelector(".stand-in .scramble-stage-2");
+  let scramble3 = document.querySelector(".stand-in .scramble-stage-3");
+
+  scramble1.style.transform = 'scale(1.4)';
+  scramble2.style.transform = 'scale(1.4)';
+  scramble3.style.transform = 'scale(1.4)';
+
   setTimeout(() => {
-    document.querySelector(".stand-in .scramble-stage-1").style.opacity = 1;
-    document.querySelector(".stand-in .scramble-stage-2").style.opacity = 1;
-    document.querySelectorAll(".scramble-stage-1").forEach((e) => {
-      e.style.transform = 'scale(1)'});
-    document.querySelectorAll(".scramble-stage-2").forEach((e) => {
-      e.style.transform = 'scale(1)'});
+    scramble1.style.opacity = 1;
+    scramble1.style.transform = 'none';
+    scramble2.style.opacity = 1;
+    scramble2.style.transform = 'none';
+
     initCondition(initialPeakPosition);
   }, DELAY);
   setTimeout(() => {
-    document.querySelector(".stand-in .scramble-stage-3").style.opacity = 1;
-    document.querySelectorAll(".scramble-stage-3").forEach((e) => {
-      e.style.transform = 'scale(1)';
-    });
+    scramble3.style.opacity = 1;
+    scramble3.style.transform = 'scale(1)';
+
     inertiaFactor = 1;
 
   }, DELAY + 2000);
