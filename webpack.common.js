@@ -6,6 +6,7 @@ const dirBuild = path.join(__dirname, 'build');
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 
 module.exports = {
   context: path.join(__dirname, 'src'),
@@ -46,10 +47,13 @@ module.exports = {
     ]
   },
   plugins:[
-    new MiniCssExtractPlugin({ filename: '[name].[contenthash].css' }),
+    new MiniCssExtractPlugin({
+      filename: '[name].[contenthash].css'
+    }),
     new HtmlWebpackPlugin({
       template: path.join(dirSrc, 'index.html'),
-    })
+    }),
+    new FaviconsWebpackPlugin('./images/favicon.png')
   ]
 
 }
