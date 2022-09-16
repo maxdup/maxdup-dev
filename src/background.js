@@ -1,3 +1,5 @@
+import {accent1, accent2} from './constants';
+import {HSLStr} from './utils';
 import Scrambler from 'scrambling-letters';
 
 let c, gl;
@@ -382,3 +384,22 @@ window.onload = function() {
   setFPS(mobileCheck() ? 30 : 60);
   render();
 };
+
+
+// selection Color
+let colorToggle = false;
+let applySelectColor = (event) => {
+  let clr = HSLStr(colorToggle ? accent2 : accent1);
+  document.documentElement.style.setProperty('--select-color', clr);
+}
+let selectionChanged = () => {
+  if (window.getSelection().toString() != ''){
+    colorToggle = !colorToggle
+    document.removeEventListener('selectionchange', selectionChanged);
+  }
+}
+document.addEventListener('selectstart', (event) => {
+  applySelectColor();
+  document.addEventListener('selectionchange', selectionChanged);
+});
+applySelectColor();

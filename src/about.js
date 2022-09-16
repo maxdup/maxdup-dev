@@ -1,3 +1,5 @@
+import {easeOut, haste, delay, remap, HSLStr} from './utils'
+
 let aboutElem = document.getElementById('about');
 let images = document.querySelectorAll('.img-box');
 let titles = document.getElementById('about-titles');
@@ -17,19 +19,6 @@ let scrolled = () => {
   computeProgress();
 }
 
-function easeOut(x) {
-  return Math.sqrt(1 - (x = x - 1) * x);
-}
-function haste(x, amount){
-  return Math.min(x, amount) * 1 / amount;
-}
-function delay(x, amount){
-  return  (Math.max(x, amount) - amount) /amount;
-}
-function remap(val, minVal, maxVal){
-  return (maxVal-minVal) * val + minVal;
-}
-
 const endHSL = [[0, 0, 0],
                 [0, 0, 39],
                 [0, 0, 70]];
@@ -43,10 +32,9 @@ const jacHSL = [[0, 0, 0],
                 [0, 75, 60]];
 
 let getColor = (progress, initHSL, targetHSL) => {
-  let hsl = [remap(progress, initHSL[0], initHSL[0]),
-             remap(progress, initHSL[1], targetHSL[1]),
-             remap(progress, initHSL[2], targetHSL[2])];
-  return `hsl(${hsl[0]}deg ${hsl[1]}% ${hsl[2]}%)`;
+  return HSLStr([remap(progress, initHSL[0], initHSL[0]),
+                 remap(progress, initHSL[1], targetHSL[1]),
+                 remap(progress, initHSL[2], targetHSL[2])]);
 }
 
 let computeProgress = () => {
