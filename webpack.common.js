@@ -53,7 +53,10 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.join(dirSrc, 'index.html'),
     }),
-    new FaviconsWebpackPlugin('./images/favicon.png')
-  ]
-
+    new FaviconsWebpackPlugin(
+      path.join(dirSrc, './images/favicon.png'))
+  ],
+  performance: {
+    maxAssetSize: 400000,
+  }
 }

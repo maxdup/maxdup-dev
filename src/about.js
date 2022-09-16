@@ -8,7 +8,7 @@ let progress = 0; // 0 ≤ progress ≤ 1
 let resized = () => {
   minY = document.documentElement.clientHeight/2;
   maxY = document.documentElement.clientHeight;
-  scroll();
+  scrolled();
 }
 
 let scrolled = () => {

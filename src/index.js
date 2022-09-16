@@ -1,3 +1,3 @@
 import './index.scss';
-require('./background');
-require('./about');
+import './background';
+import './about';
