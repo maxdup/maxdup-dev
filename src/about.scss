@@ -88,10 +88,12 @@ $img-size: $img-height $img-width;
         //background-size: $img-size;
     }
     .clr-base { background: $baseColor; }
-    /*.clr-mids { background: #523960; }
-    .clr-high { background: #e54c4c; }*/
-    .clr-mids { background: #555; }
-    .clr-high { background: #ccc; }
+
+    .clr-mids { background: hsl(278 0% 39%); }
+    .clr-high { background: hsl(0 0% 70%); }
+
+    //.clr-mids { background: hsl(278, 25%, 30%); }
+    //.clr-high { background: hsl(0, 75%, 60%); }
 }
 
 .img-box.max {
@@ -121,10 +123,12 @@ $img-size: $img-height $img-width;
         //background-size: $img-size;
     }
     .clr-base { background: $baseColor; }
-    /*.clr-mids { background: #1f4c62 }
-    .clr-high { background: #ddbdff; }*/
-    .clr-mids { background: #555; }
-    .clr-high { background: #ccc; }
+
+    .clr-mids { background: hsl(200 0% 39%); }
+    .clr-high { background: hsl(269 0% 70%); }
+
+    //.clr-mids { background: hsl(200, 52%, 25%); }
+    //.clr-high { background: hsl(269, 100%, 87%) }
 }
 .img-box.jac { margin-right: -7%; }
 .img-box.max { margin-left: -7%; }

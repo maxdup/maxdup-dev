@@ -30,6 +30,25 @@ function remap(val, minVal, maxVal){
   return (maxVal-minVal) * val + minVal;
 }
 
+const endHSL = [[0, 0, 0],
+                [0, 0, 39],
+                [0, 0, 70]];
+
+const maxHSL = [[0, 0, 0],
+                [200, 52, 25],
+                [269, 100, 87]];
+
+const jacHSL = [[0, 0, 0],
+                [278, 25, 30],
+                [0, 75, 60]];
+
+let getColor = (progress, initHSL, targetHSL) => {
+  let hsl = [remap(progress, initHSL[0], initHSL[0]),
+             remap(progress, initHSL[1], targetHSL[1]),
+             remap(progress, initHSL[2], targetHSL[2])];
+  return `hsl(${hsl[0]}deg ${hsl[1]}% ${hsl[2]}%)`;
+}
+
 let computeProgress = () => {
   // progress toward about being in the middle of the screen
   let mProgress = Math.max(Math.min(mark, maxY), minY);
@@ -38,16 +57,23 @@ let computeProgress = () => {
   let eProgress = distTopToBot - Math.max(mark, maxY);
   eProgress =  1 - eProgress / (distTopToBot - mark);
   // whichever progress is ahead
-  let progress = easeOut(Math.min(Math.max(mProgress, eProgress), 1));
+  let progress = Math.min(Math.max(mProgress, eProgress), 1);
 
 
-  let margin = remap(progress, 9, -7);
+  let margin = remap(easeOut(progress), 9, -7);
   let opacity = haste(progress, 0.5);
 
   images[0].style.opacity = opacity;
   images[0].style.marginRight = margin + '%';
+  for (let i = 0; i < 3; i++){
+    images[0].children[i].style.background = getColor(progress, jacHSL[i], endHSL[i]);
+  }
+
   images[1].style.opacity = opacity;
   images[1].style.marginLeft = margin + '%';
+  for (let i = 0; i < 3; i++){
+    images[1].children[i].style.background = getColor(progress, maxHSL[i], endHSL[i]);
+  }
 
   titles.style.opacity = Math.floor(progress);
 }
