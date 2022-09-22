@@ -1,4 +1,7 @@
 import Scrambler from 'scrambling-letters';
+import vsScript from "./shaders/background.vert";
+import fsScript from "./shaders/background.frag";
+
 
 let c, gl;
 let aLoc = [];
@@ -140,25 +143,23 @@ function resizeCanvas() {
 }
 
 function initShaders() {
-    let p = gl.createProgram();
-    let vs = gl.createShader(gl.VERTEX_SHADER);
-    let fs = gl.createShader(gl.FRAGMENT_SHADER);
-    let v = document.getElementById("vs").textContent;
-    let f = document.getElementById("fs").textContent;
-    gl.shaderSource(vs, v);
-    gl.shaderSource(fs, f);
-    gl.compileShader(vs);
-    gl.compileShader(fs);
-    gl.attachShader(p, vs);
-    gl.attachShader(p, fs);
-    gl.linkProgram(p);
-    gl.useProgram(p);
-    aLoc[0] = gl.getAttribLocation(p, "position");
-    aLoc[1] = gl.getAttribLocation(p, "color");
-    gl.enableVertexAttribArray(aLoc[0]);
-    gl.enableVertexAttribArray(aLoc[1]);
-    uLoc[0] = gl.getUniformLocation(p, "pjMatrix");
-    uLoc[1] = gl.getUniformLocation(p, "mvMatrix");
+  let p = gl.createProgram();
+  let vs = gl.createShader(gl.VERTEX_SHADER);
+  let fs = gl.createShader(gl.FRAGMENT_SHADER);
+  gl.shaderSource(vs, vsScript);
+  gl.shaderSource(fs, fsScript);
+  gl.compileShader(vs);
+  gl.compileShader(fs);
+  gl.attachShader(p, vs);
+  gl.attachShader(p, fs);
+  gl.linkProgram(p);
+  gl.useProgram(p);
+  aLoc[0] = gl.getAttribLocation(p, "position");
+  aLoc[1] = gl.getAttribLocation(p, "color");
+  gl.enableVertexAttribArray(aLoc[0]);
+  gl.enableVertexAttribArray(aLoc[1]);
+  uLoc[0] = gl.getUniformLocation(p, "pjMatrix");
+  uLoc[1] = gl.getUniformLocation(p, "mvMatrix");
 }
 
 function initBuffers() {
