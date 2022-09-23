@@ -4,6 +4,10 @@ import Scrambler from 'scrambling-letters';
 import vsScript from "./shaders/background.vert";
 import fsScript from "./shaders/background.frag";
 
+import {remap, easeOut, easeInOut} from "./utils";
+
+let max = 0;
+let min = 0;
 
 let c, gl;
 let aLoc = [];
@@ -11,6 +15,7 @@ let uLoc = [];
 
 let positions = [];
 let colors = [];
+let pointSizes = [];
 
 let translation;
 let scale;
@@ -22,6 +27,7 @@ let mvMatrix = mat4.create();
 let pMatrix = mat4.create();
 let vertexBuffer;
 let colorBuffer;
+let pointBuffer;
 
 function inertia(val){
   return val * inertiaFactor;
@@ -96,7 +102,7 @@ function initCondition(parameter) {
         let y = (-N / 2 + j) * l;
         // initial conditions
         let z = z0 * Math.exp(-(Math.pow(x - x0, 2) + Math.pow(y - y0, 2)) / (2 * sigma2));
-        f[0][i][j] = initial ? z : Math.max(z, f[0][i][j]);
+        f[0][i][j] = initial || Math.abs(z) > Math.abs(f[0][i][j]) ? z : f[0][i][j];
       }
     }
   }
@@ -158,17 +164,40 @@ function initShaders() {
   gl.useProgram(p);
   aLoc[0] = gl.getAttribLocation(p, "position");
   aLoc[1] = gl.getAttribLocation(p, "color");
+  aLoc[2] = gl.getAttribLocation(p, "pointSize");
   gl.enableVertexAttribArray(aLoc[0]);
   gl.enableVertexAttribArray(aLoc[1]);
+  gl.enableVertexAttribArray(aLoc[2]);
   uLoc[0] = gl.getUniformLocation(p, "pjMatrix");
   uLoc[1] = gl.getUniformLocation(p, "mvMatrix");
+}
+
+function makeSheen (color){
+  // consider we spawn and despawn at [4,4] and [-4,-4]
+  let a = remap(Math.random(), 10, 70) / 45 * 2
+  let sheen = {
+    a: a,
+    b: 1,
+    c: 4*(a+1),
+    speed: a * remap(Math.random(), 0.5, 1),
+    color: color
+  }
+  return sheen
+}
+function updateSheen(sheen){
+  sheen.c -= sheen.speed/10;
+  sheen.a += sheen.speed/800;
+  if (distToLine(4,4,sheen) < 0.5){
+    Object.assign(sheen, makeSheen(sheen.color));
+  }
 }
 
 function initBuffers() {
     for (let i = 0; i <= N; i++) {
         for (let j = 0; j <= N; j++) {
-            positions = positions.concat([0, 0, 0]);
-            colors = colors.concat([0, 0, 0, 1.0]);
+          positions = positions.concat([0, 0, 0]);
+          colors = colors.concat([0, 0, 0, 1.0]);
+          pointSizes.push(2);
         }
     }
 
@@ -181,6 +210,11 @@ function initBuffers() {
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.DYNAMIC_DRAW);
     gl.vertexAttribPointer(aLoc[1], 3, gl.FLOAT, false, 0, 0);
+
+    pointBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pointSizes), gl.DYNAMIC_DRAW);
+    gl.vertexAttribPointer(aLoc[2], 1, gl.FLOAT, false, 0, 0);
 }
 
 function render(){
@@ -193,6 +227,10 @@ function render(){
 
     frameTiming = now - (elapsed % frameInterval);
 
+    updateSheen(sheen1);
+    updateSheen(sheen2);
+    updateSheen(sheen3);
+
     let rad = 0.6 - 1 * scrollProgress;
     let rad2 = 1 - 0.4 * scrollProgress;
 
@@ -200,7 +238,8 @@ function render(){
     mat4.identity(mvMatrix);
     let translation = vec3.create();
 
-    vec3.set(translation, -0.5, 0, -2);
+    //vec3.set(translation, -0.5, 0, -2);
+    vec3.set(translation, -0.5, 0, -7);
     mat4.translate(mvMatrix, mvMatrix, translation);
 
     mat4.rotate(mvMatrix, mvMatrix, rad, [1, 0, 0]);
@@ -211,6 +250,21 @@ function render(){
 
     draw();
   }
+}
+
+let sheen1 = makeSheen([1,0,0]);
+let sheen2 = makeSheen([0,0,1]);
+let sheen3 = makeSheen([1,1,1]);
+
+setTimeout(() => {
+  sheen2 = makeSheen(sheen2.color);
+}, 2000);
+setTimeout(() => {
+  sheen3 = makeSheen(sheen3.color);
+}, 6000);
+
+function distToLine(x, y, l) {
+  return Math.abs((l.a*x) + (l.b*y) + l.c) / Math.sqrt(Math.pow(l.a,2) + Math.pow(l.b,2))
 }
 
 function draw() {
@@ -257,19 +311,31 @@ function draw() {
       let y = f[1][i][j] * 0.02;
       let z = (-N / 2 + j) * l * 0.02;
 
+      let dist1 = distToLine(x, z, sheen1);
+      let dist2 = distToLine(x, z, sheen2);
+      let dist3 = distToLine(x, z, sheen2);
+
+      let maxdist = 3;
+
       positions[k * 3 + 0] = x;
       positions[k * 3 + 1] = inertia(y);
       positions[k * 3 + 2] = z;
 
-      /*
-        colors[k * 3 + 0] = x + 0.5;
-        colors[k * 3 + 1] = y + 0.5;
-        colors[k * 3 + 2] = z + 0.5;
-      */
+      pointSizes[k] = remap(y, 2, 10);
 
-      colors[k * 3 + 0] = 0.5;
-      colors[k * 3 + 1] = 0.5;
-      colors[k * 3 + 2] = 0.5;
+      let easeDist1 = 1 - easeInOut(Math.min(dist1, maxdist) / maxdist, 2);
+      let easeDist2 = 1 - easeInOut(Math.min(dist2, maxdist) / maxdist, 2);
+      let easeDist3 = 1 - easeInOut(Math.min(dist3+1.5, maxdist) / maxdist, 4);
+
+      colors[k * 3 + 0] = Math.max(remap(easeDist1, 0.5, sheen1.color[0]),
+                                   remap(easeDist2, 0.5, sheen2.color[0]),
+                                   remap(easeDist3, 0.5, sheen3.color[0]));
+      colors[k * 3 + 1] = Math.max(remap(easeDist1, 0.5, sheen1.color[1]),
+                                   remap(easeDist2, 0.5, sheen2.color[1]),
+                                   remap(easeDist3, 0.5, sheen3.color[1]));
+      colors[k * 3 + 2] = Math.max(remap(easeDist1, 0.5, sheen1.color[2]),
+                                   remap(easeDist2, 0.5, sheen2.color[2]),
+                                   remap(easeDist3, 0.5, sheen3.color[2]));
 
       k++;
     }
@@ -281,7 +347,9 @@ function draw() {
   gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
   gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(colors));
 
-  //gl.drawArrays(gl.LINE_STRIP, 0, positions.length / 3);
+  gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer);
+  gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(pointSizes));
+
   gl.drawArrays(gl.POINTS, 0, positions.length / 3);
   gl.flush();
 }
@@ -289,7 +357,7 @@ let init = false
 
 let sequence = () => {
 
-  inertiaFactor = 1 - 0.01 * targetFPS / 30;
+  inertiaFactor = 1 - 0.001 * targetFPS / 30;
   const DELAY = 1000;
 
   Scrambler({
