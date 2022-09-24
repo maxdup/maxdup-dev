@@ -1,6 +1,7 @@
 import {accent1, accent2} from './constants';
 import {HSLStr} from './utils';
 import Scrambler from 'scrambling-letters';
+
 import vsScript from "./shaders/background.vert";
 import fsScript from "./shaders/background.frag";
 
@@ -14,20 +15,13 @@ let aLoc = [];
 let uLoc = [];
 
 let positions = [];
-let colors = [];
-let pointSizes = [];
+let dists = [];
 
-let translation;
-let scale;
-let eye;
-let center;
-let up;
-let view;
 let mvMatrix = mat4.create();
 let pMatrix = mat4.create();
+
 let vertexBuffer;
-let colorBuffer;
-let pointBuffer;
+let distBuffer;
 
 function inertia(val){
   return val * inertiaFactor;
@@ -163,11 +157,9 @@ function initShaders() {
   gl.linkProgram(p);
   gl.useProgram(p);
   aLoc[0] = gl.getAttribLocation(p, "position");
-  aLoc[1] = gl.getAttribLocation(p, "color");
-  aLoc[2] = gl.getAttribLocation(p, "pointSize");
+  aLoc[1] = gl.getAttribLocation(p, "dist");
   gl.enableVertexAttribArray(aLoc[0]);
   gl.enableVertexAttribArray(aLoc[1]);
-  gl.enableVertexAttribArray(aLoc[2]);
   uLoc[0] = gl.getUniformLocation(p, "pjMatrix");
   uLoc[1] = gl.getUniformLocation(p, "mvMatrix");
 }
@@ -179,7 +171,7 @@ function makeSheen (color){
     a: a,
     b: 1,
     c: 4*(a+1),
-    speed: a * remap(Math.random(), 0.5, 1),
+    speed: a * remap(Math.random(), 1, 2),
     color: color
   }
   return sheen
@@ -196,8 +188,7 @@ function initBuffers() {
     for (let i = 0; i <= N; i++) {
         for (let j = 0; j <= N; j++) {
           positions = positions.concat([0, 0, 0]);
-          colors = colors.concat([0, 0, 0, 1.0]);
-          pointSizes.push(2);
+          dists = dists.concat([0, 0, 0]);
         }
     }
 
@@ -206,15 +197,10 @@ function initBuffers() {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.DYNAMIC_DRAW);
     gl.vertexAttribPointer(aLoc[0], 3, gl.FLOAT, false, 0, 0);
 
-    colorBuffer = gl.createBuffer()
-    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.DYNAMIC_DRAW);
+    distBuffer = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, distBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(dists), gl.DYNAMIC_DRAW);
     gl.vertexAttribPointer(aLoc[1], 3, gl.FLOAT, false, 0, 0);
-
-    pointBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pointSizes), gl.DYNAMIC_DRAW);
-    gl.vertexAttribPointer(aLoc[2], 1, gl.FLOAT, false, 0, 0);
 }
 
 function render(){
@@ -238,8 +224,7 @@ function render(){
     mat4.identity(mvMatrix);
     let translation = vec3.create();
 
-    //vec3.set(translation, -0.5, 0, -2);
-    vec3.set(translation, -0.5, 0, -7);
+    vec3.set(translation, -0.5, 0, -4);
     mat4.translate(mvMatrix, mvMatrix, translation);
 
     mat4.rotate(mvMatrix, mvMatrix, rad, [1, 0, 0]);
@@ -252,16 +237,12 @@ function render(){
   }
 }
 
-let sheen1 = makeSheen([1,0,0]);
-let sheen2 = makeSheen([0,0,1]);
+let sheen1 = makeSheen([0.9,0,0.2]);
+let sheen2 = makeSheen([0,0.2,1]);
 let sheen3 = makeSheen([1,1,1]);
 
-setTimeout(() => {
-  sheen2 = makeSheen(sheen2.color);
-}, 2000);
-setTimeout(() => {
-  sheen3 = makeSheen(sheen3.color);
-}, 6000);
+setTimeout(() => { sheen2 = makeSheen(sheen2.color); }, 2000);
+setTimeout(() => { sheen3 = makeSheen(sheen3.color); }, 6000);
 
 function distToLine(x, y, l) {
   return Math.abs((l.a*x) + (l.b*y) + l.c) / Math.sqrt(Math.pow(l.a,2) + Math.pow(l.b,2))
@@ -272,7 +253,8 @@ function draw() {
 
   for (let i = 1; i <= N - 1; i++) {
     for (let j = 1; j <= N - 1; j++) {
-      f[2][i][j] = 2.0 * f[1][i][j] - f[0][i][j] + v * v * dt * dt / (dd * dd) * (f[1][i + 1][j] + f[1][i - 1][j] + f[1][i][j + 1] + f[1][i][j - 1] - 4.0 * f[1][i][j]);
+      f[2][i][j] = 2.0 * f[1][i][j] - f[0][i][j] + v * v * dt * dt / (dd * dd) *
+        (f[1][i + 1][j] + f[1][i - 1][j] + f[1][i][j + 1] + f[1][i][j - 1] - 4.0 * f[1][i][j]);
       f[2][i][j] = inertia(f[2][i][j]);
     }
   }
@@ -307,35 +289,20 @@ function draw() {
   let k = 0;
   for (let i = 0; i <= N; i++) {
     for (let j = 0; j <= N; j++) {
+
+      // update position
       let x = (-N / 2 + i) * l * 0.02;
       let y = f[1][i][j] * 0.02;
       let z = (-N / 2 + j) * l * 0.02;
-
-      let dist1 = distToLine(x, z, sheen1);
-      let dist2 = distToLine(x, z, sheen2);
-      let dist3 = distToLine(x, z, sheen2);
-
-      let maxdist = 3;
-
       positions[k * 3 + 0] = x;
       positions[k * 3 + 1] = inertia(y);
       positions[k * 3 + 2] = z;
 
-      pointSizes[k] = remap(y, 2, 10);
-
-      let easeDist1 = 1 - easeInOut(Math.min(dist1, maxdist) / maxdist, 2);
-      let easeDist2 = 1 - easeInOut(Math.min(dist2, maxdist) / maxdist, 2);
-      let easeDist3 = 1 - easeInOut(Math.min(dist3+1.5, maxdist) / maxdist, 4);
-
-      colors[k * 3 + 0] = Math.max(remap(easeDist1, 0.5, sheen1.color[0]),
-                                   remap(easeDist2, 0.5, sheen2.color[0]),
-                                   remap(easeDist3, 0.5, sheen3.color[0]));
-      colors[k * 3 + 1] = Math.max(remap(easeDist1, 0.5, sheen1.color[1]),
-                                   remap(easeDist2, 0.5, sheen2.color[1]),
-                                   remap(easeDist3, 0.5, sheen3.color[1]));
-      colors[k * 3 + 2] = Math.max(remap(easeDist1, 0.5, sheen1.color[2]),
-                                   remap(easeDist2, 0.5, sheen2.color[2]),
-                                   remap(easeDist3, 0.5, sheen3.color[2]));
+      // update distances
+      let maxdist = 3;
+      dists[k * 3 + 0] = distToLine(x, z, sheen1);
+      dists[k * 3 + 1] = distToLine(x, z, sheen2);
+      dists[k * 3 + 2] = distToLine(x, z, sheen3);
 
       k++;
     }
@@ -344,11 +311,8 @@ function draw() {
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(positions));
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-  gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(colors));
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer);
-  gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(pointSizes));
+  gl.bindBuffer(gl.ARRAY_BUFFER, distBuffer);
+  gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(dists));
 
   gl.drawArrays(gl.POINTS, 0, positions.length / 3);
   gl.flush();
