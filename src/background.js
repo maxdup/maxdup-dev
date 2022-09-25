@@ -51,7 +51,7 @@ let dd = 1.0; // space spacing
 let v = 4; // velocity
 
 // Set boundary condition
-let BC = "Neumann"; //or "Dirichlet"
+let BC = "Neumann";
 
 let initialPosition = {
   x: 0,
@@ -105,12 +105,7 @@ function initCondition(parameter) {
       f[1][i][j] = f[0][i][j] + v * v / 2.0 * dt * dt / (dd * dd) * (f[0][i + 1][j] + f[0][i - 1][j] + f[0][i][j + 1] + f[0][i][j - 1] - 4.0 * f[0][i][j]);
     }
   }
-  if (BC == "Dirichlet") {
-    // Dirichlet boundary condition
-    for (let i = 0; i <= N; i++) {
-      f[1][i][0] = f[1][i][N] = f[1][0][i] = f[1][N][i] = 0.0; // boundary condition
-    }
-  } else if (BC == "Neumann") {
+  if (BC == "Neumann") {
     // Neumann boundary condition
     for (let i = 1; i <= N - 1; i++) {
       f[1][i][0] = f[1][i][1];
@@ -184,25 +179,6 @@ function updateSheen(sheen){
   }
 }
 
-function initBuffers() {
-    for (let i = 0; i <= N; i++) {
-        for (let j = 0; j <= N; j++) {
-          positions = positions.concat([0, 0, 0]);
-          dists = dists.concat([0, 0, 0]);
-        }
-    }
-
-    vertexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.DYNAMIC_DRAW);
-    gl.vertexAttribPointer(aLoc[0], 3, gl.FLOAT, false, 0, 0);
-
-    distBuffer = gl.createBuffer()
-    gl.bindBuffer(gl.ARRAY_BUFFER, distBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(dists), gl.DYNAMIC_DRAW);
-    gl.vertexAttribPointer(aLoc[1], 3, gl.FLOAT, false, 0, 0);
-}
-
 function render(){
 
   requestAnimationFrame(render);
@@ -213,9 +189,7 @@ function render(){
 
     frameTiming = now - (elapsed % frameInterval);
 
-    updateSheen(sheen1);
-    updateSheen(sheen2);
-    updateSheen(sheen3);
+    [sheen1, sheen2, sheen3].forEach((s) => { updateSheen(s); });
 
     let rad = 0.6 - 1 * scrollProgress;
     let rad2 = 1 - 0.4 * scrollProgress;
@@ -244,6 +218,27 @@ let sheen3 = makeSheen([1,1,1]);
 setTimeout(() => { sheen2 = makeSheen(sheen2.color); }, 2000);
 setTimeout(() => { sheen3 = makeSheen(sheen3.color); }, 6000);
 
+
+function initBuffers() {
+  for (let i = 0; i <= N; i++) {
+    for (let j = 0; j <= N; j++) {
+      positions = positions.concat([(-N / 2 + i) * l * 0.02, 0, (-N / 2 + j) * l * 0.02]);
+      dists = dists.concat([0, 0, 0]);
+    }
+  }
+
+  vertexBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.DYNAMIC_DRAW);
+  gl.vertexAttribPointer(aLoc[0], 3, gl.FLOAT, false, 0, 0);
+
+  distBuffer = gl.createBuffer()
+  gl.bindBuffer(gl.ARRAY_BUFFER, distBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(dists), gl.DYNAMIC_DRAW);
+  gl.vertexAttribPointer(aLoc[1], 3, gl.FLOAT, false, 0, 0);
+}
+
+
 function distToLine(x, y, l) {
   return Math.abs((l.a*x) + (l.b*y) + l.c) / Math.sqrt(Math.pow(l.a,2) + Math.pow(l.b,2))
 }
@@ -258,12 +253,7 @@ function draw() {
       f[2][i][j] = inertia(f[2][i][j]);
     }
   }
-  if (BC == "Dirichlet") {
-    // Dirichlet boundary condition
-    for (let i = 0; i <= N; i++) {
-      f[2][i][0] = f[2][i][N] = f[2][0][i] = f[2][N][i] = 0.0; // boundary condition
-    }
-  } else if (BC == "Neumann") {
+  if (BC == "Neumann") {
     // Neumann boundary condition
     for (let i = 1; i <= N - 1; i++) {
       f[2][i][0] = f[2][i][1];
@@ -286,25 +276,16 @@ function draw() {
     }
   }
 
-  let k = 0;
   for (let i = 0; i <= N; i++) {
     for (let j = 0; j <= N; j++) {
+      let k = 3*(i*(N+1)+j);
 
-      // update position
-      let x = (-N / 2 + i) * l * 0.02;
-      let y = f[1][i][j] * 0.02;
-      let z = (-N / 2 + j) * l * 0.02;
-      positions[k * 3 + 0] = x;
-      positions[k * 3 + 1] = inertia(y);
-      positions[k * 3 + 2] = z;
+      positions[k + 1] = inertia(f[1][i][j] * 0.02);
 
       // update distances
-      let maxdist = 3;
-      dists[k * 3 + 0] = distToLine(x, z, sheen1);
-      dists[k * 3 + 1] = distToLine(x, z, sheen2);
-      dists[k * 3 + 2] = distToLine(x, z, sheen3);
-
-      k++;
+      dists[k + 0] = distToLine(positions[k], positions[k + 2], sheen1);
+      dists[k + 1] = distToLine(positions[k], positions[k + 2], sheen2);
+      dists[k + 2] = distToLine(positions[k], positions[k + 2], sheen3);
     }
   }
 
