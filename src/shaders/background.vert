@@ -1,15 +1,18 @@
 attribute vec3 position;
-attribute vec3 dist;
 
 varying   vec4 vColor;
 
 float minPSize = 2.0;
-float maxPSize = 10.0;
+float maxPSize = 15.0;
 float maxDist = 3.0;
 
 
 mat3 LINE_COLORS = %lineColors%;
 
+const vec3 distSharpness = vec3(2.0, 2.0, 4.0);
+const vec3 distWidth = vec3(1.0, 1.0, 1.5);
+
+uniform vec2 lines[6];
 uniform mat4 pjMatrix;
 uniform mat4 mvMatrix;
 
@@ -25,13 +28,22 @@ float easeInOut(float x, float p){
   return xp / (xp + pow(1.0 - x, p));
 }
 
+float distToVec(vec2 point, vec2 angle, vec2 origin){
+  vec2 v2 = point - origin;
+  vec2 v3 = vec2(angle.y,-angle.x);
+  return abs(dot(v2, normalize(v3)));
+}
+
 void main()
 {
-  vec3 distSharpness = vec3(2.0, 2.0, 4.0);
-  vec3 distWidth = vec3(1.0, 1.0, 1.5);
+  vec2 pos = vec2(position.x, position.z);
+  vec3 vdist = vec3(distToVec(pos, lines[1], lines[0]),
+                    distToVec(pos, lines[3], lines[2]),
+                    distToVec(pos, lines[5], lines[4]));
 
-  for (int s = 0; s<3; ++s){
-    float d = 1.0 - easeInOut(min(dist[s] + distWidth[s], maxDist) / maxDist, distSharpness[s]);
+  for (int s=0; s<3; ++s){
+    float d = 1.0 - easeInOut(min(vdist[s] + distWidth[s],
+                                  maxDist) / maxDist, distSharpness[s]);
     vColor = max(vColor, vec4(remapV(d, 0.5, LINE_COLORS[s]), 1.0));
   }
 

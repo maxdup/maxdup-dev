@@ -15,14 +15,12 @@ let aLoc = [];
 let uLoc = [];
 
 let positions = [];
-let dists = [];
 let lines = [];
 
 let mvMatrix = mat4.create();
 let pMatrix = mat4.create();
 
 let vertexBuffer;
-let distBuffer;
 
 function inertia(val){
   return val * inertiaFactor;
@@ -84,14 +82,16 @@ function initCondition(parameter) {
   let z0 = parameter.z;
   let sigma2 = parameter.sigma2;
 
-  for (let t = 0; t < Tn; t++) {
-    if (initial){
+  if (initial){
+    for (let t = 0; t < Tn; t++) {
       f[t] = new Array(N);
-    }
-    for (let i = 0; i <= N; i++) {
-      if (initial){
+      for (let i = 0; i <= N; i++) {
         f[t][i] = new Array(N);
       }
+    }
+  }
+  for (let t = 0; t < Tn; t++) {
+    for (let i = 0; i <= N; i++) {
       for (let j = 0; j <= N; j++) {
         let x = (-N / 2 + i) * l;
         let y = (-N / 2 + j) * l;
@@ -106,20 +106,18 @@ function initCondition(parameter) {
       f[1][i][j] = f[0][i][j] + v * v / 2.0 * dt * dt / (dd * dd) * (f[0][i + 1][j] + f[0][i - 1][j] + f[0][i][j + 1] + f[0][i][j - 1] - 4.0 * f[0][i][j]);
     }
   }
-  if (BC == "Neumann") {
-    // Neumann boundary condition
-    for (let i = 1; i <= N - 1; i++) {
-      f[1][i][0] = f[1][i][1];
-      f[1][i][N] = f[1][i][N - 1];
-      f[1][0][i] = f[1][1][i];
-      f[1][N][i] = f[1][N - 1][i];
-    }
-    // Corner processing
-    f[1][0][0] = (f[1][0][1] + f[1][1][0]) / 2;
-    f[1][0][N] = (f[1][0][N - 1] + f[1][1][N]) / 2;
-    f[1][N][0] = (f[1][N - 1][0] + f[1][N][1]) / 2;
-    f[1][N][N] = (f[1][N - 1][N] + f[1][N][N - 1]) / 2;
+  // Neumann boundary condition
+  for (let i = 1; i <= N - 1; i++) {
+    f[1][i][0] = f[1][i][1];
+    f[1][i][N] = f[1][i][N - 1];
+    f[1][0][i] = f[1][1][i];
+    f[1][N][i] = f[1][N - 1][i];
   }
+  // Corner processing
+  f[1][0][0] = (f[1][0][1] + f[1][1][0]) / 2;
+  f[1][0][N] = (f[1][0][N - 1] + f[1][1][N]) / 2;
+  f[1][N][0] = (f[1][N - 1][0] + f[1][N][1]) / 2;
+  f[1][N][N] = (f[1][N - 1][N] + f[1][N][N - 1]) / 2;
   initial = false;
 }
 
@@ -140,8 +138,9 @@ function resizeCanvas() {
   gl.viewport(0, 0, c.width, c.height);
 }
 
+let p;
 function initShaders() {
-  let p = gl.createProgram();
+  p = gl.createProgram();
   let vs = gl.createShader(gl.VERTEX_SHADER);
   let fs = gl.createShader(gl.FRAGMENT_SHADER);
   vsScript = vsScript.replace(/\%lineColors\%/g, "mat3("+sheensStr+")");
@@ -155,47 +154,11 @@ function initShaders() {
   gl.linkProgram(p);
   gl.useProgram(p);
   aLoc[0] = gl.getAttribLocation(p, "position");
-  aLoc[1] = gl.getAttribLocation(p, "dist");
   gl.enableVertexAttribArray(aLoc[0]);
   gl.enableVertexAttribArray(aLoc[1]);
   uLoc[0] = gl.getUniformLocation(p, "pjMatrix");
   uLoc[1] = gl.getUniformLocation(p, "mvMatrix");
-}
-
-let sheenColors = [[0.9, 0.0, 0.2],
-                   [0.0, 0.2, 1.0],
-                   [1.0, 1.0, 1.0]];
-let sheensStr = [];
-[].concat.apply([], sheenColors).forEach((s) => {
-  sheensStr.push(s.toFixed(1));
-});
-sheensStr = sheensStr.join();
-
-let sheen1 = makeSheen(sheenColors[0]);
-let sheen2 = makeSheen(sheenColors[1]);
-let sheen3 = makeSheen(sheenColors[2]);
-
-setTimeout(() => { sheen2 = makeSheen(sheen2.color); }, 2000);
-setTimeout(() => { sheen3 = makeSheen(sheen3.color); }, 6000);
-
-function makeSheen (color){
-  // consider we spawn and despawn at [4,4] and [-4,-4]
-  let a = remap(Math.random(), 10, 70) / 45 * 2
-  let sheen = {
-    a: a,
-    b: 1,
-    c: 4*(a+1),
-    speed: a * remap(Math.random(), 1, 2),
-    color: color
-  }
-  return sheen
-}
-function updateSheen(sheen){
-  sheen.c -= sheen.speed/10;
-  sheen.a += sheen.speed/800;
-  if (distToLine(4,4,sheen) < 0.5){
-    Object.assign(sheen, makeSheen(sheen.color));
-  }
+  uLoc[2] = gl.getUniformLocation(p, "lines");
 }
 
 let curavg = 0;
@@ -228,13 +191,17 @@ function render(){
 
     gl.uniformMatrix4fv(uLoc[0], false, pMatrix);
     gl.uniformMatrix4fv(uLoc[1], false, mvMatrix);
+    let lines = [].concat(sheen1.origin, sheen1.angle,
+                      sheen2.origin, sheen2.angle,
+                      sheen3.origin, sheen3.angle);
+    gl.uniform2fv(uLoc[2], new Float32Array(lines));
 
     draw();
 
     var end = window.performance.now();
     curavg = curavg + ((end - start) - curavg) / cntavg;
     cntavg++;
-    //console.log(`Execution time: ${curavg} ms`);
+    console.log(`Execution time: ${curavg} ms`);
   }
 }
 
@@ -242,7 +209,6 @@ function initBuffers() {
   for (let i = 0; i <= N; i++) {
     for (let j = 0; j <= N; j++) {
       positions = positions.concat([(-N / 2 + i) * l * 0.02, 0, (-N / 2 + j) * l * 0.02]);
-      dists = dists.concat([0, 0, 0]);
     }
   }
 
@@ -250,16 +216,6 @@ function initBuffers() {
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.DYNAMIC_DRAW);
   gl.vertexAttribPointer(aLoc[0], 3, gl.FLOAT, false, 0, 0);
-
-  distBuffer = gl.createBuffer()
-  gl.bindBuffer(gl.ARRAY_BUFFER, distBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(dists), gl.DYNAMIC_DRAW);
-  gl.vertexAttribPointer(aLoc[1], 3, gl.FLOAT, false, 0, 0);
-}
-
-
-function distToLine(x, y, l) {
-  return Math.abs((l.a*x) + (l.b*y) + l.c) / Math.sqrt(Math.pow(l.a,2) + Math.pow(l.b,2))
 }
 
 function draw() {
@@ -267,61 +223,86 @@ function draw() {
 
   for (let i = 1; i <= N - 1; i++) {
     for (let j = 1; j <= N - 1; j++) {
-      f[2][i][j] = 2.0 * f[1][i][j] - f[0][i][j] + v * v * dt * dt / (dd * dd) *
-        (f[1][i + 1][j] + f[1][i - 1][j] + f[1][i][j + 1] + f[1][i][j - 1] - 4.0 * f[1][i][j]);
-      f[2][i][j] = inertia(f[2][i][j]);
+      f[2][i][j] = inertia(
+        2.0 * f[1][i][j] - f[0][i][j] + v * v * dt * dt / (dd * dd) *
+          (f[1][i + 1][j] + f[1][i - 1][j] + f[1][i][j + 1] + f[1][i][j - 1] - 4.0 * f[1][i][j]));
     }
   }
-  if (BC == "Neumann") {
+  for (let i = 1; i <= N - 1; i++) {
     // Neumann boundary condition
-    for (let i = 1; i <= N - 1; i++) {
-      f[2][i][0] = f[2][i][1];
-      f[2][i][N] = f[2][i][N - 1];
-      f[2][0][i] = f[2][1][i];
-      f[2][N][i] = f[2][N - 1][i];
-    }
-    // Corner processing
-    f[2][0][0] = (f[2][0][1] + f[2][1][0]) / 2;
-    f[2][0][N] = (f[2][0][N - 1] + f[2][1][N]) / 2;
-    f[2][N][0] = (f[2][N - 1][0] + f[2][N][1]) / 2;
-    f[2][N][N] = (f[2][N - 1][N] + f[2][N][N - 1]) / 2;
-
+    f[2][i][0] = f[2][i][1];
+    f[2][i][N] = f[2][i][N - 1];
+    f[2][0][i] = f[2][1][i];
+    f[2][N][i] = f[2][N - 1][i];
   }
+  // Corner processing
+  f[2][0][0] = (f[2][0][1] + f[2][1][0]) / 2;
+  f[2][0][N] = (f[2][0][N - 1] + f[2][1][N]) / 2;
+  f[2][N][0] = (f[2][N - 1][0] + f[2][N][1]) / 2;
+  f[2][N][N] = (f[2][N - 1][N] + f[2][N][N - 1]) / 2;
+
   // Replace the array numbers for the next calculation. Past information is lost here.
   for (let i = 0; i <= N; i++) {
     for (let j = 0; j <= N; j++) {
       f[0][i][j] = f[1][i][j];
       f[1][i][j] = f[2][i][j];
-    }
-  }
 
-  for (let i = 0; i <= N; i++) {
-    for (let j = 0; j <= N; j++) {
-      let k = 3*(i*(N+1)+j);
-
-      positions[k + 1] = inertia(f[1][i][j] * 0.02);
-
-      // update distances
-      dists[k + 0] = distToLine(positions[k], positions[k + 2], sheen1);
-      dists[k + 1] = distToLine(positions[k], positions[k + 2], sheen2);
-      dists[k + 2] = distToLine(positions[k], positions[k + 2], sheen3);
+      positions[3*(i*(N+1)+j) + 1] = f[1][i][j] * 0.02;
     }
   }
 
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(positions));
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, distBuffer);
-  gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(dists));
-
   gl.drawArrays(gl.POINTS, 0, positions.length / 3);
   gl.flush();
 }
 let init = false
 
+
+
+let sheenColors = [[0.9, 0.0, 0.2],
+                   [0.0, 0.2, 1.0],
+                   [1.0, 1.0, 1.0]];
+let sheensStr = [];
+[].concat.apply([], sheenColors).forEach((s) => {
+  sheensStr.push(s.toFixed(1));
+});
+sheensStr = sheensStr.join();
+
+let sheen1 = makeSheen(sheenColors[0]);
+let sheen2 = makeSheen(sheenColors[1]);
+let sheen3 = makeSheen(sheenColors[2]);
+
+setTimeout(() => { sheen2 = makeSheen(sheen2); }, 2000);
+setTimeout(() => { sheen3 = makeSheen(sheen3); }, 6000);
+
+function makeSheen (){
+  // consider we spawn and despawn at [4,4] and [-4,-4]
+  let a = remap(Math.random(), 10, 70) / 45 * 2
+  let sheen = {
+    angle: [-a, 1],
+    origin: [-4,-4],
+    speed: a * remap(Math.random(), 1, 2),
+  }
+  return sheen
+}
+
+function updateSheen(sheen){
+  if (Math.max(sheen.origin[0], sheen.origin[1]) > 4){
+    setTimeout(() => { Object.assign(sheen, makeSheen(sheen.color)) }, 2000);
+  } else {
+    let dist = sheen.speed/10;
+
+    sheen.angle[0] += sheen.speed/100;
+    sheen.origin[0] += dist;
+    sheen.origin[1] += dist;
+  }
+}
+
 let sequence = () => {
 
-  inertiaFactor = 1 - 0.001 * targetFPS / 30;
+  inertiaFactor = 1 - 0.005 * targetFPS / 30;
   const DELAY = 1000;
 
   Scrambler({
