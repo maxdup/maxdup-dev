@@ -14,9 +14,6 @@ let c, gl;
 let aLoc = [];
 let uLoc = [];
 
-let positions = [];
-let lines = [];
-
 let mvMatrix = mat4.create();
 let pMatrix = mat4.create();
 
@@ -42,6 +39,11 @@ let inertiaFactor;
 //Size of two-dimensional square lattice
 let N = 50;
 let l = 6;
+
+let positions = [];
+let heights;
+let lines = [];
+
 
 let dt = 0.15 / (targetFPS / 30);
 dt = dt /3 *2;
@@ -154,6 +156,7 @@ function initShaders() {
   gl.linkProgram(p);
   gl.useProgram(p);
   aLoc[0] = gl.getAttribLocation(p, "position");
+  aLoc[1] = gl.getAttribLocation(p, "height");
   gl.enableVertexAttribArray(aLoc[0]);
   gl.enableVertexAttribArray(aLoc[1]);
   uLoc[0] = gl.getUniformLocation(p, "pjMatrix");
@@ -201,21 +204,27 @@ function render(){
     var end = window.performance.now();
     curavg = curavg + ((end - start) - curavg) / cntavg;
     cntavg++;
-    console.log(`Execution time: ${curavg} ms`);
+    //console.log(`Execution time: ${curavg} ms`);
   }
 }
 
 function initBuffers() {
   for (let i = 0; i <= N; i++) {
     for (let j = 0; j <= N; j++) {
-      positions = positions.concat([(-N / 2 + i) * l * 0.02, 0, (-N / 2 + j) * l * 0.02]);
+      positions = positions.concat([(-N / 2 + i) * l * 0.02, (-N / 2 + j) * l * 0.02]);
     }
   }
+  heights = new Array((N+1)*(N+1)).fill(0);
 
   vertexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.DYNAMIC_DRAW);
-  gl.vertexAttribPointer(aLoc[0], 3, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribPointer(aLoc[0], 2, gl.FLOAT, false, 0, 0);
+
+  vertexBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(heights), gl.DYNAMIC_DRAW);
+  gl.vertexAttribPointer(aLoc[1], 1, gl.FLOAT, false, 0, 0);
 }
 
 function draw() {
@@ -247,14 +256,14 @@ function draw() {
       f[0][i][j] = f[1][i][j];
       f[1][i][j] = f[2][i][j];
 
-      positions[3*(i*(N+1)+j) + 1] = f[1][i][j] * 0.02;
+      heights[(i*(N+1)+j)] = f[1][i][j] * 0.02;
     }
   }
 
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-  gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(positions));
+  gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(heights));
 
-  gl.drawArrays(gl.POINTS, 0, positions.length / 3);
+  gl.drawArrays(gl.POINTS, 0, heights.length);
   gl.flush();
 }
 let init = false

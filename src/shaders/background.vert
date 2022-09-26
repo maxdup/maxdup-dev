@@ -1,17 +1,16 @@
-attribute vec3 position;
+attribute vec2 position;
+attribute float height;
 
 varying   vec4 vColor;
 
-float minPSize = 2.0;
-float maxPSize = 15.0;
-float maxDist = 3.0;
-
-
-mat3 LINE_COLORS = %lineColors%;
+const float minPSize = 2.0;
+const float maxPSize = 15.0;
+const float maxDist = 3.0;
 
 const vec3 distSharpness = vec3(2.0, 2.0, 4.0);
 const vec3 distWidth = vec3(1.0, 1.0, 1.5);
 
+const mat3 LINE_COLORS = %lineColors%;
 uniform vec2 lines[6];
 uniform mat4 pjMatrix;
 uniform mat4 mvMatrix;
@@ -36,7 +35,7 @@ float distToVec(vec2 point, vec2 angle, vec2 origin){
 
 void main()
 {
-  vec2 pos = vec2(position.x, position.z);
+  vec2 pos = vec2(position.x, position.y);
   vec3 vdist = vec3(distToVec(pos, lines[1], lines[0]),
                     distToVec(pos, lines[3], lines[2]),
                     distToVec(pos, lines[5], lines[4]));
@@ -47,6 +46,6 @@ void main()
     vColor = max(vColor, vec4(remapV(d, 0.5, LINE_COLORS[s]), 1.0));
   }
 
-  gl_Position = pjMatrix * mvMatrix * vec4(position, 1.0);
-  gl_PointSize = remap(position.y, minPSize, maxPSize);
+  gl_Position = pjMatrix * mvMatrix * vec4(position.x, height, position.y, 1.0);
+  gl_PointSize = remap(height, minPSize, maxPSize);
 }
