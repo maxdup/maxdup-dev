@@ -16,6 +16,7 @@ let uLoc = [];
 
 let positions = [];
 let dists = [];
+let lines = [];
 
 let mvMatrix = mat4.create();
 let pMatrix = mat4.create();
@@ -143,6 +144,8 @@ function initShaders() {
   let p = gl.createProgram();
   let vs = gl.createShader(gl.VERTEX_SHADER);
   let fs = gl.createShader(gl.FRAGMENT_SHADER);
+  vsScript = vsScript.replace(/\%lineColors\%/g, "mat3("+sheensStr+")");
+
   gl.shaderSource(vs, vsScript);
   gl.shaderSource(fs, fsScript);
   gl.compileShader(vs);
@@ -158,6 +161,22 @@ function initShaders() {
   uLoc[0] = gl.getUniformLocation(p, "pjMatrix");
   uLoc[1] = gl.getUniformLocation(p, "mvMatrix");
 }
+
+let sheenColors = [[0.9, 0.0, 0.2],
+                   [0.0, 0.2, 1.0],
+                   [1.0, 1.0, 1.0]];
+let sheensStr = [];
+[].concat.apply([], sheenColors).forEach((s) => {
+  sheensStr.push(s.toFixed(1));
+});
+sheensStr = sheensStr.join();
+
+let sheen1 = makeSheen(sheenColors[0]);
+let sheen2 = makeSheen(sheenColors[1]);
+let sheen3 = makeSheen(sheenColors[2]);
+
+setTimeout(() => { sheen2 = makeSheen(sheen2.color); }, 2000);
+setTimeout(() => { sheen3 = makeSheen(sheen3.color); }, 6000);
 
 function makeSheen (color){
   // consider we spawn and despawn at [4,4] and [-4,-4]
@@ -179,11 +198,14 @@ function updateSheen(sheen){
   }
 }
 
+let curavg = 0;
+let cntavg = 1;
 function render(){
 
   requestAnimationFrame(render);
 
   let now = Date.now();
+  var start = window.performance.now();
   let elapsed = now - frameTiming;
   if (elapsed > frameInterval) {
 
@@ -208,16 +230,13 @@ function render(){
     gl.uniformMatrix4fv(uLoc[1], false, mvMatrix);
 
     draw();
+
+    var end = window.performance.now();
+    curavg = curavg + ((end - start) - curavg) / cntavg;
+    cntavg++;
+    //console.log(`Execution time: ${curavg} ms`);
   }
 }
-
-let sheen1 = makeSheen([0.9,0,0.2]);
-let sheen2 = makeSheen([0,0.2,1]);
-let sheen3 = makeSheen([1,1,1]);
-
-setTimeout(() => { sheen2 = makeSheen(sheen2.color); }, 2000);
-setTimeout(() => { sheen3 = makeSheen(sheen3.color); }, 6000);
-
 
 function initBuffers() {
   for (let i = 0; i <= N; i++) {
