@@ -1,3 +1,5 @@
+import {easeOut, haste, delay, remap, HSLStr} from './utils'
+
 let aboutElem = document.getElementById('about');
 let images = document.querySelectorAll('.img-box');
 let titles = document.getElementById('about-titles');
@@ -17,17 +19,22 @@ let scrolled = () => {
   computeProgress();
 }
 
-function easeOut(x) {
-  return Math.sqrt(1 - (x = x - 1) * x);
-}
-function haste(x, amount){
-  return Math.min(x, amount) * 1 / amount;
-}
-function delay(x, amount){
-  return  (Math.max(x, amount) - amount) /amount;
-}
-function remap(val, minVal, maxVal){
-  return (maxVal-minVal) * val + minVal;
+const endHSL = [[0, 0, 0],
+                [0, 0, 39],
+                [0, 0, 70]];
+
+const maxHSL = [[0, 0, 0],
+                [200, 52, 25],
+                [269, 100, 87]];
+
+const jacHSL = [[0, 0, 0],
+                [278, 25, 30],
+                [0, 75, 60]];
+
+let getColor = (progress, initHSL, targetHSL) => {
+  return HSLStr([remap(progress, initHSL[0], initHSL[0]),
+                 remap(progress, initHSL[1], targetHSL[1]),
+                 remap(progress, initHSL[2], targetHSL[2])]);
 }
 
 let computeProgress = () => {
@@ -38,16 +45,23 @@ let computeProgress = () => {
   let eProgress = distTopToBot - Math.max(mark, maxY);
   eProgress =  1 - eProgress / (distTopToBot - mark);
   // whichever progress is ahead
-  let progress = easeOut(Math.min(Math.max(mProgress, eProgress), 1));
+  let progress = Math.min(Math.max(mProgress, eProgress), 1);
 
 
-  let margin = remap(progress, 9, -7);
+  let margin = remap(easeOut(progress), 9, -7);
   let opacity = haste(progress, 0.5);
 
   images[0].style.opacity = opacity;
   images[0].style.marginRight = margin + '%';
+  for (let i = 0; i < 3; i++){
+    images[0].children[i].style.background = getColor(progress, jacHSL[i], endHSL[i]);
+  }
+
   images[1].style.opacity = opacity;
   images[1].style.marginLeft = margin + '%';
+  for (let i = 0; i < 3; i++){
+    images[1].children[i].style.background = getColor(progress, maxHSL[i], endHSL[i]);
+  }
 
   titles.style.opacity = Math.floor(progress);
 }

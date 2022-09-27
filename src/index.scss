@@ -26,10 +26,14 @@ body {
     }
     p {
         margin: 1rem 0;
-        line-height: 1.65rem;
     }
     a {
         color: #eee;
+        display: inline-block !important;
+        &:hover {
+            background: hsl(332deg, 99%, 57%);
+            color: black;
+        }
     }
 }
 
@@ -56,17 +60,36 @@ body {
 #contact:after { background: #999b; }
 #about:after { background: #111b; }
 
-canvas {
+canvas,
+#fallback-2D {
     height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
 
-    z-index: -1;
+    z-index: -10;
+}
+#fallback-2D {
+    opacity: 1;
+	animation-name: delayOpacity;
+	animation-iteration-count: 1;
+	animation-timing-function: ease-in;
+	animation-duration: 1s;
+}
+@keyframes delayOpacity {
+    0%   { opacity: 0; }
+    75%  { opacity: 0; }
+    100% { opacity: 1; }
 }
 
+
 ::selection {
-  color: black;
-  background: white;
+    color: black;
+    background: white;
+    background: var(--select-color);
+}
+
+:root {
+    --select-color: white;
 }
