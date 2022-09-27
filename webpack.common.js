@@ -4,6 +4,7 @@ const path = require('path');
 const dirSrc = path.join(__dirname, 'src');
 const dirBuild = path.join(__dirname, 'build');
 
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
@@ -58,7 +59,12 @@ module.exports = {
       template: path.join(dirSrc, 'index.html'),
     }),
     new FaviconsWebpackPlugin(
-      path.join(dirSrc, './images/favicon.png'))
+      path.join(dirSrc, './images/favicon.png')
+    ),
+    new CopyWebpackPlugin({
+      patterns: [{from: 'static', to: 'static'}]
+    }),
+
   ],
   performance: {
     maxAssetSize: 400000,
