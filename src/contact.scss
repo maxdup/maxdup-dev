@@ -18,4 +18,10 @@
             margin-top: 0.25rem;
         }
     }
+    .obfuscated-e:after {
+        content: attr(pt1) "@" attr(pt2) "." attr(pt3);
+    }
+    .obfuscated-p:after {
+        content: attr(pt1) " " attr(pt2) " " attr(pt3) "-" attr(pt4);
+    }
 }
