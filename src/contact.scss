@@ -18,10 +18,17 @@
             margin-top: 0.25rem;
         }
     }
-    .obfuscated-e:after {
+
+    .obfuscated-e:after,
+    .obfuscated-p:after {
+        content: ' ';
+        min-height: 1.2em;
+        display: block;
+    }
+    .obfuscated-e[pt1]:after {
         content: attr(pt1) "@" attr(pt2) "." attr(pt3);
     }
-    .obfuscated-p:after {
+    .obfuscated-p[pt1]:after {
         content: attr(pt1) " " attr(pt2) " " attr(pt3) "-" attr(pt4);
     }
 }
