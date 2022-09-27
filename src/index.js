@@ -1,4 +1,4 @@
 import './index.scss';
-import './background';
-import './about';
-import './contact';
+import './main/background';
+import './about/about';
+import './contact/contact';

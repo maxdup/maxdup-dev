@@ -1,12 +1,11 @@
-import {accent1, accent2} from './constants';
-import {HSLStr} from './utils';
+import {accent1, accent2} from '../constants';
 import Scrambler from 'scrambling-letters';
 
-import vsScript from "./shaders/background.vert";
-import fsScript from "./shaders/background.frag";
+import vsScript from "../shaders/background.vert";
+import fsScript from "../shaders/background.frag";
 
-import {remap, identityMatrix,
-        perspectiveMatrix, matrixTranslate, matrixRotate} from "./utils";
+import {HSLStr, remap, identityMatrix,
+        perspectiveMatrix, matrixTranslate, matrixRotate} from "../utils";
 
 let max = 0;
 let min = 0;

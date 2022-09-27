@@ -1,4 +1,4 @@
-import {easeOut, haste, delay, remap, HSLStr} from './utils'
+import {easeOut, haste, delay, remap, HSLStr} from '../utils'
 
 let aboutElem = document.getElementById('about');
 let images = document.querySelectorAll('.img-box');
