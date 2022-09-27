@@ -5,7 +5,8 @@ import Scrambler from 'scrambling-letters';
 import vsScript from "./shaders/background.vert";
 import fsScript from "./shaders/background.frag";
 
-import {remap, easeOut, easeInOut} from "./utils";
+import {remap, identityMatrix,
+        perspectiveMatrix, matrixTranslate, matrixRotate} from "./utils";
 
 let max = 0;
 let min = 0;
@@ -13,9 +14,6 @@ let min = 0;
 let c, gl;
 let aLoc = [];
 let uLoc = [];
-
-let mvMatrix = mat4.create();
-let pMatrix = mat4.create();
 
 let vertexBuffer;
 
@@ -164,6 +162,9 @@ function initShaders() {
   uLoc[2] = gl.getUniformLocation(p, "lines");
 }
 
+let pjMatrix = perspectiveMatrix(45, window.innerWidth / window.innerHeight, 0.1, 1000.0);
+let mvMatrix = matrixTranslate(identityMatrix(4), [-0.5, 0, -4]);
+
 function render(){
 
   requestAnimationFrame(render);
@@ -179,19 +180,15 @@ function render(){
     sheens.forEach((s) => { lines = lines.concat(s.origin, s.angle); });
     gl.uniform2fv(uLoc[2], new Float32Array(lines));
 
-    mat4.perspective(pMatrix, 45, window.innerWidth / window.innerHeight, 0.1, 1000.0);
-    mat4.identity(mvMatrix);
-    let translation = vec3.create();
-
-    vec3.set(translation, -0.5, 0, -4);
-    mat4.translate(mvMatrix, mvMatrix, translation);
+    let translation = [-0.5,0,-4];
 
     let camPitch = 0.6 - 1 * scrollProgress;
     let camYaw = 1 - 0.4 * scrollProgress;
-    mat4.rotate(mvMatrix, mvMatrix, camPitch, [1, 0, 0]);
-    mat4.rotate(mvMatrix, mvMatrix, camYaw, [0, 1, 0]);
-    gl.uniformMatrix4fv(uLoc[0], false, pMatrix);
-    gl.uniformMatrix4fv(uLoc[1], false, mvMatrix);
+    let myMatrix = matrixRotate(mvMatrix, camPitch, [1,0,0]);
+    myMatrix = matrixRotate(myMatrix, camYaw, [0,1,0]);
+
+    gl.uniformMatrix4fv(uLoc[0], false, pjMatrix);
+    gl.uniformMatrix4fv(uLoc[1], false, myMatrix);
 
     draw();
   }
@@ -296,7 +293,6 @@ function makeSheens(){
 function updateSheen(sheen){
   let dist = sheen.speed/20;
   sheen.angle[0] = Math.min(-0.25, sheen.angle[0] + dist/10);
-  //sheen.angle[0] = sheen.angle[0] + dist/10;
   sheen.origin[0] += dist;
   sheen.origin[1] += dist;
   sheen.inactive = Math.max(sheen.origin[0], sheen.origin[1]) > 4;
