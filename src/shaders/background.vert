@@ -4,11 +4,11 @@ attribute float height;
 varying   vec4 vColor;
 
 const float minPSize = 2.0;
-const float maxPSize = 10.0;
+const float maxPSize = 15.0;
 const float maxDist = 3.0;
 
-const vec3 distSharpness = vec3(2.0, 2.0, 5.0);
-const vec3 distWidth = vec3(1.0, 1.0, 1.5);
+const vec3 distSharpness = vec3(4.0, 4.0, 5.0);
+const vec3 distWidth = vec3(0.8, 0.8, 1.5);
 
 const mat3 LINE_COLORS = %lineColors%;
 uniform vec2 lines[6];

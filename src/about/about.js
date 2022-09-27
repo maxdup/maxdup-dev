@@ -24,12 +24,12 @@ const endHSL = [[0, 0, 0],
                 [0, 0, 70]];
 
 const maxHSL = [[0, 0, 0],
-                [200, 52, 25],
-                [269, 100, 87]];
+                [220, 60, 33],
+                [50, 201, 60]];
 
 const jacHSL = [[0, 0, 0],
-                [278, 25, 30],
-                [0, 75, 60]];
+                [293, 60, 27],
+                [55, 196, 60]];
 
 let getColor = (progress, initHSL, targetHSL) => {
   return HSLStr([remap(progress, initHSL[0], initHSL[0]),

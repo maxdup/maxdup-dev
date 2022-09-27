@@ -31,7 +31,7 @@ body {
         color: #eee;
         display: inline-block !important;
         &:hover {
-            background: hsl(332deg, 99%, 57%);
+            background: white;
             color: black;
         }
     }
@@ -87,7 +87,13 @@ canvas,
     background: white;
     background: var(--select-color);
 }
+body a:hover {
+    color: black;
+    background: white;
+    background: var(--link-color);
+}
 
 :root {
     --select-color: white;
+    --link-color: white;
 }

@@ -249,8 +249,8 @@ function draw() {
 }
 
 let init = false
-let sheenColors = [[0.9, 0.0, 0.2],
-                   [0.0, 0.2, 1.0],
+let sheenColors = [[1.0, 0.0, 0.2],
+                   [0.2, 0.8, 0.4],
                    [1.0, 1.0, 1.0]];
 
 let sheensStr = [];
@@ -276,12 +276,11 @@ function makeSheens(){
   sheensActive = true;
   let a = remap(Math.random(), 10, 70) / 45 * 2
   sheens.forEach((s) => {
-    let delta = remap((Math.random()+1) /2, -1, 1);
-    let ax = a + delta;
+    let delta = remap((Math.random()+1) /2, -1.5, 1.5);
     s.inactive = false;
-    s.speed = remap(ax, 0.25, 1.5) * (60 / targetFPS),
-    s.angle = [-ax + delta, 1];
-    s.origin = [-4-delta, -4-delta];
+    s.speed = remap(a/3 + delta, 0.25, 1.0) * (60 / targetFPS),
+    s.angle = [-a+delta*4, 1];
+    s.origin = [-4-delta*4, -4-delta*4];
   });
 }
 
@@ -439,14 +438,14 @@ window.onload = function() {
 
 
 // selection Color
-let colorToggle = false;
+let selectColorToggle = false;
 let applySelectColor = (event) => {
-  let clr = HSLStr(colorToggle ? accent2 : accent1);
+  let clr = HSLStr(selectColorToggle ? accent2 : accent1);
   document.documentElement.style.setProperty('--select-color', clr);
 }
 let selectionChanged = () => {
   if (window.getSelection().toString() != ''){
-    colorToggle = !colorToggle
+    selectColorToggle = !selectColorToggle
     document.removeEventListener('selectionchange', selectionChanged);
   }
 }
@@ -455,3 +454,20 @@ document.addEventListener('selectstart', (event) => {
   document.addEventListener('selectionchange', selectionChanged);
 });
 applySelectColor();
+
+// link Color
+let linkColorToggle = false;
+let applyLinkColor = (event) => {
+  let clr = HSLStr(linkColorToggle ? accent2 : accent1);
+  document.documentElement.style.setProperty('--link-color', clr);
+}
+let linkHovered = () => {
+  console.log('link hover')
+  linkColorToggle = !linkColorToggle;
+  applyLinkColor();
+}
+let links = document.getElementsByTagName('a');
+[...links].forEach((l) => {
+  l.addEventListener('mouseover', linkHovered);
+});
+linkHovered();
