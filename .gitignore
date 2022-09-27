@@ -5,3 +5,10 @@ coverage/
 *~
 *#
 .#*
+
+# Meld files
+*.orig
+*.REMOTE.*
+*.BASE.*
+*.BACKUP.*
+*.LOCAL.*

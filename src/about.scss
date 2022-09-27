@@ -7,6 +7,8 @@
         height: 7vw;
         overflow: visible;
         margin-top: -7vw;
+        z-index: 30;
+
         .titles-left, .titles-right {
             display: inline-block;
         }
