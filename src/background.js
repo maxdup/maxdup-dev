@@ -125,11 +125,7 @@ function initWebGL() {
   c = document.createElement("CANVAS");
   document.body.prepend(c);
   gl = c.getContext("experimental-webgl");
-
-  resizeCanvas();
-  window.addEventListener("resize", function(){
-    resizeCanvas();
-  });
+  return gl;
 }
 
 function resizeCanvas() {
@@ -308,9 +304,10 @@ function updateSheens(){
   !sheensActive && sheensRespawn && setTimeout(makeSheens, 2000 + Math.random() * 3000);
 }
 
+sheensRespawn = false;
+inertiaFactor = 1 - 0.005 * targetFPS / 30;
+
 let sequence = () => {
-  sheensRespawn = false;
-  inertiaFactor = 1 - 0.005 * targetFPS / 30;
   const DELAY = 1000;
 
   Scrambler({
@@ -332,8 +329,6 @@ let sequence = () => {
     }
   });
 
-  initCondition(initialPosition);
-
   let scramble1 = document.querySelector(".stand-in .scramble-stage-1");
   let scramble2 = document.querySelector(".stand-in .scramble-stage-2");
   let scramble3 = document.querySelector(".stand-in .scramble-stage-3");
@@ -342,7 +337,7 @@ let sequence = () => {
   scramble2.style.transform = 'scale(1.4)';
   scramble3.style.transform = 'scale(1.4)';
 
-  setTimeout(() => {
+  supports3D && setTimeout(() => {
     makeSheens();
     sheens[0].inactive = true;
     sheens[1].inactive = true;
@@ -354,7 +349,7 @@ let sequence = () => {
     scramble2.style.opacity = 1;
     scramble2.style.transform = 'none';
 
-    initCondition(initialPeakPosition);
+    supports3D && initCondition(initialPeakPosition);
   }, DELAY);
 
   setTimeout(() => {
@@ -365,11 +360,11 @@ let sequence = () => {
 
   }, DELAY + 3000);
 
-  setTimeout(() => {
+  supports3D && setTimeout(() => {
     initCondition(postPeakPosition);
   }, DELAY + 3100);
 
-  setTimeout(() => {
+  supports3D && setTimeout(() => {
     sheensRespawn = true;
     makeSheens();
   }, DELAY + 8000);
@@ -403,14 +398,18 @@ function mobileCheck() {
   return check;
 };
 
-window.onload = function() {
+let supports3D = true;
+let run3D = function(){
 
-  initWebGL();
+  // remove fallback image
+  let bg = document.getElementById('fallback-2D');
+  bg.parentNode.removeChild(bg);
   initShaders();
-
-  sequence();
   initBuffers();
+  initCondition(initialPosition);
+  resizeCanvas();
 
+  window.addEventListener("resize", resizeCanvas);
   if (navigator.getBattery){
     navigator.getBattery().then(function(result) {
       if (!result.charging && targetFPS != 30){
@@ -420,6 +419,23 @@ window.onload = function() {
   }
   setFPS(mobileCheck() ? 30 : 60);
   render();
+}
+
+let run2D = function(){
+  supports3D = false;
+  let cs = document.getElementsByTagName('canvas');
+  for (let i = 0; i < cs.length; i++){
+    cs[i].parentNode.removeChild(cs[i]);
+  }
+}
+
+window.onload = function() {
+  if (window.WebGLRenderingContext && initWebGL()){
+    run3D();
+  } else {
+    run2D();
+  }
+  sequence();
 };
 
 
