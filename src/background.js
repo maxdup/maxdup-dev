@@ -48,7 +48,7 @@ let lines = [];
 let dt = 0.15 / (targetFPS / 30);
 dt = dt /3 *2;
 
-let dd = 1.0; // space spacing
+let dd = 1; // space spacing
 let v = 4; // velocity
 
 // Set boundary condition
@@ -63,14 +63,14 @@ let initialPosition = {
 let initialPeakPosition = {
   x: 0,
   y: 0,
-  z: 50,
-  sigma2: 300
+  z: -50,
+  sigma2: 200
 };
 
 let postPeakPosition = {
   x: 0,
   y: 0,
-  z: 40,
+  z: -40,
   sigma2: 200
 };
 
@@ -164,23 +164,20 @@ function initShaders() {
   uLoc[2] = gl.getUniformLocation(p, "lines");
 }
 
-let curavg = 0;
-let cntavg = 1;
 function render(){
 
   requestAnimationFrame(render);
 
   let now = Date.now();
-  var start = window.performance.now();
   let elapsed = now - frameTiming;
   if (elapsed > frameInterval) {
 
     frameTiming = now - (elapsed % frameInterval);
 
-    [sheen1, sheen2, sheen3].forEach((s) => { updateSheen(s); });
-
-    let rad = 0.6 - 1 * scrollProgress;
-    let rad2 = 1 - 0.4 * scrollProgress;
+    updateSheens();
+    let lines = [];
+    sheens.forEach((s) => { lines = lines.concat(s.origin, s.angle); });
+    gl.uniform2fv(uLoc[2], new Float32Array(lines));
 
     mat4.perspective(pMatrix, 45, window.innerWidth / window.innerHeight, 0.1, 1000.0);
     mat4.identity(mvMatrix);
@@ -189,22 +186,14 @@ function render(){
     vec3.set(translation, -0.5, 0, -4);
     mat4.translate(mvMatrix, mvMatrix, translation);
 
-    mat4.rotate(mvMatrix, mvMatrix, rad, [1, 0, 0]);
-    mat4.rotate(mvMatrix, mvMatrix, rad2, [0, 1, 0]);
-
+    let camPitch = 0.6 - 1 * scrollProgress;
+    let camYaw = 1 - 0.4 * scrollProgress;
+    mat4.rotate(mvMatrix, mvMatrix, camPitch, [1, 0, 0]);
+    mat4.rotate(mvMatrix, mvMatrix, camYaw, [0, 1, 0]);
     gl.uniformMatrix4fv(uLoc[0], false, pMatrix);
     gl.uniformMatrix4fv(uLoc[1], false, mvMatrix);
-    let lines = [].concat(sheen1.origin, sheen1.angle,
-                      sheen2.origin, sheen2.angle,
-                      sheen3.origin, sheen3.angle);
-    gl.uniform2fv(uLoc[2], new Float32Array(lines));
 
     draw();
-
-    var end = window.performance.now();
-    curavg = curavg + ((end - start) - curavg) / cntavg;
-    cntavg++;
-    //console.log(`Execution time: ${curavg} ms`);
   }
 }
 
@@ -266,51 +255,65 @@ function draw() {
   gl.drawArrays(gl.POINTS, 0, heights.length);
   gl.flush();
 }
+
 let init = false
-
-
-
 let sheenColors = [[0.9, 0.0, 0.2],
                    [0.0, 0.2, 1.0],
                    [1.0, 1.0, 1.0]];
+
 let sheensStr = [];
 [].concat.apply([], sheenColors).forEach((s) => {
   sheensStr.push(s.toFixed(1));
 });
 sheensStr = sheensStr.join();
 
-let sheen1 = makeSheen(sheenColors[0]);
-let sheen2 = makeSheen(sheenColors[1]);
-let sheen3 = makeSheen(sheenColors[2]);
-
-setTimeout(() => { sheen2 = makeSheen(sheen2); }, 2000);
-setTimeout(() => { sheen3 = makeSheen(sheen3); }, 6000);
+let sheens = [makeSheen(),makeSheen(),makeSheen()];
 
 function makeSheen (){
-  // consider we spawn and despawn at [4,4] and [-4,-4]
-  let a = remap(Math.random(), 10, 70) / 45 * 2
-  let sheen = {
-    angle: [-a, 1],
+  return {
+    inactive: true,
+    angle: [0,0],
     origin: [-4,-4],
-    speed: a * remap(Math.random(), 1, 2),
+    speed: 0
   }
-  return sheen
+}
+
+let sheensActive = false;
+let sheensRespawn = false;
+function makeSheens(){
+  sheensActive = true;
+  let a = remap(Math.random(), 10, 70) / 45 * 2
+  sheens.forEach((s) => {
+    let delta = remap((Math.random()+1) /2, -1, 1);
+    let ax = a + delta;
+    s.inactive = false;
+    s.speed = remap(ax, 0.25, 1.5) * (60 / targetFPS),
+    s.angle = [-ax + delta, 1];
+    s.origin = [-4-delta, -4-delta];
+  });
 }
 
 function updateSheen(sheen){
-  if (Math.max(sheen.origin[0], sheen.origin[1]) > 4){
-    setTimeout(() => { Object.assign(sheen, makeSheen(sheen.color)) }, 2000);
-  } else {
-    let dist = sheen.speed/10;
+  let dist = sheen.speed/20;
+  sheen.angle[0] = Math.min(-0.25, sheen.angle[0] + dist/10);
+  //sheen.angle[0] = sheen.angle[0] + dist/10;
+  sheen.origin[0] += dist;
+  sheen.origin[1] += dist;
+  sheen.inactive = Math.max(sheen.origin[0], sheen.origin[1]) > 4;
+}
 
-    sheen.angle[0] += sheen.speed/100;
-    sheen.origin[0] += dist;
-    sheen.origin[1] += dist;
-  }
+function updateSheens(){
+  if (!sheensActive){ return }
+  sheensActive = false;
+  sheens.forEach((s) => {
+    !s.inactive && updateSheen(s);
+    sheensActive = sheensActive || !s.inactive;
+  });
+  !sheensActive && sheensRespawn && setTimeout(makeSheens, 2000 + Math.random() * 3000);
 }
 
 let sequence = () => {
-
+  sheensRespawn = false;
   inertiaFactor = 1 - 0.005 * targetFPS / 30;
   const DELAY = 1000;
 
@@ -326,7 +329,7 @@ let sequence = () => {
   });
   Scrambler({
     target: '.stand-in .scramble-stage-3',
-    random: [DELAY + 2000, DELAY + 4000],
+    random: [DELAY + 3000, DELAY + 5000],
     speed: 75,
     afterAll: () => {
       document.querySelector(".stand-in").style.width = '100%';
@@ -344,6 +347,12 @@ let sequence = () => {
   scramble3.style.transform = 'scale(1.4)';
 
   setTimeout(() => {
+    makeSheens();
+    sheens[0].inactive = true;
+    sheens[1].inactive = true;
+  }, DELAY / 2);
+
+  setTimeout(() => {
     scramble1.style.opacity = 1;
     scramble1.style.transform = 'none';
     scramble2.style.opacity = 1;
@@ -351,16 +360,24 @@ let sequence = () => {
 
     initCondition(initialPeakPosition);
   }, DELAY);
+
   setTimeout(() => {
     scramble3.style.opacity = 1;
     scramble3.style.transform = 'scale(1)';
 
     inertiaFactor = 1;
 
-  }, DELAY + 2000);
+  }, DELAY + 3000);
+
   setTimeout(() => {
     initCondition(postPeakPosition);
-  }, DELAY + 2100);
+  }, DELAY + 3100);
+
+  setTimeout(() => {
+    sheensRespawn = true;
+    makeSheens();
+  }, DELAY + 8000);
+
 }
 
 
@@ -379,9 +396,10 @@ document.getElementById("main-content").appendChild(clonetent);
 let setFPS = (fps) => {
   targetFPS = fps;
   frameInterval =  1000 / targetFPS;
-  dt = 0.15 / (targetFPS / 30);
+  dt = 0.10 / (targetFPS / 30);
   dt = dt /3 *2;
 }
+
 
 function mobileCheck() {
   let check = false;
