@@ -55,42 +55,75 @@ body {
     }
 }
 
-#contact:after { background: #999b; }
+// ------------------------------------------
+// Container backgrounds
+// ------------------------------------------
+
 #about:after { background: #111b; }
+#services:after { background: #444c; }
+#contact:after { background: #999b; }
+
+
+// ------------------------------------------
+// Main background
+// ------------------------------------------
+
+$bgImage: url('images/background.jpg');
+$bgGlow: radial-gradient(circle at 10% 30%, #201010 0%, #100808 0% 20%, black 60%, black 70%, #101810 100%);
 
 canvas,
-#fallback-2D {
+body:before {
+    display: block;
     height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
+}
 
+canvas {
     z-index: -10;
 }
-#fallback-2D {
-    opacity: 1;
-	animation-name: delayOpacity;
-	animation-iteration-count: 1;
-	animation-timing-function: ease-in;
-	animation-duration: 1s;
+body:before {
+    content: ' ';
+    z-index: -11;
+    background-image: $bgGlow, $bgImage;
+    background-blend-mode: screen;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    animation-name: delayBackground;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in;
+    animation-duration: 1s;
 }
-@keyframes delayOpacity {
-    0%   { opacity: 0; }
-    75%  { opacity: 0; }
-    100% { opacity: 1; }
+body.gl-enabled:before {
+    background-image: $bgGlow;
+    animation-name: none;
 }
 
+@keyframes delayBackground {
+    0%   { background-image: $bgGlow; }
+    50%  { background-image: $bgGlow; }
+    100% { background-image: $bgGlow, $bgImage; }
+}
+
+
+// ------------------------------------------
+// Selection and link hover colored accents
+// ------------------------------------------
+
+body a:hover {
+    color: black;
+    background: white;
+    background: var(--link-color);
+}
 
 ::selection {
     color: black;
     background: white;
     background: var(--select-color);
-}
-body a:hover {
-    color: black;
-    background: white;
-    background: var(--link-color);
 }
 
 :root {

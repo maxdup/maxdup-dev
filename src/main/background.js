@@ -131,6 +131,7 @@ function resizeCanvas() {
   c.width = window.innerWidth;
   c.height = window.innerHeight;
   gl.viewport(0, 0, c.width, c.height);
+  pjMatrix = perspectiveMatrix(45, window.innerWidth / window.innerHeight, 0.1, 1000.0);
 }
 
 let p;
@@ -179,11 +180,11 @@ function render(){
 
     let camPitch = 0.6 - 1 * scrollProgress;
     let camYaw = 1 - 0.4 * scrollProgress;
-    let myMatrix = matrixRotate(mvMatrix, camPitch, [1,0,0]);
-    myMatrix = matrixRotate(myMatrix, camYaw, [0,1,0]);
+    let cpMatrix = matrixRotate(mvMatrix, camPitch, [1,0,0]);
+    cpMatrix = matrixRotate(cpMatrix, camYaw, [0,1,0]);
 
     gl.uniformMatrix4fv(uLoc[0], false, pjMatrix);
-    gl.uniformMatrix4fv(uLoc[1], false, myMatrix);
+    gl.uniformMatrix4fv(uLoc[1], false, cpMatrix);
 
     draw();
   }
@@ -264,7 +265,7 @@ let sheens = [makeSheen(),makeSheen(),makeSheen()];
 function makeSheen (){
   return {
     inactive: true,
-    angle: [0,0],
+    angle: [0,1],
     origin: [-4,-4],
     speed: 0
   }
@@ -338,7 +339,10 @@ let sequence = () => {
   supports3D && setTimeout(() => {
     makeSheens();
     sheens[0].inactive = true;
+    sheens[0].angle = [0,1];
     sheens[1].inactive = true;
+    sheens[1].angle = [0,1];
+    sheens[2].speed = 5;
   }, DELAY / 2);
 
   setTimeout(() => {
@@ -400,8 +404,7 @@ let supports3D = true;
 let run3D = function(){
 
   // remove fallback image
-  let bg = document.getElementById('fallback-2D');
-  bg.parentNode.removeChild(bg);
+  document.body.classList.add('gl-enabled');
   initShaders();
   initBuffers();
   initCondition(initialPosition);
