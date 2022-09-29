@@ -8,6 +8,7 @@ prodConfig = {
   mode: 'production',
   output: {
     publicPath: 'https://allorithmique',
+    clean: true,
   },
   plugins: [new CssMinimizerPlugin()],
   optimization: {

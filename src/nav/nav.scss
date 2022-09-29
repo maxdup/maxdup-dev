@@ -1,0 +1,227 @@
+$navHeight: 5.5rem;
+
+// Overrides for nav to work
+#main {
+    height: calc(100vh - $navHeight) !important;
+}
+.container {
+    padding-top: $navHeight + 2rem !important;
+    margin-top: -$navHeight !important;
+    &:after {
+        top: $navHeight !important;
+    }
+}
+
+// ------------------------------------------
+// Navigation
+// ------------------------------------------
+body>h1 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 1.65rem 2rem;
+    z-index: 11;
+    pointer-events: none;
+    * {
+        pointer-events: all;
+    }
+    a {
+        text-decoration : none !important;
+        &:hover {
+            text-shadow: 0px 0px 5px #555;
+            background: none !important;
+        }
+    }
+}
+body>h1,
+nav {
+    max-width: 1400px;
+    margin: auto;
+
+    a {
+        &:hover {
+            color: #fff !important;
+        }
+    }
+}
+body>h1 a {
+}
+
+body.js-enabled {
+
+    >h1 a {
+        //opacity: 0.25;
+        color: #444;
+        transition: color 0.3s;
+    }
+    nav:before {
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    >h1, nav {
+        //transition: max-width 2s;
+    }
+    &.nav-complete {
+        >h1, nav {
+            //max-width: 1400px !important;
+        }
+        >h1 a {
+            //opacity: 1;
+            //transition: opacity 0.3s;
+            color: #fff;
+            transition: color 0.3s;
+        }
+        nav:before {
+            opacity: 1;
+        }
+    }
+}
+@mixin frosted {
+    background: #222b;
+    backdrop-filter: blur(5px);
+}
+
+nav {
+    position: sticky;
+    z-index: 10;
+    overflow: visible;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    //padding-top: 2rem;
+    //padding-right: 0.5rem;
+    padding: 2rem;
+    z-index: 10;
+
+    text-align: right;
+    font-size: 1.25rem;
+    font-weight: 800;
+
+    &:before {
+        content: '';
+        display: block;
+        position: fixed;
+        z-index: -1;
+        top: 0;
+        width: 100vw;
+        left: -100vw;
+        right: -100vw;
+        margin: auto;
+        height: $navHeight;
+        @include frosted;
+        box-shadow: 0px 0px 30px black;
+    }
+    a {
+        color: #aaa !important;
+        text-decoration: none;
+        &:not(:first-child):before {
+            display: inline-block;
+            content: '|';
+            margin: 0 0.7rem;
+        }
+    }
+}
+
+
+@mixin menu-container {
+    text-align: center;
+
+    >a {
+        touch-action: manipulation;
+        user-select: none;
+        background-image: none;
+        cursor: pointer;
+        &::-webkit-details-marker {
+            display: none;
+        }
+        &:active {
+            outline: 0;
+            box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.13);
+        }
+    }
+
+    transition: right 0.3s ease;
+    &:not([open]) {
+        right: -100%;
+    }
+    &[open],
+    &:hover {
+        right: 0;
+    }
+}
+@media only screen and (min-width: 700px) {
+    nav a:hover {
+        background: none !important;
+        color: white !important;
+        text-decoration: underline;
+    }
+}
+
+@media only screen and (max-width: 700px) {
+    #main {
+        height: 100vh !important;
+    }
+    nav {
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: unset;
+        bottom: unset;
+        width: initial !important;
+        padding: $navHeight + 0.5rem 0.5rem 0 0;
+
+        @include menu-container;
+
+        &:before { opacity: 1; }
+
+        &:after {
+            content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 100 80' width='40' height='40'%3E%3Crect width='100' height='10'%3E%3C/rect%3E%3Crect y='30' width='100' height='10'%3E%3C/rect%3E%3Crect y='60' width='100' height='10'%3E%3C/rect%3E%3C/svg%3E");
+            padding-top: 1.75rem;
+            fill: white;
+            color: white;
+            display: block;
+            position: fixed;
+            padding-right: 2rem;
+            height: 5rem;
+            top: 0;
+            right: 0;
+            left: unset;
+            bottom:unset;
+            opacity: 1 !important;
+        }
+
+        a {
+            padding: 1em 2em;
+            margin: 0 !important;
+
+            display: block !important;
+            background: #222e !important;
+            &:hover {
+                background: #222e !important;
+            }
+            &:before {
+                content: none !important;
+            }
+            border-width: 1px;
+            border-color: #333;
+            border-style: solid;
+
+            border-top-width: 0px;
+            border-bottom-width: 0px;
+            &:first-child {
+                border-top-width: 1px;
+                border-top-left-radius: 0.25rem;
+                border-top-right-radius: 0.25rem;
+            }
+            &:last-child {
+                border-bottom-width: 1px;
+                border-bottom-left-radius: 0.25rem;
+                border-bottom-right-radius: 0.25rem;
+            }
+        }
+    }
+}
