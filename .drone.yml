@@ -1,0 +1,17 @@
+kind: pipeline
+type: docker
+name: default
+
+
+steps:
+- name: docker-npm-nginx
+  image: plugins/docker
+  settings:
+    dockerfile: Dockerfile
+    repo: registry.home/allorithmique
+    registry: registry.home
+    username: registry
+    insecure: true
+    auto_tag: true
+    password:
+      from_secret: registry_password
