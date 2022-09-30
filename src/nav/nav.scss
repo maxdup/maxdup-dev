@@ -179,19 +179,30 @@ nav {
         &:before { opacity: 1; }
 
         &:after {
-            content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 100 80' width='40' height='40'%3E%3Crect width='100' height='10'%3E%3C/rect%3E%3Crect y='30' width='100' height='10'%3E%3C/rect%3E%3Crect y='60' width='100' height='10'%3E%3C/rect%3E%3C/svg%3E");
+            content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 100 80' width='40' height='40'%3E%3Crect id='pwease' width='100' height='10'%3E%3C/rect%3E%3Crect y='30' width='100' height='10'%3E%3C/rect%3E%3Crect y='60' width='100' height='10'%3E%3C/rect%3E%3C/svg%3E");
             padding-top: 1.75rem;
-            fill: white;
+
             color: white;
             display: block;
             position: fixed;
             padding-right: 2rem;
-            height: 5rem;
+            padding-left: 2rem;
+            height: $navHeight;
+            box-sizing: border-box;
             top: 0;
             right: 0;
             left: unset;
             bottom:unset;
             opacity: 1 !important;
+
+        }
+
+        &[open],
+        &:hover {
+            &:after {
+                background: black;
+                filter: invert(1);
+            }
         }
 
         a {
