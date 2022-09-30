@@ -1,4 +1,4 @@
-let secretE = ['jacobproulx', 'gmail', 'com'];
+let secretE = ['info', 'allorithmique', 'com'];
 let secretP = ['+1', '514', '546', '0054'];
 
 let linkEmail = 'mailto:' + secretE[0] + '@' + secretE[1] + '.' + secretE[2];
