@@ -7,7 +7,7 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 prodConfig = {
   mode: 'production',
   output: {
-    publicPath: 'https://allorithmique',
+    publicPath: '/',
     clean: true,
   },
   plugins: [new CssMinimizerPlugin()],
