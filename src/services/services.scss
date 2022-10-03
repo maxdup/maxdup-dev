@@ -1,2 +1,64 @@
+$shadowcolor: #200004;
+
 #services {
+    ul.services {
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 1rem;
+
+        li {
+            display: inline-block;
+            background: radial-gradient(circle at 60% 100%,#303832 0%, #1a1010 100%);
+            min-height: 100px;
+            padding: 1rem 2rem 1.5rem 1.5rem;
+            vertical-align: top;
+            box-sizing: border-box;
+            min-height: 12rem;
+            position: relative;
+            overflow: hidden;
+
+            box-shadow: inset -1px -1px -0px #422;
+
+            p {
+                padding-right: 4.5rem;
+            }
+
+            &:before, &:after
+            {
+                content: "";
+                position: absolute;
+                opacity: 0.7;
+            }
+
+
+            &:before {
+                height: 3rem;
+                width: 100%;
+                left: 10px;
+                bottom: -4.75rem;
+                transform: rotate(-2deg);
+                box-shadow: 0 -2rem 20px $shadowcolor;
+            }
+            &:after
+            {
+                height: 100%;
+                width: 3rem;
+                bottom: 15px;
+                right: -5.25rem;
+                bottom: -0.25rem;
+                transform: rotate(6deg);
+                box-shadow: -2rem 0 20px $shadowcolor;
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 700px) {
+    #services ul.services {
+        grid-template-columns: repeat(1, 1fr);
+        li p {
+            padding-right: 30%;
+        }
+    }
 }
