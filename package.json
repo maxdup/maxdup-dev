@@ -4,7 +4,7 @@
   "description": "",
   "main": "webpack.prod.js",
   "scripts": {
-    "start": "PORT=8000 webpack-dev-server --open --config webpack.dev.js",
+    "start": "webpack-dev-server --open --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js"
   },
   "author": "",
