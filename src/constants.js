@@ -1,4 +1,4 @@
-const accent1 = [163, 99, 57];
-const accent2 = [341, 86, 65];
+const accent1 = [146, 50, 52];
+const accent2 = [0, 70, 58];
 
 export { accent1, accent2 }

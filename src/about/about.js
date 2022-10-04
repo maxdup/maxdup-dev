@@ -1,35 +1,23 @@
-import {easeOut, haste, delay, remap, HSLStr} from '../utils'
+import {easeOut, haste, remap, HSLStr} from '../utils'
 
 let aboutElem = document.getElementById('about');
 let images = document.querySelectorAll('.img-box');
 let titles = document.getElementById('about-titles');
 
-let minY, maxY, mark, distTopToBot = 0;
 let progress = 0; // 0 ≤ progress ≤ 1
-
-let resized = () => {
-  minY = document.documentElement.clientHeight/2;
-  maxY = document.documentElement.clientHeight;
-  scrolled();
-}
-
-let scrolled = () => {
-  mark = aboutElem.getBoundingClientRect().top + aboutElem.clientHeight/2;
-  distTopToBot = Math.floor(document.documentElement.getBoundingClientRect().bottom);
-  computeProgress();
-}
+let delay = 0;
 
 const endHSL = [[0, 0, 0],
                 [0, 0, 39],
                 [0, 0, 70]];
 
 const maxHSL = [[0, 0, 0],
-                [220, 60, 33],
-                [50, 201, 60]];
+                [125, 20, 33],
+                [200, 120, 100]];
 
 const jacHSL = [[0, 0, 0],
-                [293, 60, 27],
-                [55, 196, 60]];
+                [365, 20, 27],
+                [30, 120, 100]];
 
 let getColor = (progress, initHSL, targetHSL) => {
   return HSLStr([remap(progress, initHSL[0], initHSL[0]),
@@ -38,15 +26,8 @@ let getColor = (progress, initHSL, targetHSL) => {
 }
 
 let computeProgress = () => {
-  // progress toward about being in the middle of the screen
-  let mProgress = Math.max(Math.min(mark, maxY), minY);
-  mProgress = 1 - (mProgress - minY) / minY;
-  // progress toward hitting the end of the page
-  let eProgress = distTopToBot - Math.max(mark, maxY);
-  eProgress =  1 - eProgress / (distTopToBot - mark);
-  // whichever progress is ahead
-  let progress = Math.min(Math.max(mProgress, eProgress), 1);
-
+  progress = 1 - (images[0].getBoundingClientRect().bottom - window.innerHeight + delay) / images[0].clientHeight;
+  progress = Math.min(1, Math.max(0, progress));
 
   let margin = remap(easeOut(progress), 9, -7);
   let opacity = haste(progress, 0.5);
@@ -65,6 +46,16 @@ let computeProgress = () => {
 
   titles.style.opacity = Math.floor(progress);
 }
+
+let resized = () => {
+  delay = 200 - (images[0].clientHeight / window.innerHeight) * 200;
+  computeProgress();
+}
+
+let scrolled = () => {
+  computeProgress();
+}
+
 resized();
 window.addEventListener('scroll', scrolled);
 window.addEventListener('resize', resized);

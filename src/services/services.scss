@@ -1,4 +1,4 @@
-$shadowcolor: #200004;
+$shadowcolor: #200a04;
 
 #services {
     ul.services {
@@ -9,7 +9,7 @@ $shadowcolor: #200004;
 
         li {
             display: inline-block;
-            background: radial-gradient(circle at 60% 100%,#303832 0%, #1a1010 100%);
+            background: radial-gradient(circle at 60% 100%,#303331 0%, #1a1010 100%);
             min-height: 100px;
             padding: 1rem 2rem 1.5rem 1.5rem;
             vertical-align: top;
@@ -51,6 +51,12 @@ $shadowcolor: #200004;
                 box-shadow: -2rem 0 20px $shadowcolor;
             }
         }
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    #services ul.services li {
+        padding: 1rem 1rem 1.5rem 1rem;
     }
 }
 

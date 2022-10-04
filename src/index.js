@@ -14,7 +14,7 @@ import {HSLStr} from "./utils";
 let selectColorToggle = false;
 let applySelectColor = (event) => {
   let clr = HSLStr(selectColorToggle ? accent2 : accent1);
-  document.documentElement.style.setProperty('--select-color', clr);
+  document.documentElement.style.setProperty('--select-background', clr);
 }
 let selectionChanged = () => {
   if (window.getSelection().toString() != ''){
@@ -34,7 +34,7 @@ applySelectColor();
 let linkColorToggle = false;
 let applyLinkColor = (event) => {
   let clr = HSLStr(linkColorToggle ? accent2 : accent1);
-  document.documentElement.style.setProperty('--link-color', clr);
+  document.documentElement.style.setProperty('--link-background', clr);
 }
 let linkHovered = () => {
   linkColorToggle = !linkColorToggle;
@@ -45,3 +45,5 @@ let links = document.getElementsByTagName('a');
   l.addEventListener('mouseover', linkHovered);
 });
 linkHovered();
+
+document.documentElement.style.setProperty('--highlight-color', 'white');

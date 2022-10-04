@@ -88,7 +88,6 @@ $img-size: $img-height $img-width;
         //background-size: $img-size;
     }
     .clr-base { background: $baseColor; }
-
     .clr-mids { background: hsl(278 0% 39%); }
     .clr-high { background: hsl(0 0% 70%); }
 
@@ -123,7 +122,6 @@ $img-size: $img-height $img-width;
         //background-size: $img-size;
     }
     .clr-base { background: $baseColor; }
-
     .clr-mids { background: hsl(200 0% 39%); }
     .clr-high { background: hsl(269 0% 70%); }
 
@@ -185,5 +183,17 @@ $img-size: $img-height $img-width;
     &:after {
         z-index: 6;
         filter: brightness(0.8) grayscale(1) contrast(200%);
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    #about #about-titles {
+        h3, span {
+            font-size: 1em;
+        }
+    }
+
+    #about {
+        padding-bottom: 4.5rem;
     }
 }

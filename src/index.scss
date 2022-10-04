@@ -39,7 +39,7 @@ body {
 }
 
 .container {
-    padding: 2rem 2rem 6rem;
+    padding: 1.5rem 1rem 3rem;
     max-width: 800px;
     margin: auto;
     position: relative;
@@ -57,14 +57,32 @@ body {
     }
 }
 
+@media only screen and (min-width: 480px) {
+    .container {
+        padding: 2rem 2rem 6rem;
+    }
+}
+
 
 // ------------------------------------------
 // Container backgrounds
 // ------------------------------------------
 
-#about:after { background: #111b; }
-#services:after { background: #444c; }
-#contact:after { background: #999b; }
+#about:after {
+    background: #111b;
+    background-attachment: fixed;
+    background: radial-gradient(circle at 60% 100%, #211b 0%, #111a11bb 100%);
+}
+#services:after {
+    background: #444c;
+    background-attachment: fixed;
+    background: radial-gradient(circle at 60% 100%, #544b 0%, #444a44bb 100%);
+}
+#contact:after {
+    background: #999b;
+    background-attachment: fixed;
+    background: radial-gradient(circle at 60% 100%, #a99b 0%, #9a9b 100%);
+}
 
 
 // ------------------------------------------
@@ -72,7 +90,7 @@ body {
 // ------------------------------------------
 
 $bgImage: url('images/background.jpg');
-$bgGlow: radial-gradient(circle at 10% 30%, #201010 0%, #100808 0% 20%, black 60%, black 70%, #101810 100%);
+$bgGlow: radial-gradient(circle at 10% 30%, #401010 0%, #150808 0% 20%, black 60%, black 70%, #101810 100%);
 
 canvas,
 body:before {
@@ -119,19 +137,26 @@ body.gl-enabled:before {
 // Selection and link hover colored accents
 // ------------------------------------------
 
+$highlight-color: black;
+$highlight-background: white;
+
+body a:hover,
+::selection {
+    color: $highlight-color;
+    background: $highlight-background;
+}
 body a:hover {
-    color: black;
-    background: white;
-    background: var(--link-color);
+    color: var(--highlight-color);
+    background: var(--link-background);
 }
 
 ::selection {
-    color: black;
-    background: white;
-    background: var(--select-color);
+    color: var(--highlight-color);
+    background: var(--select-background);
 }
 
 :root {
-    --select-color: white;
-    --link-color: white;
+    --highlight-color: #{$highlight-color};
+    --link-background: #{$highlight-background};
+    --select-background: #{$highlight-background};
 }
