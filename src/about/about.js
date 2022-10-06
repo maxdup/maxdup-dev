@@ -26,7 +26,7 @@ let getColor = (progress, initHSL, targetHSL) => {
 }
 
 let computeProgress = () => {
-  progress = 1 - (images[0].getBoundingClientRect().bottom - window.innerHeight + delay) / images[0].clientHeight;
+  progress = 1 - (images[0].getBoundingClientRect().bottom - window.innerHeight) / images[0].clientHeight - delay;
   progress = Math.min(1, Math.max(0, progress));
 
   let margin = remap(easeOut(progress), 9, -7);
@@ -48,7 +48,7 @@ let computeProgress = () => {
 }
 
 let resized = () => {
-  delay = 200 - (images[0].clientHeight / window.innerHeight) * 200;
+  delay = Math.max(0, (window.innerHeight - aboutElem.clientHeight) / window.innerHeight);
   computeProgress();
 }
 

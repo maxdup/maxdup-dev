@@ -1,5 +1,5 @@
-let nav = document.getElementsByTagName('nav')[0];
 let h1 = document.getElementsByTagName('h1')[0];
+let nav = document.getElementsByTagName('nav')[0];
 let main = document.getElementById('main');
 
 document.body.classList.add('js-enabled');
@@ -13,7 +13,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
 let onScroll = () => {
-  if (main.getBoundingClientRect().bottom <= 1) {
+  if (main.getBoundingClientRect().bottom <= h1.clientHeight) {
     document.body.classList.add('nav-complete');
   } else {
     document.body.classList.remove('nav-complete');
