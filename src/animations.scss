@@ -1,0 +1,25 @@
+@import 'mixins.scss';
+
+@keyframes abberation-main {
+    0% { @include abberation-text(0); }
+    10% { @include abberation-text(4); }
+    40% { @include abberation-text(1); }
+    50% { @include abberation-text(2); }
+    60% { @include abberation-text(1); }
+    100% { @include abberation-text(0); }
+}
+
+@keyframes abberation-nav {
+    0% { @include abberation-text(0); }
+    10% { @include abberation-text(3); }
+    40% { @include abberation-text(1); }
+    50% { @include abberation-text(2); }
+    100% { @include abberation-text(1); }
+}
+
+@keyframes abberation-link {
+    0% { @include abberation-box(0); }
+    10% { @include abberation-box(2); }
+    40% { @include abberation-box(1); }
+    100% { @include abberation-box(2); }
+}

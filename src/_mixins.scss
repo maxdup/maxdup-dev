@@ -1,0 +1,9 @@
+$accent1: hsla(146deg, 50%, 52%, 0.5);
+$accent2: hsla(0deg, 70%, 58%, 0.5);
+
+@mixin abberation-text($dist) {
+    text-shadow: $dist * 0.10em $dist * 0.05em 0px $accent2, $dist * -0.15em 0px 0px $accent1;
+}
+@mixin abberation-box($dist) {
+    box-shadow: $dist * 0.10em $dist * 0.1em 0px $accent2, $dist * -0.15em 0px 0px $accent1;
+}

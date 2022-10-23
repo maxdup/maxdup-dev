@@ -1,3 +1,4 @@
+@import './animations';
 @import './nav/nav';
 @import './main/main';
 @import './about/about';
@@ -31,7 +32,13 @@ body {
     a {
         color: #eee;
         display: inline-block;
+
+        transition: none;
+        animation-duration: 1s;
+        animation-fill-mode: forwards;
+
         &:hover {
+            animation-name: abberation-link;
             background: white;
             color: black;
         }

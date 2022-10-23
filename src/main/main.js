@@ -42,8 +42,10 @@ let sequence = () => {
   setTimeout(() => {
     scramble1.style.opacity = 1;
     scramble1.style.transform = 'none';
+    scramble1.style.animationName = 'abberation-main';
     scramble2.style.opacity = 1;
     scramble2.style.transform = 'none';
+    scramble2.style.animationName = 'abberation-main';
 
     supports3D && glbg.initCondition(initialPeakPosition);
   }, DELAY);
@@ -51,6 +53,7 @@ let sequence = () => {
   setTimeout(() => {
     scramble3.style.opacity = 1;
     scramble3.style.transform = 'scale(1)';
+    scramble3.style.animationName = 'abberation-main';
 
     glbg.setInertia(0);
 
@@ -113,6 +116,7 @@ let run2D = function(){
 }
 
 initTextScramble();
+
 window.onload = function() {
   if (window.WebGLRenderingContext && glbg.initWebGL()){
     run3D();

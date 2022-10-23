@@ -58,5 +58,13 @@
         transition: transform 0.5s ease, opacity 0.5s ease;
         transform: scale(1);
         opacity: 1;
+        animation-fill-mode: forwards;
+    }
+    .scramble-stage-1 {
+        animation-duration: 1.5s;
+    }
+    .scramble-stage-2,
+    .scramble-stage-3 {
+        animation-duration: 3s;
     }
 }
