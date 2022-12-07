@@ -31,8 +31,8 @@ $baseColor: black;
 $midsColor: #07060e;
 $highColor: red;
 
-$imageSrcJac: url("~/images/jac.jpg");
-$imageSrcMax: url("~/images/max.jpg");
+$imageSrcJac: url("~/images/jac.webp");
+$imageSrcMax: url("~/images/max.webp");
 
 $img-height: 100%;
 $img-width: 100%;
@@ -93,6 +93,9 @@ $img-size: $img-height $img-width;
 
     //.clr-mids { background: hsl(278, 25%, 30%); }
     //.clr-high { background: hsl(0, 75%, 60%); }
+
+    .clr-mids:after { left: -10px !important; }
+    .clr-high:after { left: 10px !important; }
 }
 
 .img-box.max {
@@ -154,7 +157,7 @@ $img-size: $img-height $img-width;
         left: 0;
         width: 100%;
         height: 100%;
-        mix-blend-mode: multiply;
+        //mix-blend-mode: multiply;
     }
 }
 .clr-image {

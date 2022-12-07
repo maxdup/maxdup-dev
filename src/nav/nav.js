@@ -12,18 +12,21 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
   });
 });
-let onScroll = () => {
+let onScroll = function(){
   if (main.getBoundingClientRect().bottom <= h1.clientHeight) {
     document.body.classList.add('nav-complete');
   } else {
     document.body.classList.remove('nav-complete');
   }
 }
-let onResize = () => {
+let onResize = function(){
   nav.style.maxWidth = window.innerWidth + 'px';
   h1.style.maxWidth = window.innerWidth + 'px';
 }
-window.addEventListener('resize', onResize);
-window.addEventListener('scroll', onScroll);
-onResize();
-onScroll();
+
+window.addEventListener('load', function() {
+  window.addEventListener('resize', onResize);
+  window.addEventListener('scroll', onScroll);
+  onResize();
+  onScroll();
+});

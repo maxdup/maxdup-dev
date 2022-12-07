@@ -47,12 +47,12 @@ let computeProgress = () => {
   titles.style.opacity = Math.floor(progress);
 }
 
-let resized = () => {
+let resized = async () => {
   delay = Math.max(0, (window.innerHeight - aboutElem.clientHeight) / window.innerHeight);
   computeProgress();
 }
 
-let scrolled = () => {
+let scrolled = async () => {
   computeProgress();
 }
 

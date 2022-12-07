@@ -71,7 +71,7 @@ let sequence = () => {
 }
 
 let scramble1, scramble2, scramble3;
-function initTextScramble(){
+async function initTextScramble(){
   // funky stuff so the changing line length doesn't affect line alignement
   let content = document.querySelectorAll(".reserved-space")[0];
   let clonetent = content.cloneNode(true);
@@ -117,14 +117,14 @@ let run2D = function(){
 
 initTextScramble();
 
-window.onload = function() {
+window.addEventListener('load', function() {
   if (window.WebGLRenderingContext && glbg.initWebGL()){
     run3D();
   } else {
     run2D();
   }
   sequence();
-};
+});
 
 
 function mobileCheck() {
