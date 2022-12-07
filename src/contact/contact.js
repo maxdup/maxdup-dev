@@ -1,5 +1,8 @@
-let secretE = ['info', 'allorithmique', 'com'];
-let secretP = ['+1', '514', '546', '0054'];
+let contactInit = false;
+let secretE, secretP = null;
+
+secretE = ['info', 'allorithmique', 'com'];
+secretP = ['+1', '514', '546', '0054'];
 
 let linkEmail = 'mailto:' + secretE[0] + '@' + secretE[1] + '.' + secretE[2];
 let linkPhone = 'tel:+' + secretP.join(' ');

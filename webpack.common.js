@@ -58,7 +58,6 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: path.join(dirSrc, 'index.html'),
-      lang: 'fr',
     }),
     new FaviconsWebpackPlugin({
       logo: path.join(dirSrc, './images/favicon.png'),

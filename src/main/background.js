@@ -1,6 +1,7 @@
 import vsScript from "../shaders/background.vert";
 import fsScript from "../shaders/background.frag";
 
+
 import {remap, identityMatrix,
         perspectiveMatrix, matrixTranslate, matrixRotate} from "../utils";
 
@@ -59,33 +60,41 @@ function Background(){
   let scrollProgress = 0;
 
   this.initWebGL = () => {
-    c = document.createElement("CANVAS");
-    document.body.prepend(c);
-    gl = c.getContext("experimental-webgl");
-    return gl;
+    return new Promise((resolve, reject) => {
+      c = document.createElement("CANVAS");
+      document.body.prepend(c);
+      gl = c.getContext("experimental-webgl");
+      (gl ? resolve : reject)();
+    });
   }
 
   this.initShaders = () => {
-    p = gl.createProgram();
-    let vs = gl.createShader(gl.VERTEX_SHADER);
-    let fs = gl.createShader(gl.FRAGMENT_SHADER);
-    vsScript = vsScript.replace(/\%lineColors\%/g, "mat3("+SHEENS_STR+")");
+    return new Promise((resolve, reject) => {
+      p = gl.createProgram();
 
-    gl.shaderSource(vs, vsScript);
-    gl.shaderSource(fs, fsScript);
-    gl.compileShader(vs);
-    gl.compileShader(fs);
-    gl.attachShader(p, vs);
-    gl.attachShader(p, fs);
-    gl.linkProgram(p);
-    gl.useProgram(p);
-    aLoc[0] = gl.getAttribLocation(p, "position");
-    aLoc[1] = gl.getAttribLocation(p, "height");
-    gl.enableVertexAttribArray(aLoc[0]);
-    gl.enableVertexAttribArray(aLoc[1]);
-    uLoc[0] = gl.getUniformLocation(p, "pjMatrix");
-    uLoc[1] = gl.getUniformLocation(p, "mvMatrix");
-    uLoc[2] = gl.getUniformLocation(p, "lines");
+      let vs = gl.createShader(gl.VERTEX_SHADER);
+      let fs = gl.createShader(gl.FRAGMENT_SHADER);
+      vsScript = vsScript.replace(/\%lineColors\%/g, "mat3("+SHEENS_STR+")");
+
+      gl.shaderSource(vs, vsScript);
+      gl.shaderSource(fs, fsScript);
+      gl.compileShader(vs);
+      gl.compileShader(fs);
+      gl.attachShader(p, vs);
+      gl.attachShader(p, fs);
+
+      gl.linkProgram(p);
+      gl.useProgram(p);
+      aLoc[0] = gl.getAttribLocation(p, "position");
+      aLoc[1] = gl.getAttribLocation(p, "height");
+      gl.enableVertexAttribArray(aLoc[0]);
+      gl.enableVertexAttribArray(aLoc[1]);
+      uLoc[0] = gl.getUniformLocation(p, "pjMatrix");
+      uLoc[1] = gl.getUniformLocation(p, "mvMatrix");
+      uLoc[2] = gl.getUniformLocation(p, "lines");
+      resolve();
+
+    });
   }
 
   this.initBuffers = () => {
@@ -266,6 +275,7 @@ function Background(){
   this.resizeCanvas = () => {
     c.width = window.innerWidth;
     c.height = window.innerHeight;
+
     gl.viewport(0, 0, c.width, c.height);
     pjMatrix = perspectiveMatrix(45, window.innerWidth / window.innerHeight, 0.1, 1000.0);
   }

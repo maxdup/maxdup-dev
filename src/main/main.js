@@ -1,11 +1,11 @@
 import Scrambler from 'scrambling-letters';
-import glbg from "./background";
+import glbg from './background.js'
 
-let initialPosition = {
+const initialPosition = {
   x: 0, y: 0, z: 0, sigma2: 100 };
-let initialPeakPosition = {
+const initialPeakPosition = {
   x: 0, y: 0, z: -50, sigma2: 200 };
-let postPeakPosition = {
+const postPeakPosition = {
   x: 0, y: 0, z: -40, sigma2: 200 };
 
 let sequence = () => {
@@ -71,7 +71,7 @@ let sequence = () => {
 }
 
 let scramble1, scramble2, scramble3;
-async function initTextScramble(){
+function initTextScramble(){
   // funky stuff so the changing line length doesn't affect line alignement
   let content = document.querySelectorAll(".reserved-space")[0];
   let clonetent = content.cloneNode(true);
@@ -87,15 +87,16 @@ async function initTextScramble(){
 
 let supports3D = true;
 
-let run3D = function(){
+let run3D = function(bg){
   document.body.classList.add('gl-enabled');
   glbg.setInertia(0.005);
-  glbg.initShaders();
-  glbg.initBuffers();
+
+
   glbg.initCondition(initialPosition);
   glbg.resizeCanvas();
 
   window.addEventListener("resize", glbg.resizeCanvas);
+
   if (navigator.getBattery){
     navigator.getBattery().then(function(result) {
       if (!result.charging){
@@ -104,7 +105,12 @@ let run3D = function(){
     });
   }
   glbg.setFPS(mobileCheck() ? 30 : 60);
-  glbg.render();
+
+  glbg.initShaders().then(() => {
+    glbg.initBuffers();
+    glbg.render();
+  });
+
 }
 
 let run2D = function(){
@@ -117,9 +123,9 @@ let run2D = function(){
 
 initTextScramble();
 
-window.addEventListener('load', function() {
-  if (window.WebGLRenderingContext && glbg.initWebGL()){
-    run3D();
+window.addEventListener('load', async function() {
+  if (window.WebGLRenderingContext){
+    glbg.initWebGL().then(run3D, run2D);
   } else {
     run2D();
   }

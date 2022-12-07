@@ -7,6 +7,8 @@ let titles = document.getElementById('about-titles');
 let progress = 0; // 0 ≤ progress ≤ 1
 let delay = 0;
 
+let updating = false;
+
 const endHSL = [[0, 0, 0],
                 [0, 0, 39],
                 [0, 0, 70]];
@@ -26,7 +28,6 @@ let getColor = (progress, initHSL, targetHSL) => {
 }
 
 let computeProgress = () => {
-  progress = 1 - (images[0].getBoundingClientRect().bottom - window.innerHeight) / images[0].clientHeight - delay;
   progress = Math.min(1, Math.max(0, progress));
 
   let margin = remap(easeOut(progress), 9, -7);
@@ -45,17 +46,24 @@ let computeProgress = () => {
   }
 
   titles.style.opacity = Math.floor(progress);
+  updating = false
 }
 
-let resized = async () => {
+let resized = () => {
   delay = Math.max(0, (window.innerHeight - aboutElem.clientHeight) / window.innerHeight);
-  computeProgress();
+  scrolled();
 }
 
-let scrolled = async () => {
-  computeProgress();
+let scrolled = () => {
+  progress = 1 - (images[0].getBoundingClientRect().bottom - window.innerHeight) / images[0].clientHeight - delay;
+  if (!updating){
+    requestAnimationFrame(computeProgress);
+    updating = true;
+  }
 }
 
-resized();
-window.addEventListener('scroll', scrolled);
-window.addEventListener('resize', resized);
+window.addEventListener('load', () => {
+  resized();
+  window.addEventListener('scroll', scrolled);
+  window.addEventListener('resize', resized);
+});
