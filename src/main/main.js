@@ -1,5 +1,5 @@
 import Scrambler from 'scrambling-letters';
-import glbg from './background.js'
+let glWorker = null;
 
 const initialPosition = {
   x: 0, y: 0, z: 0, sigma2: 100 };
@@ -31,12 +31,14 @@ let sequence = () => {
   });
 
   supports3D && setTimeout(() => {
-    glbg.makeSheens();
-    glbg.sheens[0].inactive = true;
-    glbg.sheens[0].angle = [0,1];
-    glbg.sheens[1].inactive = true;
-    glbg.sheens[1].angle = [0,1];
-    glbg.sheens[2].speed = 5;
+    glWorker.postMessage({msg: 'setSheens', value: {
+      respawn: false,
+      sheens: [{ inactive: true,
+                 angle: [0,1], },
+               { inactive: true,
+                 angle: [0,1], },
+               { speed: 5 }]
+    }});
   }, DELAY / 2);
 
   setTimeout(() => {
@@ -47,7 +49,8 @@ let sequence = () => {
     scramble2.style.transform = 'none';
     scramble2.style.animationName = 'abberation-main';
 
-    supports3D && glbg.initCondition(initialPeakPosition);
+    supports3D && glWorker.postMessage({msg: 'setPositions',
+                                      value: initialPeakPosition});
   }, DELAY);
 
   setTimeout(() => {
@@ -55,17 +58,19 @@ let sequence = () => {
     scramble3.style.transform = 'scale(1)';
     scramble3.style.animationName = 'abberation-main';
 
-    glbg.setInertia(0);
+    supports3D && glWorker.postMessage({msg: 'setInertia',
+                                      value: 0});
 
   }, DELAY + 3000);
 
   supports3D && setTimeout(() => {
-    glbg.initCondition(postPeakPosition);
+    glWorker.postMessage({msg: 'setPositions',
+                        value: postPeakPosition});
   }, DELAY + 3100);
 
   supports3D && setTimeout(() => {
-    glbg.sheensRespawn = true;
-    glbg.makeSheens();
+    glWorker.postMessage({msg: 'setSheens',
+                        value: {respawn: true}});
   }, DELAY + 8000);
 
 }
@@ -86,35 +91,43 @@ function initTextScramble(){
 }
 
 let supports3D = true;
-
 let run3D = function(bg){
+
+  window.addEventListener('scroll', () => {
+    let scrollProgress = document.documentElement.scrollTop /
+        (document.documentElement.scrollHeight - document.documentElement.clientHeight);
+    glWorker.postMessage({msg: 'setProgress', value: scrollProgress})
+  });
+
+  window.addEventListener('resize', () => {
+    glWorker.postMessage({msg: 'setSize', value: {
+      width: window.innerWidth,
+      height: window.innerHeight
+    }});
+  });
+
   document.body.classList.add('gl-enabled');
-  glbg.setInertia(0.005);
-
-
-  glbg.initCondition(initialPosition);
-  glbg.resizeCanvas();
-
-  window.addEventListener("resize", glbg.resizeCanvas);
+  glWorker.postMessage({msg: 'setInertia', value: 0.005});
+  glWorker.postMessage({msg: 'setPositions', value: initialPosition});
+  glWorker.postMessage({msg: 'setSize', value: {
+    width: window.innerWidth,
+    height: window.innerHeight
+  }});
 
   if (navigator.getBattery){
     navigator.getBattery().then(function(result) {
       if (!result.charging){
-        glbg.setFPS(30);
+        glWorker.postMessage({msg: 'setFPS', value: 30});
       }
     });
   }
-  glbg.setFPS(mobileCheck() ? 30 : 60);
-
-  glbg.initShaders().then(() => {
-    glbg.initBuffers();
-    glbg.render();
-  });
-
+  glWorker.postMessage({msg: 'setFPS', value: mobileCheck() ? 30 : 60});
+  glWorker.postMessage({msg: 'start'});
 }
 
 let run2D = function(){
   supports3D = false;
+  // cleanup, remove the canvas
   let cs = document.getElementsByTagName('canvas');
   for (let i = 0; i < cs.length; i++){
     cs[i].parentNode.removeChild(cs[i]);
@@ -125,10 +138,18 @@ initTextScramble();
 
 window.addEventListener('load', async function() {
   if (window.WebGLRenderingContext){
-    glbg.initWebGL().then(run3D, run2D);
-  } else {
-    run2D();
+    supports3D = true;
+    try {
+      const canvas = document.createElement("CANVAS");
+      document.body.prepend(canvas);
+      const offscreenCanvas = canvas.transferControlToOffscreen();
+      glWorker = new Worker(new URL('./background.js', import.meta.url));
+      glWorker.postMessage({msg: 'init', canvas: offscreenCanvas}, [offscreenCanvas]);
+    } catch(err) {
+      supports3D = false;
+    }
   }
+  (supports3D ? run3D : run2D)();
   sequence();
 });
 
