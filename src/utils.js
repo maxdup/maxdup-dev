@@ -96,5 +96,5 @@ function matrixRotate(mat, rad, axis){
 }
 
 
-export { easeOut, easeInOut, haste, delay, remap, HSLStr,
+export { easeOut, easeIn, easeInOut, haste, delay, remap, HSLStr,
          identityMatrix, perspectiveMatrix, matrixTranslate, matrixRotate }

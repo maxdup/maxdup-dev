@@ -52,29 +52,11 @@ $shadowcolor: #200a04;
             }
             .img-bg {
                 position: absolute;
-                left: 0;
                 right: 0;
                 bottom: 0;
                 pointer-events: none;
                 height: 100%;
-                width: 100%;
-                opacity: 0.05;
-                background-repeat: no-repeat;
-                background-position-x: right;
-                background-position-y: bottom;
-                background-size: contain;
-            }
-            &.services-conception .img-bg {
-                background-image: url(./images/services_conception.svg);
-            }
-            &.services-development .img-bg {
-                background-image: url(./images/services_development.svg);
-            }
-            &.services-content .img-bg {
-                background-image: url(./images/services_content.svg);
-            }
-            &.services-deploy .img-bg {
-                background-image: url(./images/services_deploy.svg);
+                opacity: 0.1;
             }
         }
     }
