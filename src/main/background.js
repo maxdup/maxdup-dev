@@ -1,9 +1,13 @@
 import vsScript from "../shaders/background.vert";
 import fsScript from "../shaders/background.frag";
+import sfsScript from "../shaders/sprite.frag";
 
-
-import {remap, identityMatrix,
-        perspectiveMatrix, matrixTranslate, matrixRotate} from "../utils";
+import {
+  remap,
+  identityMatrix,
+  perspectiveMatrix,
+  matrixTranslate,
+  matrixRotate} from "../utils";
 
 //Size of two-dimensional square lattice
 const N = 50;
@@ -35,21 +39,35 @@ function sheensToString(){
 
 const SHEENS_STR = sheensToString();
 
-let gl, c, p;
+let gl, c;
+let dotProgram = null;
+let lineProgram = null;
 let initial = true;
 let pjMatrix = null;
-let mvMatrix = matrixTranslate(identityMatrix(4), [-0.5, 0, -4]);
+let mvMatrix = matrixTranslate(identityMatrix(4), [-0.5, 0, -6]);
 
-let aLoc = [];
-let uLoc = [];
+let texture = null;
+let allHeights = null;
+
+let daLoc = [];
+let duLoc = [];
+let laLoc = [];
+let luLoc = [];
 
 let targetFPS = 60;
 let frameTiming = Date.now();
 let frameInterval =  1000 / targetFPS;
 
-let vertexBuffer;
+let dotBuffer;
+let lineBuffer;
 let positions = [];
-let heights;
+let heights = [];
+
+
+let connections = [];
+let connectedIdPairs = [];
+
+let connectedHeights = [];
 
 let inertiaFactor;
 let f = new Array(Tn);
@@ -100,51 +118,207 @@ self.onmessage = (ev) => {
 
 self.initWebGL = (canvas) => {
   c = canvas;
-  gl = canvas.getContext("webgl");
+  gl = canvas.getContext("webgl") || canvas.getContext('experimental-webgl');
 }
 
 self.initShaders = () => {
-  p = gl.createProgram();
+  dotProgram = gl.createProgram();
+  lineProgram = gl.createProgram();
 
   let vs = gl.createShader(gl.VERTEX_SHADER);
   let fs = gl.createShader(gl.FRAGMENT_SHADER);
+  let sfs = gl.createShader(gl.FRAGMENT_SHADER);
   vsScript = vsScript.replace(/\%lineColors\%/g, "mat3("+SHEENS_STR+")");
 
   gl.shaderSource(vs, vsScript);
   gl.shaderSource(fs, fsScript);
+  gl.shaderSource(sfs, sfsScript);
+
   gl.compileShader(vs);
   gl.compileShader(fs);
-  gl.attachShader(p, vs);
-  gl.attachShader(p, fs);
+  gl.compileShader(sfs);
 
-  gl.linkProgram(p);
-  gl.useProgram(p);
-  aLoc[0] = gl.getAttribLocation(p, "position");
-  aLoc[1] = gl.getAttribLocation(p, "height");
-  gl.enableVertexAttribArray(aLoc[0]);
-  gl.enableVertexAttribArray(aLoc[1]);
-  uLoc[0] = gl.getUniformLocation(p, "pjMatrix");
-  uLoc[1] = gl.getUniformLocation(p, "mvMatrix");
-  uLoc[2] = gl.getUniformLocation(p, "lines");
+  gl.attachShader(lineProgram, vs);
+  gl.attachShader(lineProgram, fs);
+  gl.attachShader(dotProgram, vs);
+  gl.attachShader(dotProgram, sfs);
+
+  gl.linkProgram(dotProgram);
+  gl.linkProgram(lineProgram);
+
+  gl.disable(gl.DEPTH_TEST);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 }
 
 self.initBuffers = () => {
-  for (let i = 0; i <= N; i++) {
-    for (let j = 0; j <= N; j++) {
-      positions = positions.concat([(-N / 2 + i) * L * 0.02, (-N / 2 + j) * L * 0.02]);
+  let posx = [];
+  let posy = [];
+  for (let i = 0; i < N; i++) {
+    let x = (-N / 2 + i) * L * 0.02;
+    for (let j = 0; j < N; j++) {
+      let y = (-N / 2 + j) * L * 0.02;
+      positions = positions.concat([x,y]);
     }
   }
-  heights = new Array((N+1)*(N+1)).fill(0);
+  heights = new Array(N*N).fill(0);
 
-  vertexBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.DYNAMIC_DRAW);
-  gl.vertexAttribPointer(aLoc[0], 2, gl.FLOAT, false, 0, 0);
+  connections = new Array(N*N).fill(0);
+  connectedIdPairs = [];
+  for (let i = 0; i <= N; i++){
+    connectedIdPairs.push(0);
+    connectedIdPairs.push(i*N - i);
+  }
 
-  vertexBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(heights), gl.DYNAMIC_DRAW);
-  gl.vertexAttribPointer(aLoc[1], 1, gl.FLOAT, false, 0, 0);
+
+  for (let i = 0; i < N*N; i++){
+    connections[i] = Math.max(0, Math.floor(Math.random() * 64) - 62);
+  }
+  connectedIdPairs = [];
+
+
+  for (let x = 0; x < N; x++){
+    for (let y = 0; y < N; y++){
+
+      let id = x * N + y;
+
+      if (connections[id] == 0){ continue }
+      let npairs = 0;
+      let dist = 0;
+
+      while (npairs < connections[id] +1 && dist < N){
+        for (let j = 0; j < dist; j++){
+
+          let sy = y + j;
+          let sxp = x + dist - j;
+          let sxm = x - dist + j;
+
+          function testpair(c){
+            if (connections[c] > 0) {
+              connectedIdPairs.push(id);
+              connectedIdPairs.push(c);
+              npairs++;
+              return true;
+            }
+          }
+          if (sy < N && sxp < N) {
+            if (testpair(sxp * N + sy)) { continue };
+          }
+          if (sy < N && sxm >= 0) {
+            if (testpair(sxm * N + sy)) { continue };
+          }
+        }
+        dist++;
+      }
+    }
+  }
+
+  let connectedPositions = new Array(connectedIdPairs.length*2).fill(0);
+  let connectedConnections = new Array(connectedIdPairs.length).fill(0);
+  connectedHeights = new Array(connectedIdPairs.length).fill(0);
+
+  mapConnected([...positions], connectedPositions);
+  mapConnected([...connections], connectedConnections);
+  mapConnected([...heights], connectedHeights);
+
+  let allPositions = [...positions, ...connectedPositions];
+  let allConnections = [...connections, ...connectedConnections];
+  allHeights = [...heights, ...connectedHeights];
+
+
+  // dots
+  gl.useProgram(dotProgram);
+
+  daLoc[0] = gl.getAttribLocation(dotProgram, "position");
+  daLoc[1] = gl.getAttribLocation(dotProgram, "nconnection");
+  daLoc[2] = gl.getAttribLocation(dotProgram, "height");
+  gl.enableVertexAttribArray(daLoc[0]);
+  gl.enableVertexAttribArray(daLoc[1]);
+  gl.enableVertexAttribArray(daLoc[2]);
+
+  duLoc[0] = gl.getUniformLocation(dotProgram, "pjMatrix");
+  duLoc[1] = gl.getUniformLocation(dotProgram, "mvMatrix");
+  duLoc[2] = gl.getUniformLocation(dotProgram, "sheens");
+
+  gl.uniform2f(gl.getUniformLocation(dotProgram, 'screenSize'), c.width, c.height);
+
+  texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.texImage2D(
+    gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+    new Uint8Array([0, 0, 255, 255]));
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+  dotBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, dotBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(allPositions), gl.DYNAMIC_DRAW);
+  gl.vertexAttribPointer(daLoc[0], 2, gl.FLOAT, false, 0, 0);
+
+  dotBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, dotBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(connections), gl.DYNAMIC_DRAW);
+  gl.vertexAttribPointer(daLoc[1], 1, gl.FLOAT, false, 0, 0);
+
+  dotBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, dotBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(allHeights), gl.DYNAMIC_DRAW);
+  gl.vertexAttribPointer(daLoc[2], 1, gl.FLOAT, false, 0, 0);
+
+  self.setImage();
+
+
+  gl.useProgram(lineProgram);
+
+  laLoc[0] = gl.getAttribLocation(lineProgram, "position");
+  laLoc[1] = gl.getAttribLocation(dotProgram, "nconnection");
+  laLoc[2] = gl.getAttribLocation(lineProgram, "height");
+  gl.enableVertexAttribArray(laLoc[0]);
+  gl.enableVertexAttribArray(laLoc[1]);
+  gl.enableVertexAttribArray(laLoc[2]);
+
+  luLoc[0] = gl.getUniformLocation(lineProgram, "pjMatrix");
+  luLoc[1] = gl.getUniformLocation(lineProgram, "mvMatrix");
+  luLoc[2] = gl.getUniformLocation(lineProgram, "sheens");
+
+  gl.uniform2f(gl.getUniformLocation(lineProgram, 'screenSize'), c.width, c.height);
+
+  lineBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, lineBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(allPositions), gl.DYNAMIC_DRAW);
+  gl.vertexAttribPointer(laLoc[0], 2, gl.FLOAT, false, 0, 0);
+
+  lineBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, lineBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(allConnections), gl.DYNAMIC_DRAW);
+  gl.vertexAttribPointer(laLoc[1], 1, gl.FLOAT, false, 0, 0);
+
+  lineBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, lineBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(allHeights), gl.DYNAMIC_DRAW);
+  gl.vertexAttribPointer(laLoc[2], 1, gl.FLOAT, false, 0, 0);
+}
+
+function mapConnected(sourceArray, destArray){
+  let times = destArray.length / connectedIdPairs.length;
+  for (let i = 0; i < connectedIdPairs.length; i++){
+    for (let n = 0; n < times; n++){
+      destArray[i*times+n] = sourceArray[connectedIdPairs[i]*times+n];
+    }
+  }
+}
+
+self.setImage = async () => {
+  const res = await fetch(require('../images/dot.jpg'), {mode: 'cors'});
+  const blob = await res.blob();
+  const bitmap = await createImageBitmap(blob, {
+    premultiplyAlpha: 'none',
+    colorSpaceConversion: 'none',
+  });
+
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bitmap);
 }
 
 self.setPositions = (parameter) => {
@@ -202,10 +376,10 @@ self.render = () => {
 
     frameTiming = now - (elapsed % frameInterval);
 
+
     updateSheens();
-    let lines = [];
-    self.sheens.forEach((s) => { lines = lines.concat(s.origin, s.angle); });
-    gl.uniform2fv(uLoc[2], new Float32Array(lines));
+    let sheens = [];
+    self.sheens.forEach((s) => { sheens = sheens.concat(s.origin, s.angle); });
 
     let translation = [-0.5,0,-4];
 
@@ -213,15 +387,35 @@ self.render = () => {
     let camYaw = 1 - 0.4 * scrollProgress;
     let cpMatrix = matrixRotate(mvMatrix, camPitch, [1,0,0]);
     cpMatrix = matrixRotate(cpMatrix, camYaw, [0,1,0]);
+    cpMatrix = matrixRotate(cpMatrix, 0, [0,1,0]);
+    updateHeights();
 
-    gl.uniformMatrix4fv(uLoc[0], false, pjMatrix);
-    gl.uniformMatrix4fv(uLoc[1], false, cpMatrix);
 
-    self.draw();
+    gl.useProgram(dotProgram);
+
+    gl.uniformMatrix4fv(duLoc[0], false, pjMatrix);
+    gl.uniformMatrix4fv(duLoc[1], false, cpMatrix);
+    gl.uniform2fv(duLoc[2], new Float32Array(sheens));
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, dotBuffer);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(allHeights));
+    gl.drawArrays(gl.POINTS, 0, heights.length);
+
+    gl.useProgram(lineProgram);
+
+    gl.uniformMatrix4fv(luLoc[0], false, pjMatrix);
+    gl.uniformMatrix4fv(luLoc[1], false, cpMatrix);
+    gl.uniform2fv(luLoc[2], new Float32Array(sheens));
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, lineBuffer);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(allHeights));
+    gl.drawArrays(gl.LINES, heights.length, allHeights.length - heights.length);
+
+    gl.flush();
   }
 }
 
-self.draw = () => {
+let updateHeights = () => {
   for (let i = 1; i <= N - 1; i++) {
     for (let j = 1; j <= N - 1; j++) {
       f[2][i][j] = inertiaFactor *
@@ -243,20 +437,20 @@ self.draw = () => {
   f[2][N][N] = (f[2][N - 1][N] + f[2][N][N - 1]) / 2;
 
   // Replace the array numbers for the next calculation. Past information is lost here.
-  for (let i = 0; i <= N; i++) {
-    for (let j = 0; j <= N; j++) {
+  for (let i = 0; i < N; i++) {
+    for (let j = 0; j < N; j++) {
       f[0][i][j] = f[1][i][j];
       f[1][i][j] = f[2][i][j];
+      heights[(i*N+j)] = f[1][i][j] * 0.02;
+      allHeights[(i*N+j)] = f[1][i][j] * 0.02;
 
-      heights[(i*(N+1)+j)] = f[1][i][j] * 0.02;
     }
   }
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-  gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(heights));
-
-  gl.drawArrays(gl.POINTS, 0, heights.length);
-  gl.flush();
+  mapConnected(heights, connectedHeights);
+  for (let i = 0; i < connectedHeights.length; i++){
+    allHeights[i+heights.length] = connectedHeights[i];
+  }
 }
 
 

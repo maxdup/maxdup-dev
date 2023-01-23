@@ -1,19 +1,23 @@
 attribute vec2 position;
+attribute float nconnection;
 attribute float height;
+
 
 varying   vec4 vColor;
 
-const float minPSize = 2.0;
-const float maxPSize = 15.0;
+const float minPSize = 0.0025;
+const float maxPSize = 0.025;
+
 const float maxDist = 3.0;
 
 const vec3 distSharpness = vec3(4.0, 4.0, 5.0);
 const vec3 distWidth = vec3(0.8, 0.8, 1.5);
 
 const mat3 LINE_COLORS = %lineColors%;
-uniform vec2 lines[6];
+uniform vec2 sheens[6];
 uniform mat4 pjMatrix;
 uniform mat4 mvMatrix;
+uniform vec2 screenSize;
 
 float remap(float val, float minV, float maxV){
   return val * (maxV - minV) + minV;
@@ -36,9 +40,9 @@ float distToVec(vec2 point, vec2 angle, vec2 origin){
 void main()
 {
   vec2 pos = vec2(position.x, position.y);
-  vec3 vdist = vec3(distToVec(pos, lines[1], lines[0]),
-                    distToVec(pos, lines[3], lines[2]),
-                    distToVec(pos, lines[5], lines[4]));
+  vec3 vdist = vec3(distToVec(pos, sheens[1], sheens[0]),
+                    distToVec(pos, sheens[3], sheens[2]),
+                    distToVec(pos, sheens[5], sheens[4]));
 
   for (int s=0; s<3; ++s){
     float d = 1.0 - easeInOut(min(vdist[s] + distWidth[s],
@@ -46,6 +50,9 @@ void main()
     vColor = max(vColor, vec4(remapV(d, 0.5, LINE_COLORS[s]), 1.0));
   }
 
-  gl_Position = pjMatrix * mvMatrix * vec4(position.x, height, position.y, 1.0);
-  gl_PointSize = remap(height, minPSize, maxPSize);
+  vec4 screenTransform = vec4(2.0 / screenSize.x, -2.0 / screenSize.y, -1.0, 1.0);
+  gl_Position = pjMatrix * mvMatrix * vec4(position.x, height + 0.1 * nconnection, position.y, 1.0);
+  gl_PointSize = remap(height,
+                       screenSize.x * minPSize + 12.0 * nconnection,
+                       screenSize.x * maxPSize + 8.0 * nconnection);
 }
