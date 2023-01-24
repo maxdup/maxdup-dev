@@ -143,10 +143,12 @@ window.addEventListener('load', async function() {
       const canvas = document.createElement("CANVAS");
       document.body.prepend(canvas);
       const offscreenCanvas = canvas.transferControlToOffscreen();
-      glWorker = new Worker(new URL('./background.js', import.meta.url));
+      glWorker = new Worker(new URL('./background-worker.js', import.meta.url));
       glWorker.postMessage({msg: 'init', canvas: offscreenCanvas}, [offscreenCanvas]);
+      window.glWorker = glWorker;
     } catch(err) {
       supports3D = false;
+      console.log(err);
     }
   }
   (supports3D ? run3D : run2D)();
