@@ -13,18 +13,13 @@ let lineProgram = null;
 let texture = null;
 
 let daLoc = [];
-let duLoc = [];
 let laLoc = [];
-let luLoc = [];
+
+let duLoc = []; // TODO: combine to daloc?
+let luLoc = []; // TODO: combine to laloc?
 
 let dotBuffer;
 let lineBuffer;
-let positions = [];
-
-
-let gridHeights = [];
-
-let allHeights = null;
 
 let scrollProgress = 0;
 
@@ -93,29 +88,30 @@ function Void(camera, waves, grid, nodes, sheens){
 
 
   let buildHeightBuffer = () => {
-    let heights = this.waves.heights;
-    let gridHeights = mapConnected(this.grid.idTable, heights, 1);
-    let nodeHeights = mapConnected(this.nodes.idTable, heights, 1);
+    let gridHeights = mapConnected(this.grid.idTable, this.waves.heights, 1);
+    let nodeHeights = mapConnected(this.nodes.idTable, this.waves.heights, 1);
 
-    return [...heights, ...gridHeights, ...nodeHeights];
+    return [...this.waves.heights, ...gridHeights, ...nodeHeights];
+  }
+  let buildPositionBuffer = () => {
+    let positions = Array.from( // [x1, y1, x2, y2, x3, y3....]
+      Array.from({length: N*N*2}, (_,i) => Math.floor(i/2)),
+      (id,i) => L * 0.02 * (-N / 2 + (Math.floor(id/N) * (1-i%2)) + (id%N * (i%2))));
+    let connectedPositions = mapConnected(this.nodes.idTable, positions, 2)
+    let gridPositions = mapConnected(this.grid.idTable, positions, 2);
+    return [...positions, ...gridPositions, ...connectedPositions];
+  }
+  let buildConnectionBuffer = () => {
+    let connectedConnections = mapConnected(this.nodes.idTable, this.nodes.connections, 1);
+    let gridConnections = mapConnected(this.grid.idTable, this.nodes.connections, 1);
+    return [...this.nodes.connections, ...gridConnections, ...connectedConnections];
+
   }
   this.initBuffers = () => {
 
-    positions = Array.from( // [x1, y1, x2, y2, x3, y3....]
-      Array.from({length: N*N*2}, (_,i) => Math.floor(i/2)),
-      (id,i) => L * 0.02 * (-N / 2 + (Math.floor(id/N) * (1-i%2)) + (id%N * (i%2))));
-
-
-    let connectedPositions = mapConnected(this.nodes.idTable, positions, 2)
-    let connectedConnections = mapConnected(this.nodes.idTable, this.nodes.connections, 1);
-
-    let gridPositions = mapConnected(this.grid.idTable, positions, 2);
-    let gridConnections = mapConnected(this.grid.idTable, this.nodes.connections, 1);
-
-    let allPositions = [...positions, ...gridPositions, ...connectedPositions];
-    let allConnections = [...this.nodes.connections, ...gridConnections, ...connectedConnections];
-
+    let positions  = buildPositionBuffer();
     let heights = buildHeightBuffer();
+    let connections = buildConnectionBuffer();
 
     function glSetAttributes(p, aLoc){
       aLoc[0] = gl.getAttribLocation(p, "position");
@@ -160,8 +156,8 @@ function Void(camera, waves, grid, nodes, sheens){
 
     glTexture();
 
-    glBuffer(daLoc[0], 2, allPositions);
-    glBuffer(daLoc[1], 1, allConnections);
+    glBuffer(daLoc[0], 2, positions);
+    glBuffer(daLoc[1], 1, connections);
     dotBuffer = glBuffer(daLoc[2], 1, heights);
 
     this.setImage();

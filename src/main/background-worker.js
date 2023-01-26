@@ -1,9 +1,9 @@
-import Camera from './camera';
-import Void from './void';
-import Waves from './waves';
-import Grid from './grid';
-import Nodes from './nodes';
-import Sheens from './sheens';
+import Camera from '../visualization/camera';
+import Void from '../visualization/void';
+import Waves from '../visualization/waves';
+import Grid from '../visualization/grid';
+import Nodes from '../visualization/nodes';
+import Sheens from '../visualization/sheens';
 
 const MSGS = {
   initialize: 0,
