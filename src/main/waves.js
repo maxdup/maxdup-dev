@@ -1,5 +1,4 @@
-const N = 50;
-const L = 6;
+import {N, L} from './config';
 
 const Tn = 3;
 const DD = 1; // spacing
@@ -7,7 +6,6 @@ const V = 4; // velocity
 
 function Waves(){
   let f = new Array(Tn);
-  this.f = f;
   let inertiaFactor = 0;
   let initial = true;
   let dt = 0.033;
@@ -54,11 +52,20 @@ function Waves(){
     runBoundaries(1);
     runCorners(1);
     initial = false;
+    makeHeights();
+  }
+
+  let makeHeights = () => {
+    this.heights = new Array(N*N);
+    for (let i = 0; i < N; i++){
+      for (let j = 0; j < N; j++){
+        this.heights[i*N+j] = f[1][i][j] * 0.02;
+      }
+    }
   }
 
 
   this.update = (timeDelta) => {
-    //dt = timeDelta / 1000;
     dt = timeDelta;
     for (let i = 1; i <= N - 1; i++) {
       for (let j = 1; j <= N - 1; j++) {
@@ -77,6 +84,7 @@ function Waves(){
         f[1][i][j] = f[2][i][j];
       }
     }
+    makeHeights();
   }
 
   let runBoundaries = (s) => {
@@ -95,5 +103,7 @@ function Waves(){
     f[s][N][0] = (f[s][N - 1][0] + f[s][N][1]) / 2;
     f[s][N][N] = (f[s][N - 1][N] + f[s][N][N - 1]) / 2;
   }
+  this.offset = 0;
+  this.len = N*N;
 }
 export default Waves;

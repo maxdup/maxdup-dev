@@ -1,5 +1,8 @@
+import Camera from './camera';
 import Void from './void';
 import Waves from './waves';
+import Grid from './grid';
+import Nodes from './nodes';
 import Sheens from './sheens';
 
 const MSGS = {
@@ -14,10 +17,13 @@ const MSGS = {
   loseCTX: 8,
 }
 
-
+let camera = new Camera();
 let waves = new Waves();
+let grid = new Grid();
 let sheens = new Sheens();
-let v = new Void(waves, sheens);
+let nodes = new Nodes();
+
+let v = new Void(camera, waves, grid, nodes, sheens);
 
 self.onmessage = (ev) => {
 

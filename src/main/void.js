@@ -2,27 +2,13 @@ import vsScript from "../shaders/background.vert";
 import fsScript from "../shaders/background.frag";
 import sfsScript from "../shaders/sprite.frag";
 
-import {
-  remap,
-  identityMatrix,
-  perspectiveMatrix,
-  matrixTranslate,
-  matrixRotate} from "../utils";
+import {N, L} from './config';
 
-//Size of two-dimensional square lattice
-const N = 50; // duped
-const L = 6; // duped
 let dt = 0;
-
 let gl, glExt, c;
 
 let dotProgram = null;
 let lineProgram = null;
-
-let pjMatrix = null;
-let cpMatrix = null;
-let mvMatrix = matrixTranslate(identityMatrix(4), [-0.5, 0, -6]);
-
 
 let texture = null;
 
@@ -35,19 +21,24 @@ let dotBuffer;
 let lineBuffer;
 let positions = [];
 
-let connections = [];
-let connectedIdPairs = [];
 
-let connectedHeights = [];
+let gridHeights = [];
+
 let allHeights = null;
 
 let scrollProgress = 0;
 
 
-function Void(waves, sheens){
+function Void(camera, waves, grid, nodes, sheens){
 
+  this.camera = camera;
   this.waves = waves;
+  this.grid = grid;
   this.sheens = sheens;
+  this.nodes = nodes;
+
+  this.grid.offset = this.waves.len;
+  this.nodes.offset = this.waves.len + this.grid.len;
 
   this.targetFPS = 60;
 
@@ -100,70 +91,31 @@ function Void(waves, sheens){
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   }
 
+
+  let buildHeightBuffer = () => {
+    let heights = this.waves.heights;
+    let gridHeights = mapConnected(this.grid.idTable, heights, 1);
+    let nodeHeights = mapConnected(this.nodes.idTable, heights, 1);
+
+    return [...heights, ...gridHeights, ...nodeHeights];
+  }
   this.initBuffers = () => {
 
     positions = Array.from( // [x1, y1, x2, y2, x3, y3....]
       Array.from({length: N*N*2}, (_,i) => Math.floor(i/2)),
       (id,i) => L * 0.02 * (-N / 2 + (Math.floor(id/N) * (1-i%2)) + (id%N * (i%2))));
 
-    connections = new Array(N*N).fill(0);
-    connectedIdPairs = [];
-    for (let i = 0; i <= N; i++){
-      connectedIdPairs.push(0);
-      connectedIdPairs.push(i*N - i);
-    }
 
+    let connectedPositions = mapConnected(this.nodes.idTable, positions, 2)
+    let connectedConnections = mapConnected(this.nodes.idTable, this.nodes.connections, 1);
 
-    for (let i = 0; i < N*N; i++){
-      connections[i] = Math.max(0, Math.floor(Math.random() * 64) - 62);
-    }
-    connectedIdPairs = [];
+    let gridPositions = mapConnected(this.grid.idTable, positions, 2);
+    let gridConnections = mapConnected(this.grid.idTable, this.nodes.connections, 1);
 
-    for (let x = 0; x < N; x++){
-      for (let y = 0; y < N; y++){
+    let allPositions = [...positions, ...gridPositions, ...connectedPositions];
+    let allConnections = [...this.nodes.connections, ...gridConnections, ...connectedConnections];
 
-        let id = x * N + y;
-
-        if (connections[id] == 0){ continue }
-        let npairs = 0;
-        let dist = 0;
-
-        while (npairs < connections[id] +1 && dist < N){
-          for (let j = 0; j < dist; j++){
-
-            let sy = y + j;
-            let sxp = x + dist - j;
-            let sxm = x - dist + j;
-
-            function testpair(c){
-              if (connections[c] > 0) {
-                connectedIdPairs.push(id);
-                connectedIdPairs.push(c);
-                npairs++;
-                return true;
-              }
-            }
-            if (sy < N && sxp < N && testpair(sxp * N + sy)) { continue }
-            if (sy < N && sxm >= 0 && testpair(sxm * N + sy)) { continue }
-          }
-          dist++;
-        }
-      }
-    }
-    allHeights = new Array(N*N + connectedIdPairs.length/2);
-
-    let connectedPositions = new Array(connectedIdPairs.length*2).fill(0);
-    let connectedConnections = new Array(connectedIdPairs.length).fill(0);
-    connectedHeights = new Array(connectedIdPairs.length).fill(0);
-
-    mapConnected([...positions], connectedPositions);
-    mapConnected([...connections], connectedConnections);
-    mapConnected([...allHeights], connectedHeights);
-
-    let allPositions = [...positions, ...connectedPositions];
-    let allConnections = [...connections, ...connectedConnections];
-    allHeights = new Array(N*N).fill(0).concat(connectedHeights);
-
+    let heights = buildHeightBuffer();
 
     function glSetAttributes(p, aLoc){
       aLoc[0] = gl.getAttribLocation(p, "position");
@@ -210,7 +162,7 @@ function Void(waves, sheens){
 
     glBuffer(daLoc[0], 2, allPositions);
     glBuffer(daLoc[1], 1, allConnections);
-    dotBuffer = glBuffer(daLoc[2], 1, allHeights);
+    dotBuffer = glBuffer(daLoc[2], 1, heights);
 
     this.setImage();
 
@@ -220,16 +172,17 @@ function Void(waves, sheens){
     glSetAttributes(lineProgram, laLoc);
     glSetUniforms(lineProgram, luLoc);
 
-    lineBuffer = glBuffer(laLoc[2], 1, allHeights);
+    lineBuffer = glBuffer(laLoc[2], 1, heights);
   }
 
-  function mapConnected(sourceArray, destArray){
-    let times = destArray.length / connectedIdPairs.length;
-    for (let i = 0; i < connectedIdPairs.length; i++){
+  function mapConnected(idTable, sourceArray, times){
+    let destArray = new Array(idTable.length);
+    for (let i = 0; i < idTable.length; i++){
       for (let n = 0; n < times; n++){
-        destArray[i*times+n] = sourceArray[connectedIdPairs[i]*times+n];
+        destArray[i*times+n] = sourceArray[idTable[i]*times+n];
       }
     }
+    return destArray;
   }
 
   this.setImage = async () => {
@@ -245,6 +198,7 @@ function Void(waves, sheens){
   }
 
   this.render = () => {
+
     requestAnimationFrame(this.render);
 
     let now = Date.now();
@@ -255,66 +209,51 @@ function Void(waves, sheens){
 
       this.sheens.update(elapsed);
       this.waves.update(dt);
-      updateCam();
+
+      let heights = buildHeightBuffer();
 
       // ingest sheens
       let sh = Array.from(this.sheens.array, (s,i) => [...s.origin, ...s.angle]).flat();
 
-      // ingest heights
-      for (let i = 0; i < N*N; i++){
-        let x = Math.floor(i/N);
-        let y = i % N;
-        allHeights[i] = this.waves.f[1][x][y] * 0.02;
-      }
-      mapConnected(allHeights, connectedHeights);
-      for (let i = 0; i < connectedHeights.length; i++){
-        allHeights[i+N*N] = connectedHeights[i];
-      }
-
       let glUpdateUniforms = (uLoc) => {
-        gl.uniformMatrix4fv(uLoc[0], false, pjMatrix);
-        gl.uniformMatrix4fv(uLoc[1], false, cpMatrix);
+        gl.uniformMatrix4fv(uLoc[0], false, this.camera.pjMatrix);
+        gl.uniformMatrix4fv(uLoc[1], false, this.camera.mvMatrix);
         gl.uniform2fv(uLoc[2], new Float32Array(sh));
       }
 
-      let glUpdateHeights = (buffer) => {
+      let glUpdateHeights = (buffer, h) => {
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(allHeights));
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(h));
       }
 
       gl.useProgram(dotProgram);
       glUpdateUniforms(duLoc);
-      glUpdateHeights(dotBuffer);
+      glUpdateHeights(dotBuffer, heights);
 
-      gl.drawArrays(gl.POINTS, 0, N*N);
+      gl.drawArrays(gl.POINTS, this.waves.offset, this.waves.len);
 
       gl.useProgram(lineProgram);
       glUpdateUniforms(luLoc);
-      glUpdateHeights(lineBuffer);
+      glUpdateHeights(lineBuffer, heights);
 
-      gl.drawArrays(gl.LINES, N*N, allHeights.length - N*N);
+      gl.drawArrays(gl.LINES,  this.grid.offset, this.grid.len + this.nodes.len);
 
       gl.flush();
     }
-  }
-
-  let updateCam = () => {
-    let camPitch = 0.6 - 1 * scrollProgress;
-    let camYaw = 1 - 0.4 * scrollProgress;
-    cpMatrix = matrixRotate(mvMatrix, camPitch, [1,0,0]);
-    cpMatrix = matrixRotate(cpMatrix, camYaw, [0,1,0]);
-    cpMatrix = matrixRotate(cpMatrix, 0, [0,1,0]);
   }
 
   this.setSize = (width, height) => {
     c.width = width;
     c.height = height;
     gl.viewport(0, 0, width, height);
-    pjMatrix = perspectiveMatrix(45, width / height, 0.1, 1000.0);
+    this.camera.updateSize(width, height);
   }
 
   this.setProgress = (val) => {
     scrollProgress = val;
+    let pitch = 0.6 - 1 * scrollProgress;
+    let yaw = 1 - 0.4 * scrollProgress;
+    this.camera.updateAngle(pitch, yaw, 0);
   }
 
   this.setFPS = (fps) => {
@@ -329,6 +268,7 @@ function Void(waves, sheens){
     this.render();
   }
 
+  this.setProgress(0);
   this.setFPS(this.targetFPS);
 }
 
