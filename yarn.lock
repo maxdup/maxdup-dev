@@ -2622,6 +2622,11 @@ queue-microtask@^1.2.2:
   resolved "https://registry.npmjs.org/queue-microtask/-/queue-microtask-1.2.3.tgz"
   integrity sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==
 
+quick-perlin-noise-js@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/quick-perlin-noise-js/-/quick-perlin-noise-js-1.0.3.tgz"
+  integrity sha512-y0UR4DIIiTcLBcPM/oSNl5u2PDMKynapWXDAUHUWbE7tlmG4kXmo4xrzAHxGSq7sfwNfmjSAOh3yn6ZgMyygVw==
+
 randombytes@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/randombytes/-/randombytes-2.1.0.tgz"

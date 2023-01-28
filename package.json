@@ -31,6 +31,7 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
+    "quick-perlin-noise-js": "^1.0.3",
     "scrambling-letters": "^1.6.2"
   }
 }

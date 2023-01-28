@@ -10,10 +10,9 @@ function makeSheen (){
 }
 
 function sheensToString(){
-  let sheensStr = [];
-  [].concat.apply([], SHEEN_COLORS).forEach((s) => {
-    sheensStr.push(s.toFixed(1));
-  });
+  // rrrbbbggg
+  let sheensStr = Array.from({length: 9}, (_,i) =>
+                             SHEEN_COLORS[i%3][Math.floor(i/3)]);
   return sheensStr.join();
 }
 

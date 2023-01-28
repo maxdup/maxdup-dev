@@ -2,21 +2,22 @@ import vsScript from "../shaders/background.vert";
 import fsScript from "../shaders/background.frag";
 import sfsScript from "../shaders/sprite.frag";
 
+import quickNoise from 'quick-perlin-noise-js';
+
 import {N, L} from './config';
 
 let dt = 0;
 let gl, glExt, c;
 
-let dotProgram = null;
 let lineProgram = null;
+let laLoc = [];
+let luLoc = [];
+
+let dotProgram = null;
+let daLoc = [];
+let duLoc = [];
 
 let texture = null;
-
-let daLoc = [];
-let laLoc = [];
-
-let duLoc = []; // TODO: combine to daloc?
-let luLoc = []; // TODO: combine to laloc?
 
 let dotBuffer;
 let lineBuffer;
@@ -34,6 +35,8 @@ function Void(camera, waves, grid, nodes, sheens){
 
   this.grid.offset = this.waves.len;
   this.nodes.offset = this.waves.len + this.grid.len;
+
+  let noise = new Array(N*N);
 
   this.targetFPS = 60;
 
@@ -86,12 +89,16 @@ function Void(camera, waves, grid, nodes, sheens){
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   }
 
-
   let buildHeightBuffer = () => {
-    let gridHeights = mapConnected(this.grid.idTable, this.waves.heights, 1);
-    let nodeHeights = mapConnected(this.nodes.idTable, this.waves.heights, 1);
-
-    return [...this.waves.heights, ...gridHeights, ...nodeHeights];
+    let heights = Array.from(this.waves.heights, (h,i) =>  Math.max(h,noise[i]));
+    let gridHeights = mapConnected(this.grid.idTable, heights, 1);
+    let nodeHeights = mapConnected(this.nodes.idTable, heights, 1);
+    return [...heights, ...gridHeights, ...nodeHeights];
+  }
+  let buildConnectionBuffer = () => {
+    let connectedConnections = mapConnected(this.nodes.idTable, this.nodes.connections, 1);
+    let gridConnections = mapConnected(this.grid.idTable, this.nodes.connections, 1);
+    return [...this.nodes.connections, ...gridConnections, ...connectedConnections];
   }
   let buildPositionBuffer = () => {
     let positions = Array.from( // [x1, y1, x2, y2, x3, y3....]
@@ -101,17 +108,20 @@ function Void(camera, waves, grid, nodes, sheens){
     let gridPositions = mapConnected(this.grid.idTable, positions, 2);
     return [...positions, ...gridPositions, ...connectedPositions];
   }
-  let buildConnectionBuffer = () => {
-    let connectedConnections = mapConnected(this.nodes.idTable, this.nodes.connections, 1);
-    let gridConnections = mapConnected(this.grid.idTable, this.nodes.connections, 1);
-    return [...this.nodes.connections, ...gridConnections, ...connectedConnections];
 
-  }
   this.initBuffers = () => {
-
+    for (let xy = 0; xy < N*N; xy++){
+      let x = Math.floor(xy / N);
+      let y = xy % N;
+      noise[xy] =
+        Math.sin((x/N * 1.25 - 0.125) * Math.PI) *
+        Math.sin((y/N * 1.25 - 0.125) * Math.PI) * 2 - 0.7;
+      noise[xy] += quickNoise.noise(x/N*20, y/N*15, 0) *0.25;
+    }
     let positions  = buildPositionBuffer();
     let heights = buildHeightBuffer();
     let connections = buildConnectionBuffer();
+
 
     function glSetAttributes(p, aLoc){
       aLoc[0] = gl.getAttribLocation(p, "position");
@@ -222,17 +232,18 @@ function Void(camera, waves, grid, nodes, sheens){
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(h));
       }
 
+      gl.useProgram(lineProgram);
+      glUpdateUniforms(luLoc);
+      glUpdateHeights(lineBuffer, heights);
+
+      gl.drawArrays(gl.LINES,  this.grid.offset, this.grid.len + this.nodes.len);
+
       gl.useProgram(dotProgram);
       glUpdateUniforms(duLoc);
       glUpdateHeights(dotBuffer, heights);
 
       gl.drawArrays(gl.POINTS, this.waves.offset, this.waves.len);
 
-      gl.useProgram(lineProgram);
-      glUpdateUniforms(luLoc);
-      glUpdateHeights(lineBuffer, heights);
-
-      gl.drawArrays(gl.LINES,  this.grid.offset, this.grid.len + this.nodes.len);
 
       gl.flush();
     }
@@ -248,7 +259,7 @@ function Void(camera, waves, grid, nodes, sheens){
   this.setProgress = (val) => {
     scrollProgress = val;
     let pitch = 0.6 - 1 * scrollProgress;
-    let yaw = 1 - 0.4 * scrollProgress;
+    let yaw = 1 + Math.PI*1 - 0.4 * scrollProgress;
     this.camera.updateAngle(pitch, yaw, 0);
   }
 
