@@ -1,0 +1,27 @@
+html {
+    @include base-text();
+    @include content-text();
+}
+
+body {
+    @include content-text();
+}
+
+button {
+    @include content-text();
+    @include interactive();
+}
+
+input {
+    @include border-input();
+}
+
+textarea {
+    @include border-textarea();
+}
+
+form {
+    >button, >input, >textarea {
+        @include form-spacing();
+    }
+}

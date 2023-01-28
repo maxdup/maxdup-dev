@@ -1,20 +1,60 @@
-@import './animations';
-@import './nav/nav';
-@import './main/main';
-@import './about/about';
-@import './services/services';
-@import './contact/contact';
+@import '../animations';
+@import '../nav/nav';
+@import '../main/main';
+@import '../about/about';
+@import '../services/services';
+@import '../contact/contact';
 
-html {
+@mixin base-text(){
+    font-family: Tahoma, sans-serif;
     font-size: 18px;
 }
+@mixin content-text() {
+    color: #eee;
+    font-size: 1rem;
+}
+@mixin border-input() {
+    border-bottom: 1px solid white;
+}
+@mixin border-textarea() {
+    @include border-interactive();
+}
+
+// Interactive
+@mixin border-interactive() {
+    border: 1px solid white;
+    border-radius: 4px;
+}
+@mixin padding-interactive() {
+    padding: 0.5rem 1rem;
+}
+@mixin background-interactive() {
+    background: transparent;
+    background-color: transparent;
+    transition: background 0.3s ease-in;
+    &:hover {
+        background: rgba(1,1,1,0.5);
+    }
+}
+@mixin interactive(){
+    @include border-interactive();
+    @include padding-interactive();
+    @include background-interactive();
+}
+
+@mixin form-spacing(){
+    margin-bottom: 1.5rem;
+}
+
+
+
+@import './framework';
 
 body {
-    color: #eee;
     background: black;
     margin: 0;
-    font-family: Tahoma, sans-serif;
     overflow-x: hidden;
+
     h1, h2, h3 {
         display: block;
         font-weight: bold;
@@ -41,6 +81,54 @@ body {
             animation-name: abberation-link;
             background: white;
             color: black;
+        }
+    }
+    input, textarea {
+        color: white;
+        display: block;
+        width: 100%;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid white;
+
+        background: transparent;
+        background-color: transparent;
+        box-sizing: border-box;
+        box-shadow: 0 0 0 1000px base-color(0%) inset;
+        transition: background-color 99999s ease-in-out;
+
+        height: 2rem;
+        line-height: 1.25rem;
+        font-size: 1rem;
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+
+
+        &[autocomplete=off]{
+            box-shadow: 0 0 0 0 base-color(0%) inset;
+        }
+        &:focus {
+            outline: none;
+        }
+        ::placeholder {
+            color: base-color(60%);
+        }
+    }
+
+    textarea {
+        min-height: 6.75rem;
+        border: 1px solid white;
+        border-radius: 4px;
+        padding-top: 0.25rem;
+    }
+    form {
+        background: rgba(0,0,0,0.75);
+        margin: 1rem 0rem 3rem;
+        padding: 3rem 3rem;
+
+        >button, >input, >textarea {
+            display: block;
+            margin-bottom: 1.5rem;
         }
     }
 }
@@ -91,12 +179,45 @@ body {
     background: radial-gradient(circle at 60% 100%, #a99b 0%, #9a9b 100%);
 }
 
+.aside {
+    $shadowcolor: #200a04;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(circle at 60% 100%,#303331 0%, #1a1010 100%);
+    border-radius: 12px;
+    box-shadow: inset -1px -1px -0px #422;
+
+    &:before, &:after {
+        content: "";
+        position: absolute;
+        opacity: 0.7;
+    }
+    &:before {
+        height: 3rem;
+        width: 100%;
+        left: 0;
+        top: 100%;
+        transform: rotate(-2deg);
+        transform-origin: bottom right;
+        box-shadow: 0 -2rem 20px $shadowcolor;
+    }
+    &:after {
+        height: 100%;
+        width: 3rem;
+        top: 0;
+        left: 100%;
+        transform: rotate(6deg);
+        transform-origin: bottom right;
+        box-shadow: -2rem 0 20px $shadowcolor;
+    }
+}
+
 
 // ------------------------------------------
 // Main background
 // ------------------------------------------
 
-$bgImage: url('images/background.webp');
+$bgImage: url('../images/background.webp');
 $bgGlow: radial-gradient(circle at 10% 30%, #401010 0%, #150808 0% 20%, black 60%, black 70%, #101810 100%);
 
 canvas,
