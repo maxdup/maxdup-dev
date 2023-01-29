@@ -22,8 +22,11 @@ let texture = null;
 let dotBuffer;
 let lineBuffer;
 
-let scrollProgress = 0;
-
+// Scene controls
+let dottedness = 1;
+let nodeness = 1;
+let gridness = 1;
+let fogginess = 1;
 
 function Void(camera, waves, grid, nodes, sheens){
 
@@ -90,14 +93,15 @@ function Void(camera, waves, grid, nodes, sheens){
   }
 
   let buildHeightBuffer = () => {
-    let heights = Array.from(this.waves.heights, (h,i) =>  Math.max(h,noise[i]));
+    //let heights = Array.from(this.waves.heights, (h,i) =>  Math.max(h,noise[i]));
+    let heights = this.waves.heights;
     let gridHeights = mapConnected(this.grid.idTable, heights, 1);
     let nodeHeights = mapConnected(this.nodes.idTable, heights, 1);
     return [...heights, ...gridHeights, ...nodeHeights];
   }
   let buildConnectionBuffer = () => {
     let connectedConnections = mapConnected(this.nodes.idTable, this.nodes.connections, 1);
-    let gridConnections = mapConnected(this.grid.idTable, this.nodes.connections, 1);
+    let gridConnections = new Array(this.grid.idTable.length).fill(0);
     return [...this.nodes.connections, ...gridConnections, ...connectedConnections];
   }
   let buildPositionBuffer = () => {
@@ -118,10 +122,10 @@ function Void(camera, waves, grid, nodes, sheens){
         Math.sin((y/N * 1.25 - 0.125) * Math.PI) * 2 - 0.7;
       noise[xy] += quickNoise.noise(x/N*20, y/N*15, 0) *0.25;
     }
+
     let positions  = buildPositionBuffer();
     let heights = buildHeightBuffer();
     let connections = buildConnectionBuffer();
-
 
     function glSetAttributes(p, aLoc){
       aLoc[0] = gl.getAttribLocation(p, "position");
@@ -134,9 +138,13 @@ function Void(camera, waves, grid, nodes, sheens){
     function glSetUniforms(p, uLoc){
       uLoc[0] = gl.getUniformLocation(p, "pjMatrix");
       uLoc[1] = gl.getUniformLocation(p, "mvMatrix");
-      uLoc[2] = gl.getUniformLocation(p, "sheens");
+      uLoc[2] = gl.getUniformLocation(p, 'screenScale');
+      uLoc[3] = gl.getUniformLocation(p, "sheens");
 
-      gl.uniform2f(gl.getUniformLocation(p, 'screenSize'), c.width, c.height);
+      uLoc[4] = gl.getUniformLocation(p, "dottedness");
+      uLoc[5] = gl.getUniformLocation(p, "nodeness");
+      uLoc[6] = gl.getUniformLocation(p, "gridness");
+      uLoc[7] = gl.getUniformLocation(p, "fogginess");
     }
 
     function glBuffer(destaLoc, size, data){
@@ -224,23 +232,29 @@ function Void(camera, waves, grid, nodes, sheens){
       let glUpdateUniforms = (uLoc) => {
         gl.uniformMatrix4fv(uLoc[0], false, this.camera.pjMatrix);
         gl.uniformMatrix4fv(uLoc[1], false, this.camera.mvMatrix);
-        gl.uniform2fv(uLoc[2], new Float32Array(sh));
+        gl.uniform1f(uLoc[2], this.camera.resolutionScale);
+        gl.uniform2fv(uLoc[3], new Float32Array(sh));
+
+        gl.uniform1f(uLoc[4], dottedness);
+        gl.uniform1f(uLoc[5], nodeness);
+        gl.uniform1f(uLoc[6], gridness);
+        gl.uniform1f(uLoc[7], fogginess);
       }
 
-      let glUpdateHeights = (buffer, h) => {
+      let glUpdateAttributes = (buffer) => {
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(h));
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(heights));
       }
 
       gl.useProgram(lineProgram);
       glUpdateUniforms(luLoc);
-      glUpdateHeights(lineBuffer, heights);
+      glUpdateAttributes(lineBuffer);
 
       gl.drawArrays(gl.LINES,  this.grid.offset, this.grid.len + this.nodes.len);
 
       gl.useProgram(dotProgram);
       glUpdateUniforms(duLoc);
-      glUpdateHeights(dotBuffer, heights);
+      glUpdateAttributes(dotBuffer);
 
       gl.drawArrays(gl.POINTS, this.waves.offset, this.waves.len);
 
@@ -257,9 +271,8 @@ function Void(camera, waves, grid, nodes, sheens){
   }
 
   this.setProgress = (val) => {
-    scrollProgress = val;
-    let pitch = 0.6 - 1 * scrollProgress;
-    let yaw = 1 + Math.PI*1 - 0.4 * scrollProgress;
+    let pitch = 0.6 - 1 * val;
+    let yaw = Math.PI *3  + 1.0 - 0.4 * val;
     this.camera.updateAngle(pitch, yaw, 0);
   }
 
