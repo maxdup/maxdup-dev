@@ -4,8 +4,9 @@ attribute float height;
 
 varying   vec4 vColor;
 
-const float minPSize = 0.125;
-const float maxPSize = 0.5;
+const float minPSize = 0.2;
+const float maxPSize = 0.65;
+const float connPSize = 0.035;
 
 const float maxDist = 3.0;
 
@@ -28,7 +29,7 @@ varying float dotted;
 varying float lined;
 
 float demap(float val, float minV, float maxV){
-  return (val - minV) / (maxV - minV);
+  return max(0.0, min(1.0, (val - minV) / (maxV - minV)));
 }
 vec3 remap(vec3 val, float minV, mat3 maxV){
   return val * (maxV - minV) + minV;
@@ -50,7 +51,7 @@ void main()
   lined = max(noded, gridness - min(1.0, nconnection));
 
   // POSITION
-  float nodeHeightOffset = 0.035 * nodeFactor;
+  float nodeHeightOffset = connPSize * nodeFactor;
   gl_Position = pjMatrix * mvMatrix * vec4(position.x, height + nodeHeightOffset, position.y, 1.0);
 
   // POINT SIZE
@@ -61,9 +62,11 @@ void main()
   gl_PointSize = dotted * (agnosticPointSize + nodePointSizeOffset) * scale ;
 
   // COLORS
-  float minZ = vec4(pjMatrix * mvMatrix * vec4(maxDist, 0.035, maxDist, 1.0))[2];
-  float maxZ = vec4(pjMatrix * mvMatrix * vec4(-maxDist, 0.035, -maxDist, 1.0))[2];
-  float fogging = 1.0 - mix(0.0, 0.3, 1.0 - demap(gl_Position.z, minZ, maxZ) * fogginess);
+  //float minZ = vec4(pjMatrix * mvMatrix * vec4(maxDist/2.0, 0.0, -maxDist/2.0, 1.0)).z;
+  float minZ = vec4(pjMatrix * mvMatrix * vec4(0.0, 0.0, 0.0, 1.0)).z;
+  float maxZ = vec4(pjMatrix * mvMatrix * vec4(-maxDist, 0.0, maxDist, 1.0)).z;
+  float fogged = 1.5 - mix(1.0, 0.0, demap(gl_Position.z, minZ, maxZ) * fogginess);
+  float fogging = 1.0 - mix(0.0, 0.3, 1.0 - gl_Position.z * fogginess);
 
   vec2 pos = vec2(position.x, position.y);
   vec3 vdist = vec3(distToVec(pos, sheens[1], sheens[0]),
@@ -71,7 +74,5 @@ void main()
                     distToVec(pos, sheens[5], sheens[4]));
   vec3 distVec = min(vdist + distWidth, maxDist) / maxDist;
   distVec = 1.0 - easeInOut(distVec, distSharpness);
-  vColor = max(vColor, vec4(remap(distVec, 0.4, LINE_COLORS) * fogging, 1.0));
-
-
+  vColor = vec4(remap(distVec, 0.4, LINE_COLORS) * fogged, 1.0);
 }

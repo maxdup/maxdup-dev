@@ -1,3 +1,4 @@
+import Scene from '../visualization/scene';
 import Camera from '../visualization/camera';
 import Void from '../visualization/void';
 import Waves from '../visualization/waves';
@@ -14,16 +15,18 @@ const MSGS = {
   setSheens: 5,
   setFPS: 6,
   setProgress: 7,
-  loseCTX: 8,
+  setScene: 8,
+  loseCTX: 9,
 }
 
+let scene = new Scene();
 let camera = new Camera();
 let waves = new Waves();
 let grid = new Grid();
 let sheens = new Sheens();
 let nodes = new Nodes();
 
-let v = new Void(camera, waves, grid, nodes, sheens);
+let v = new Void(scene, camera, waves, grid, nodes, sheens);
 
 self.onmessage = (ev) => {
 
@@ -48,6 +51,9 @@ self.onmessage = (ev) => {
     break;
   case MSGS.setSheens:
     sheens.set(ev.data.value);
+    break;
+  case MSGS.setScene:
+    scene.target(ev.data.value);
     break;
   case MSGS.setFPS:
     v.setFPS(ev.data.value);

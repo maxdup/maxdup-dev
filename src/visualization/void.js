@@ -22,14 +22,9 @@ let texture = null;
 let dotBuffer;
 let lineBuffer;
 
-// Scene controls
-let dottedness = 1;
-let nodeness = 1;
-let gridness = 1;
-let fogginess = 1;
+function Void(scene, camera, waves, grid, nodes, sheens){
 
-function Void(camera, waves, grid, nodes, sheens){
-
+  this.scene = scene;
   this.camera = camera;
   this.waves = waves;
   this.grid = grid;
@@ -93,8 +88,8 @@ function Void(camera, waves, grid, nodes, sheens){
   }
 
   let buildHeightBuffer = () => {
-    //let heights = Array.from(this.waves.heights, (h,i) =>  Math.max(h,noise[i]));
-    let heights = this.waves.heights;
+    let heights = Array.from(this.waves.heights,
+                             (h,i) =>  Math.max(h,this.scene.gridness * noise[i]));
     let gridHeights = mapConnected(this.grid.idTable, heights, 1);
     let nodeHeights = mapConnected(this.nodes.idTable, heights, 1);
     return [...heights, ...gridHeights, ...nodeHeights];
@@ -221,6 +216,7 @@ function Void(camera, waves, grid, nodes, sheens){
 
       frameTiming = now - (elapsed % frameInterval);
 
+      this.scene.update(elapsed);
       this.sheens.update(elapsed);
       this.waves.update(dt);
 
@@ -235,10 +231,10 @@ function Void(camera, waves, grid, nodes, sheens){
         gl.uniform1f(uLoc[2], this.camera.resolutionScale);
         gl.uniform2fv(uLoc[3], new Float32Array(sh));
 
-        gl.uniform1f(uLoc[4], dottedness);
-        gl.uniform1f(uLoc[5], nodeness);
-        gl.uniform1f(uLoc[6], gridness);
-        gl.uniform1f(uLoc[7], fogginess);
+        gl.uniform1f(uLoc[4], this.scene.dottedness);
+        gl.uniform1f(uLoc[5], this.scene.nodeness);
+        gl.uniform1f(uLoc[6], this.scene.gridness);
+        gl.uniform1f(uLoc[7], this.scene.fogginess);
       }
 
       let glUpdateAttributes = (buffer) => {
@@ -272,7 +268,7 @@ function Void(camera, waves, grid, nodes, sheens){
 
   this.setProgress = (val) => {
     let pitch = 0.6 - 1 * val;
-    let yaw = Math.PI *3  + 1.0 - 0.4 * val;
+    let yaw = 1.0 - 0.4 * val;
     this.camera.updateAngle(pitch, yaw, 0);
   }
 

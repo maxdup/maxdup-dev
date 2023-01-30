@@ -19,7 +19,14 @@ let onInit = function(){
     });
   });
 }
-
+let onHover = function(e){
+  if (window.glWorker){
+    window.glWorker.postMessage({
+      msg: 'setScene',
+      value: e.target.attributes.scene.value
+    });
+  }
+}
 // On Scroll
 let onScroll = function(){
   navThreshold = main.getBoundingClientRect().bottom <= h1.clientHeight;
@@ -61,4 +68,8 @@ window.addEventListener('load', function() {
   onScroll();
   afterScroll();
   onInit();
+});
+
+let navs = document.querySelectorAll('nav a').forEach((n) => {
+  n.addEventListener('mouseover', onHover);
 });
