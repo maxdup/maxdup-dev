@@ -53,7 +53,8 @@ self.onmessage = (ev) => {
     sheens.set(ev.data.value);
     break;
   case MSGS.setScene:
-    scene.target(ev.data.value);
+    scene.target(ev.data.value.name,
+                 ev.data.value.speed);
     break;
   case MSGS.setFPS:
     v.setFPS(ev.data.value);

@@ -37,15 +37,18 @@ function Scene(){
     this.fogginess = updated(this.fogginess, targetFogginess);
   }
 
-  this.target = (sceneName) => {
+  this.target = (sceneName, speed) => {
+    velocity = speed;
     switch(SCENES[sceneName]){
     case SCENES.about:
+      this.activeScene = sceneName;
       targetDottedness = 1;
       targetNodeness = 0;
       targetGridness = 1;
       targetFogginess = 1;
       break
     case SCENES.contact:
+      this.activeScene = sceneName;
       targetDottedness = 1;
       targetNodeness = 1;
       targetGridness = 0;
@@ -53,6 +56,7 @@ function Scene(){
       break
     case SCENES.services:
     case SCENES.main:
+      this.activeScene = sceneName;
     default:
       targetDottedness = 1;
       targetNodeness = 0;

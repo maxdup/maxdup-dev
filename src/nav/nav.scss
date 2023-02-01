@@ -51,28 +51,20 @@ nav {
 body.js-enabled {
 
     >h1 a {
-        //opacity: 0.25;
         color: #444;
         transition: color 0.3s;
     }
-    nav:before {
+    >h1:before {
         opacity: 0;
         transition: opacity 0.3s;
     }
-    >h1, nav {
-        //transition: max-width 2s;
-    }
     &.nav-complete {
-        >h1, nav {
-            //max-width: 1400px !important;
-        }
         >h1 a {
-            //opacity: 1;
-            //transition: opacity 0.3s;
             color: #fff;
             transition: color 0.3s;
         }
-        nav:before {
+        //nav:before {
+        >h1:before {
             opacity: 1;
         }
     }
@@ -82,37 +74,38 @@ body.js-enabled {
     backdrop-filter: blur(5px);
 }
 
+body>h1:before {
+    content: '';
+    display: block;
+    position: fixed;
+    z-index: -1;
+    top: 0;
+    width: 100vw;
+    left: -100vw;
+    right: -100vw;
+    margin: auto;
+    height: $navHeight;
+    @include frosted;
+    box-shadow: 0px 0px 30px black;
+    box-sizing: border-box;
+}
+
 nav {
     position: sticky;
-    z-index: 10;
     overflow: visible;
-    left: 0;
     right: 0;
     top: 0;
-    bottom: 0;
 
     padding: 2rem;
-    z-index: 10;
+    z-index: 11;
 
     text-align: right;
     font-size: 1.25rem;
     font-weight: 800;
+    display: table;
+    margin-right: 0;
+    pointer-events: all;
 
-    &:before {
-        content: '';
-        display: block;
-        position: fixed;
-        z-index: -1;
-        top: 0;
-        width: 100vw;
-        left: -100vw;
-        right: -100vw;
-        margin: auto;
-        height: $navHeight;
-        @include frosted;
-        box-shadow: 0px 0px 30px black;
-        box-sizing: border-box;
-    }
     a {
         color: #aaa !important;
         text-decoration: none;

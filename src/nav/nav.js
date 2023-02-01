@@ -2,52 +2,94 @@ let h1 = document.getElementsByTagName('h1')[0];
 let nav = document.getElementsByTagName('nav')[0];
 let main = document.getElementById('main');
 
+let about = document.getElementById('about');
+let service = document.getElementById('services');
+let contact = document.getElementById('contact');
+
 let windowInnerWidth = null;
-let navThreshold = null;
+let windowInnerHalfHeight = null;
 
 let scrolling, resizing = null;
+
+let scrollScene = null;
 
 let onInit = function(){
   document.body.classList.add('js-enabled');
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
       e.preventDefault();
-
       document.querySelector(this.getAttribute('href')).scrollIntoView({
         behavior: 'smooth'
       });
     });
   });
 }
-let onHover = function(e){
-  if (window.glWorker){
-    window.glWorker.postMessage({
-      msg: 'setScene',
-      value: e.target.attributes.scene.value
-    });
-  }
+
+let onNavOut = function(e){
+  if (nav !== e.target) return;
+  setScene(scrollScene, 0.3);
 }
+
+let onNavHover = function(e){
+  setScene(e.target.attributes.scene.value, 0.3);
+}
+
 // On Scroll
 let onScroll = function(){
-  navThreshold = main.getBoundingClientRect().bottom <= h1.clientHeight;
   if (!scrolling) {
     requestAnimationFrame(afterScroll);
     scrolling = true;
   }
 }
+
+let setScene = function(sceneName, speed) {
+  if (window.glWorker){
+    window.glWorker.postMessage({
+      msg: 'setScene',
+      value: {
+        name: sceneName,
+        speed: speed
+      }
+    });
+  }
+}
+let setScrollScene = function(sceneName) {
+  if (scrollScene != sceneName){
+    scrollScene = sceneName;
+    setScene(sceneName, 0.75);
+  }
+}
+
 let afterScroll = function(){
-  if (navThreshold) {
+  if (main.getBoundingClientRect().bottom <= h1.clientHeight) {
     document.body.classList.add('nav-complete');
   } else {
     document.body.classList.remove('nav-complete');
   }
   scrolling = false;
+
+  if (contact.getBoundingClientRect().bottom > windowInnerHalfHeight){
+    if (service.getBoundingClientRect().bottom > windowInnerHalfHeight){
+      if (about.getBoundingClientRect().bottom > windowInnerHalfHeight){
+        if (about.getBoundingClientRect().top < windowInnerHalfHeight){
+          setScrollScene('about');
+        } else {
+          setScrollScene();
+        }
+      } else {
+        setScrollScene('services');
+      }
+    } else {
+      setScrollScene('contact');
+    }
+  }
 }
 
 
 // On Resize
 let onResize = function(){
   windowInnerWidth = window.innerWidth;
+  windowInnerHalfHeight = window.innerHeight / 2;
   if (!resizing) {
     requestAnimationFrame(afterResize);
     resizing = true
@@ -70,6 +112,8 @@ window.addEventListener('load', function() {
   onInit();
 });
 
-let navs = document.querySelectorAll('nav a').forEach((n) => {
-  n.addEventListener('mouseover', onHover);
+
+nav.addEventListener('mouseout', onNavOut);
+[...nav.children].forEach((n) => {
+  n.addEventListener('mouseover', onNavHover);
 });
