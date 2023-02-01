@@ -1,20 +1,3 @@
-attribute vec2 position;
-attribute float nconnection;
-attribute float height;
-
-varying   vec4 vColor;
-
-const float minPSize = 0.2;
-const float maxPSize = 0.65;
-const float connPSize = 0.035;
-
-const float maxDist = 3.0;
-
-const vec3 distSharpness = vec3(4.0, 4.0, 5.0);
-const vec3 distWidth = vec3(0.8, 0.8, 1.5);
-
-const mat3 LINE_COLORS = %lineColors%;
-
 uniform vec2 sheens[6];
 uniform mat4 pjMatrix;
 uniform mat4 mvMatrix;
@@ -25,8 +8,23 @@ uniform float nodeness;
 uniform float gridness;
 uniform float fogginess;
 
-varying float dotted;
-varying float lined;
+attribute vec3 position;
+attribute float nconnection;
+attribute float height;
+
+varying vec4 vColor;
+varying float isDotted;
+varying float isLined;
+
+const float maxDist = 3.0;
+const float minPSize = 0.2;
+const float maxPSize = 0.65;
+const float connPSize = 1.5;
+const float connHOffs = 0.035;
+
+const vec3 distSharpness = vec3(4.0, 4.0, 5.0);
+const vec3 distWidth = vec3(0.8, 0.8, 1.5);
+const mat3 LINE_COLORS = %lineColors%;
 
 float demap(float val, float minV, float maxV){
   return max(0.0, min(1.0, (val - minV) / (maxV - minV)));
@@ -44,35 +42,36 @@ float distToVec(vec2 point, vec2 angle, vec2 origin){
 
 void main()
 {
-  float noded = min(1.0, nconnection) * nodeness; // [0,1]
-  float nodeFactor = noded * nconnection; // [0, nconnection];
+  float quaded = max(0.0, sign(position.z - height)) * gridness;
+  float noded = min(1.0, nconnection); // [0,1]
+  float nodeFactor = noded * nodeness * nconnection; // [0, nconnection];
 
-  dotted = max(noded, dottedness);
-  lined = max(noded, gridness - min(1.0, nconnection));
+  float nodePointSizeOffset = connPSize * nodeFactor;
+  float nodeHeightOffset = connHOffs * nodeFactor;
+
+  isDotted = max(noded * nodeness, min(dottedness, 1.0-quaded));
+  isLined = max(noded * nodeness, min(0.5, (quaded * gridness) - noded));
 
   // POSITION
-  float nodeHeightOffset = connPSize * nodeFactor;
-  gl_Position = pjMatrix * mvMatrix * vec4(position.x, height + nodeHeightOffset, position.y, 1.0);
+  float z = position.z * quaded + height * (1.0-quaded);
+  vec4 pos = vec4(position.x, z + nodeHeightOffset, position.y, 1.0);
+  gl_Position = pjMatrix * mvMatrix * pos;
 
   // POINT SIZE
   float agnosticPointSize = mix(minPSize, maxPSize, min(height*5.0, 1.0));
   float scalePointSize = agnosticPointSize * screenScale;
   float scale = screenScale / 100.0;
-  float nodePointSizeOffset = 1.0 * nodeFactor;
-  gl_PointSize = dotted * (agnosticPointSize + nodePointSizeOffset) * scale ;
+  gl_PointSize = isDotted * (agnosticPointSize + nodePointSizeOffset) * scale ;
 
   // COLORS
-  //float minZ = vec4(pjMatrix * mvMatrix * vec4(maxDist/2.0, 0.0, -maxDist/2.0, 1.0)).z;
   float minZ = vec4(pjMatrix * mvMatrix * vec4(0.0, 0.0, 0.0, 1.0)).z;
-  float maxZ = vec4(pjMatrix * mvMatrix * vec4(-maxDist, 0.0, maxDist, 1.0)).z;
-  float fogged = 1.5 - mix(1.0, 0.0, demap(gl_Position.z, minZ, maxZ) * fogginess);
-  float fogging = 1.0 - mix(0.0, 0.3, 1.0 - gl_Position.z * fogginess);
+  float maxZ = vec4(pjMatrix * mvMatrix * vec4(-maxDist, 0.0, -maxDist, 1.0)).z;
+  float fog = 1.0 - (fogginess * (position.x - position.y) / maxDist / 2.0 + 0.5);
 
-  vec2 pos = vec2(position.x, position.y);
-  vec3 vdist = vec3(distToVec(pos, sheens[1], sheens[0]),
-                    distToVec(pos, sheens[3], sheens[2]),
-                    distToVec(pos, sheens[5], sheens[4]));
+  vec3 vdist = vec3(distToVec(position.xy, sheens[1], sheens[0]),
+                    distToVec(position.xy, sheens[3], sheens[2]),
+                    distToVec(position.xy, sheens[5], sheens[4]));
   vec3 distVec = min(vdist + distWidth, maxDist) / maxDist;
   distVec = 1.0 - easeInOut(distVec, distSharpness);
-  vColor = vec4(remap(distVec, 0.4, LINE_COLORS) * fogged, 1.0);
+  vColor = vec4(remap(distVec, 0.5, LINE_COLORS) * fog, 1.0);
 }

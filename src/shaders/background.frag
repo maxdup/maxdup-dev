@@ -1,8 +1,8 @@
 precision mediump float;
 varying vec4 vColor;
-varying float lined;
+varying float isLined;
 
 void main() // LINES
 {
-  gl_FragColor = vec4(vColor.rgb * 0.4, lined);
+  gl_FragColor = vec4(vColor.rgb * (1.0 - 0.4), isLined);
 }

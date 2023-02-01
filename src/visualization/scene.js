@@ -1,13 +1,20 @@
+const SCENES = {
+  main: 0,
+  about: 1,
+  services: 2,
+  contact: 3,
+};
+
 function Scene(){
   this.dottedness = 1;
   this.nodeness = 0;
   this.gridness = 0;
   this.fogginess = 0;
 
-  this.targetDottedness = 1;
-  this.targetNodeness = 0;
-  this.targetGridness = 0;
-  this.targetFogginess = 0;
+  let targetDottedness = 1;
+  let targetNodeness = 0;
+  let targetGridness = 0;
+  let targetFogginess = 0;
 
   let velocity = 0.3; // seconds
 
@@ -24,31 +31,33 @@ function Scene(){
         }
       }
     }
-    this.dottedness = updated(this.dottedness, this.targetDottedness);
-    this.nodeness = updated(this.nodeness, this.targetNodeness);
-    this.gridness = updated(this.gridness, this.targetGridness);
-    this.fogginess = updated(this.fogginess, this.targetFogginess);
+    this.dottedness = updated(this.dottedness, targetDottedness);
+    this.nodeness = updated(this.nodeness, targetNodeness);
+    this.gridness = updated(this.gridness, targetGridness);
+    this.fogginess = updated(this.fogginess, targetFogginess);
   }
 
   this.target = (sceneName) => {
-    console.log('scene!', sceneName);
-    if (sceneName == 'about') {
-      this.targetDottedness = 0;
-      this.targetNodeness = 0;
-      this.targetGridness = 1;
-      this.targetFogginess = 1;
-    }
-    if (sceneName == 'services') {
-      this.targetDottedness = 1;
-      this.targetNodeness = 0;
-      this.targetGridness = 0;
-      this.targetFogginess = 0;
-    }
-    if (sceneName == 'contact') {
-      this.targetDottedness = 1;
-      this.targetNodeness = 1;
-      this.targetGridness = 0;
-      this.targetFogginess = 0;
+    switch(SCENES[sceneName]){
+    case SCENES.about:
+      targetDottedness = 1;
+      targetNodeness = 0;
+      targetGridness = 1;
+      targetFogginess = 1;
+      break
+    case SCENES.contact:
+      targetDottedness = 1;
+      targetNodeness = 1;
+      targetGridness = 0;
+      targetFogginess = 0;
+      break
+    case SCENES.services:
+    case SCENES.main:
+    default:
+      targetDottedness = 1;
+      targetNodeness = 0;
+      targetGridness = 0;
+      targetFogginess = 0;
     }
   }
 }

@@ -88,11 +88,9 @@ function Void(scene, camera, waves, grid, nodes, sheens){
   }
 
   let buildHeightBuffer = () => {
-    let heights = Array.from(this.waves.heights,
-                             (h,i) =>  Math.max(h,this.scene.gridness * noise[i]));
-    let gridHeights = mapConnected(this.grid.idTable, heights, 1);
-    let nodeHeights = mapConnected(this.nodes.idTable, heights, 1);
-    return [...heights, ...gridHeights, ...nodeHeights];
+    let gridHeights = mapConnected(this.grid.idTable, this.waves.heights, 1);
+    let nodeHeights = mapConnected(this.nodes.idTable, this.waves.heights, 1);
+    return [...this.waves.heights, ...gridHeights, ...nodeHeights];
   }
   let buildConnectionBuffer = () => {
     let connectedConnections = mapConnected(this.nodes.idTable, this.nodes.connections, 1);
@@ -100,24 +98,25 @@ function Void(scene, camera, waves, grid, nodes, sheens){
     return [...this.nodes.connections, ...gridConnections, ...connectedConnections];
   }
   let buildPositionBuffer = () => {
-    let positions = Array.from( // [x1, y1, x2, y2, x3, y3....]
-      Array.from({length: N*N*2}, (_,i) => Math.floor(i/2)),
-      (id,i) => L * 0.02 * (-N / 2 + (Math.floor(id/N) * (1-i%2)) + (id%N * (i%2))));
-    let connectedPositions = mapConnected(this.nodes.idTable, positions, 2)
-    let gridPositions = mapConnected(this.grid.idTable, positions, 2);
+    let positions = Array.from(
+      { length: N*N }, // [x1, y1, z1, x2, y2, z2, x3, y3, z3, ...]
+      (_,xy) => {
+        let x = Math.floor(xy / N);
+        let y = xy % N;
+        let sinZ =
+            Math.sin((x/N * 1.25 - 0.125) * Math.PI) *
+            Math.sin((y/N * 1.25 - 0.125) * Math.PI) * 2 - 0.7;
+        return [L * 0.02 * (-N / 2 + x),
+                L * 0.02 * (-N / 2 + y),
+                sinZ + quickNoise.noise(x/N*20, y/N*15, 0) *0.25];
+      }).flat();
+
+    let connectedPositions = mapConnected(this.nodes.idTable, positions, 3)
+    let gridPositions = mapConnected(this.grid.idTable, positions, 3);
     return [...positions, ...gridPositions, ...connectedPositions];
   }
 
   this.initBuffers = () => {
-    for (let xy = 0; xy < N*N; xy++){
-      let x = Math.floor(xy / N);
-      let y = xy % N;
-      noise[xy] =
-        Math.sin((x/N * 1.25 - 0.125) * Math.PI) *
-        Math.sin((y/N * 1.25 - 0.125) * Math.PI) * 2 - 0.7;
-      noise[xy] += quickNoise.noise(x/N*20, y/N*15, 0) *0.25;
-    }
-
     let positions  = buildPositionBuffer();
     let heights = buildHeightBuffer();
     let connections = buildConnectionBuffer();
@@ -141,7 +140,6 @@ function Void(scene, camera, waves, grid, nodes, sheens){
       uLoc[6] = gl.getUniformLocation(p, "gridness");
       uLoc[7] = gl.getUniformLocation(p, "fogginess");
     }
-
     function glBuffer(destaLoc, size, data){
       let buffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -169,7 +167,7 @@ function Void(scene, camera, waves, grid, nodes, sheens){
 
     glTexture();
 
-    glBuffer(daLoc[0], 2, positions);
+    glBuffer(daLoc[0], 3, positions);
     glBuffer(daLoc[1], 1, connections);
     dotBuffer = glBuffer(daLoc[2], 1, heights);
 
@@ -245,15 +243,12 @@ function Void(scene, camera, waves, grid, nodes, sheens){
       gl.useProgram(lineProgram);
       glUpdateUniforms(luLoc);
       glUpdateAttributes(lineBuffer);
-
       gl.drawArrays(gl.LINES,  this.grid.offset, this.grid.len + this.nodes.len);
 
       gl.useProgram(dotProgram);
       glUpdateUniforms(duLoc);
       glUpdateAttributes(dotBuffer);
-
       gl.drawArrays(gl.POINTS, this.waves.offset, this.waves.len);
-
 
       gl.flush();
     }
