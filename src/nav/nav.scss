@@ -15,56 +15,79 @@ $navHeight: 5.5rem;
 // ------------------------------------------
 // Navigation
 // ------------------------------------------
-body>h1 {
+body>a#home {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
     margin: 0;
     padding: 1.65rem 2rem;
+    padding-left: 4.65rem;
     z-index: 11;
     pointer-events: none;
+
     * {
         pointer-events: all;
     }
-    a {
-        text-decoration : none !important;
-        &:hover {
+    h1 {
+        margin: 0;
+    }
+    svg {
+        position: absolute;
+        top: 0.75rem;
+        left: 0.5rem;
+        height: 4rem;
+        width: 4rem;
+        display: inline-block;
+    }
+    &:hover {
+        box-shadow: none !important;
+        background: none !important;
+        h1 {
             text-shadow: 0px 0px 5px #555 !important;
-            box-shadow: none !important;
-            background: none !important;
+        }
+        svg {
+            filter: drop-shadow(0px 0px 5px #555);
         }
     }
 }
-body>h1,
+
+a#home, nav a {
+    text-decoration : none !important;
+    &:hover {
+        color: #fff !important;
+        svg path {
+            fill: #fff !important;
+        }
+    }
+}
+
 nav {
     max-width: 1400px;
     margin: auto;
-
-    a {
-        &:hover {
-            color: #fff !important;
-        }
-    }
 }
 
 body.js-enabled {
 
-    >h1 a {
+    >a#home {
         color: #444;
         transition: color 0.3s;
+        svg path {
+            transition: fill 0.3s;
+            fill: #444;
+        }
     }
-    >h1:before {
+    >a#home:before {
         opacity: 0;
         transition: opacity 0.3s;
     }
     &.nav-complete {
-        >h1 a {
-            color: #fff;
-            transition: color 0.3s;
+        a#home {
+            color: #ccc;
+            svg path {
+                fill: #ccc;
+            }
         }
-        //nav:before {
-        >h1:before {
+        a#home:before {
             opacity: 1;
         }
     }
@@ -74,7 +97,7 @@ body.js-enabled {
     backdrop-filter: blur(5px);
 }
 
-body>h1:before {
+body>a#home:before {
     content: '';
     display: block;
     position: fixed;
@@ -108,7 +131,6 @@ nav {
 
     a {
         color: #aaa !important;
-        text-decoration: none;
         box-shadow: none !important;
 
         transition: color 0.2s ease-in !important;
@@ -240,16 +262,37 @@ nav {
 }
 
 @media only screen and (max-width: 400px) {
-    body > h1 {
+    body > a#home {
         font-size: 1.5rem;
         padding: 1.25rem;
+        height: 2rem * 0.75;
+        height: $navHeight * 0.75 - 2.5rem;
+        svg {
+            top: 0.75rem;
+            left: 0.5rem;
+            height: 3rem;
+            width: 3rem;
+        }
+        h1 {
+            display: none;
+        }
     }
     nav {
         padding-top: 4.75rem;
+    }
+    body > a#home,
+    nav {
         &:before, &:after {
             font-size: 0.5rem;
             height: $navHeight * 0.75;
             padding: 1rem;
+        }
+    }
+    .container {
+        padding-top: $navHeight * 0.75 + 2rem !important;
+        margin-top: -$navHeight * 0.75 !important;
+        &:after {
+            top: $navHeight * 0.75 !important;
         }
     }
 }

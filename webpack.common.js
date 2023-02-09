@@ -43,12 +43,12 @@ module.exports = {
         ]
       },
       {
-        test: /\.(png|svg|jpg|jpeg|gif)$/i,
-        type: 'asset/resource',
-      },
-      {
         test: /\.(glsl|vs|fs|vert|frag)$/,
         loader: 'ts-shader-loader'
+      },
+      {
+        test: /\.(svg|jpg|jpeg|png|gif)$/i,
+        type: "asset/resource",
       },
     ]
   },

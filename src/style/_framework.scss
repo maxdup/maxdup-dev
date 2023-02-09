@@ -1,0 +1,30 @@
+html, input, textarea {
+    @include base-text();
+}
+html, body, input, textarea, button {
+    @include content-text();
+}
+button {
+    @include clickable-button();
+}
+a {
+    @include clickable-text();
+}
+input {
+    @include input();
+}
+textarea {
+    @include textarea();
+}
+form {
+    @include sub-content-container();
+    >button, >input, >textarea {
+        @include form-item-spacing();
+    }
+}
+.container {
+    @include content-container();
+}
+.sub-container {
+    @include sub-content-container();
+}

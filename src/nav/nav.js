@@ -1,4 +1,4 @@
-let h1 = document.getElementsByTagName('h1')[0];
+let home = document.getElementById('home');
 let nav = document.getElementsByTagName('nav')[0];
 let main = document.getElementById('main');
 
@@ -61,7 +61,7 @@ let setScrollScene = function(sceneName) {
 }
 
 let afterScroll = function(){
-  if (main.getBoundingClientRect().bottom <= h1.clientHeight) {
+  if (main.getBoundingClientRect().bottom <= home.clientHeight) {
     document.body.classList.add('nav-complete');
   } else {
     document.body.classList.remove('nav-complete');
@@ -98,7 +98,7 @@ let onResize = function(){
 
 let afterResize = function(){
   nav.style.maxWidth = windowInnerWidth + 'px';
-  h1.style.maxWidth = windowInnerWidth + 'px';
+  home.style.maxWidth = windowInnerWidth + 'px';
   resizing = false;
 }
 
