@@ -5,6 +5,7 @@ import sfsScript from "../shaders/sprite.frag";
 import quickNoise from 'quick-perlin-noise-js';
 
 import {N, L} from './config';
+const HN = Math.floor(N/2);
 
 let dt = 0;
 let gl, glExt, c;
@@ -203,6 +204,8 @@ function Void(scene, camera, waves, grid, nodes, sheens){
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bitmap);
   }
+  let frameCount = 0;
+  let frameAvg = null;
 
   this.render = () => {
 
@@ -251,6 +254,11 @@ function Void(scene, camera, waves, grid, nodes, sheens){
       gl.drawArrays(gl.POINTS, this.waves.offset, this.waves.len);
 
       gl.flush();
+
+      let deltaT = Date.now() - now;
+      frameAvg = frameAvg || deltaT;
+      frameCount++;
+      frameAvg += (deltaT - frameAvg) / frameCount;
     }
   }
 
@@ -263,7 +271,7 @@ function Void(scene, camera, waves, grid, nodes, sheens){
 
   this.setProgress = (val) => {
     let pitch = 0.6 - 1 * val;
-    let yaw = 1.0 - 0.4 * val;
+    let yaw = 0.45 - 0.4 * val;
     this.camera.updateAngle(pitch, yaw, 0);
   }
 

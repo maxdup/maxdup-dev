@@ -61,7 +61,7 @@ void main()
   float agnosticPointSize = mix(minPSize, maxPSize, min(height*5.0, 1.0));
   float scalePointSize = agnosticPointSize * screenScale;
   float scale = screenScale / 100.0;
-  gl_PointSize = isDotted * (agnosticPointSize + nodePointSizeOffset) * scale ;
+  gl_PointSize = isDotted * (agnosticPointSize + nodePointSizeOffset) * scale;
 
   // COLORS
   float minZ = vec4(pjMatrix * mvMatrix * vec4(0.0, 0.0, 0.0, 1.0)).z;

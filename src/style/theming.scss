@@ -18,7 +18,7 @@
 // Button Style
 @mixin clickable-button-neutral() {
     @include border-interactive();
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 0.5rem;
     background: transparent;
     background-color: transparent;
     transition: background 0.3s ease-in;
@@ -50,8 +50,9 @@
     background: transparent;
     line-height: 1.25rem;
     font-size: 1rem;
+
     padding-left: 0.5rem;
-    padding-right: 0.25rem;
+    padding-right: 0.5rem;
 
     background: transparent;
     background-color: transparent;
