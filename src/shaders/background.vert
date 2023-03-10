@@ -30,11 +30,17 @@ const vec3 distSharpness = vec3(4.0, 4.0, 5.0);
 const vec3 distWidth = vec3(0.8, 0.8, 1.5);
 const mat3 LINE_COLORS = %lineColors%;
 
-float demap(float val, float minV, float maxV){
-  return max(0.0, min(1.0, (val - minV) / (maxV - minV)));
+
+
+float demap(float val, float minOut, float maxOut){
+  const float minVal = 0.0;
+  const float maxVal = 1.0;
+  return max(0.0, min(1.0, (val - minOut) / (maxOut - minOut)));
 }
-vec3 remap(vec3 val, float minV, mat3 maxV){
-  return val * (maxV - minV) + minV;
+vec3 remap(vec3 val, float minOut, mat3 maxOut){
+  const vec3 minVal = vec3(0.0, 0.0, 0.0);
+  const vec3 maxVal = vec3(1.0, 1.0, 1.0);
+  return max(minVal, min(maxVal, val)) * (maxOut - minOut) + minOut;
 }
 vec3 easeInOut(vec3 x, vec3 p){
   vec3 xp = pow(min(max(x, 0.0), 1.0), p);
@@ -42,6 +48,11 @@ vec3 easeInOut(vec3 x, vec3 p){
 }
 float distToVec(vec2 point, vec2 angle, vec2 origin){
   return abs(dot(point - origin, normalize(vec2(angle.y,-angle.x))));
+}
+float distToVecAlt(vec2 P, vec2 slope, vec2 O){
+    vec2 D = normalize(slope);
+    vec2 X = O + D * dot(P-O, D);
+    return abs(distance(P, X));
 }
 
 void main()
