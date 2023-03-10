@@ -1,5 +1,4 @@
 import Scrambler from 'scrambling-letters';
-let glWorker = null;
 let glInterface = null;
 
 const initialPosition = {
@@ -84,6 +83,7 @@ function initTextScramble(){
     sc.style.transform = 'scale(1.4)';
   })
   clonetent.classList.add('stand-in');
+  clonetent.setAttribute("aria-hidden", "true");
   document.getElementById("main-content").appendChild(clonetent);
 }
 

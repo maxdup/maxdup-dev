@@ -13,7 +13,10 @@
 
     .reserved-space {
         opacity: 1;
-        position: relative;
+
+        &:not(.stand-in){
+            z-index: 2;
+        }
 
         &.stand-in {
             opacity: 1;
@@ -21,6 +24,8 @@
             top: 0;
             left: 0;
             width: 115%;
+            pointer-events: none;
+            user-select: none;
         }
     }
 

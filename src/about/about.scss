@@ -25,164 +25,33 @@
             color: #aaa;
         }
     }
-}
 
-$baseColor: black;
-$midsColor: #07060e;
-$highColor: red;
+    .img-container {
+        display: block;
+        text-align: center;
+    }
 
-$imageSrcJac: url("~/images/jac.webp");
-$imageSrcMax: url("~/images/max.webp");
-
-$img-height: 100%;
-$img-width: 100%;
-
-$img-size: $img-height $img-width;
-
-.img-container {
-    display: block;
-    text-align: center;
-}
-
-.img-box-pos {
-    position: absolute;
-    top: 0;
-    width: 100%;
-    height: 100%;
-}
-
-.img-box {
-    display: inline-block;
-    padding-bottom: 40%;
-    width: 40%;
-    position: relative;
-    background-repeat: no-repeat;
-    background-size: $img-size;
-    mix-blend-mode: lighten;
-}
-.img-box.jac,
-.img-box-filter.jac {
-    background-image: $imageSrcJac;
-    background-repeat: no-repeat;
-    background-size: $img-size;
-
-    .clr-blend {
-        mask: $imageSrcJac;
-        mask-repeat: no-repeat;
-        mask-size: $img-size;
-
-        &:after {
-            background-image: $imageSrcJac;
-            background-repeat: no-repeat;
-            background-size: $img-size;
+    .img-box {
+        display: inline-block;
+        padding-bottom: 40%;
+        width: 40%;
+        position: relative;
+        mix-blend-mode: lighten;
+        img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
         }
     }
-    .clr-image {
-        //background-image: $imageSrcJac;
-        background-repeat: no-repeat;
-        background-size: $img-size;
-    }
-    .clr-base{
-        //background-image: $imageSrcJac;
-        //background-repeat: no-repeat;
-        //background-size: $img-size;
-    }
-    .clr-base { background: $baseColor; }
-    .clr-mids { background: hsl(278 0% 39%); }
-    .clr-high { background: hsl(0 0% 70%); }
-
-    //.clr-mids { background: hsl(278, 25%, 30%); }
-    //.clr-high { background: hsl(0, 75%, 60%); }
+    .img-box.jac { margin-right: -7%; }
+    .img-box.max { margin-left: -7%; }
 }
 
-.img-box.max {
-    background-image: $imageSrcMax;
-    background-repeat: no-repeat;
-    background-size: $img-size;
-
-    .clr-blend {
-        mask: $imageSrcMax;
-        mask-repeat: no-repeat;
-        mask-size: $img-size;
-
-        &:after {
-            background-image: $imageSrcMax;
-            background-repeat: no-repeat;
-            background-size: $img-size;
-        }
-    }
-    .clr-image {
-        background-image: $imageSrcMax;
-        background-repeat: no-repeat;
-        background-size: $img-size;
-    }
-    .clr-base{
-        //background-image: $imageSrcMax;
-        //background-repeat: no-repeat;
-        //background-size: $img-size;
-    }
-    .clr-base { background: $baseColor; }
-    .clr-mids { background: hsl(200 0% 39%); }
-    .clr-high { background: hsl(269 0% 70%); }
-
-    //.clr-mids { background: hsl(200, 52%, 25%); }
-    //.clr-high { background: hsl(269, 100%, 87%) }
-}
-.img-box.jac { margin-right: -7%; }
-.img-box.max { margin-left: -7%; }
-
-.img-box-filter {
-    display: inline-block;
-    height: $img-height;
-    width: $img-width;
-    position: relative;
-    mix-blend-mode: lighten;
-}
-.clr-blend {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-
-    &:after {
-        content: " ";
-        display:block;
-        z-index: 4;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        mix-blend-mode: multiply;
-    }
-}
-.clr-image {
-    background-repeat: no-repeat;
-    background-size: $img-size;
-}
-
-.clr-base {
-    z-index: 1;
-    &:after {
-        z-index: 2;
-        filter: brightness(0.4);
-    }
-}
-.clr-mids {
-    z-index: 3;
-    mix-blend-mode: screen;
-    &:after {
-        z-index: 4;
-        filter: brightness(2.7) grayscale(1) contrast(100%);
-    }
-}
-.clr-high {
-    z-index: 5;
-    mix-blend-mode: color-dodge;
-    &:after {
-        z-index: 6;
-        filter: brightness(0.8) grayscale(1) contrast(200%);
+_::-webkit-full-page-media, _:future, :root .safari_only {
+    .img-box {
+        mix-blend-mode: normal !important;
     }
 }
 

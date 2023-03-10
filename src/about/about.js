@@ -9,22 +9,9 @@ let delay = 0;
 
 let updating = false;
 
-const endHSL = [[0, 0, 0],
-                [0, 0, 39],
-                [0, 0, 70]];
-
-const maxHSL = [[0, 0, 0],
-                [125, 20, 33],
-                [200, 120, 100]];
-
-const jacHSL = [[0, 0, 0],
-                [365, 20, 27],
-                [30, 120, 100]];
-
-let getColor = (progress, initHSL, targetHSL) => {
-  return HSLStr([remap(progress, initHSL[0], initHSL[0]),
-                 remap(progress, initHSL[1], targetHSL[1]),
-                 remap(progress, initHSL[2], targetHSL[2])]);
+let colorStr = (progress, hue) => {
+  let cStr = "sepia(" + (100 - progress * 100) + "%) saturate(100%) brightness(100%) hue-rotate("+hue+"deg)";
+  return cStr;
 }
 
 let computeProgress = () => {
@@ -35,15 +22,11 @@ let computeProgress = () => {
 
   images[0].style.opacity = opacity;
   images[0].style.marginRight = margin + '%';
-  for (let i = 0; i < 3; i++){
-    images[0].children[i].style.background = getColor(progress, jacHSL[i], endHSL[i]);
-  }
+  images[0].children[0].style.filter = colorStr(progress, 320);
 
   images[1].style.opacity = opacity;
   images[1].style.marginLeft = margin + '%';
-  for (let i = 0; i < 3; i++){
-    images[1].children[i].style.background = getColor(progress, maxHSL[i], endHSL[i]);
-  }
+  images[1].children[0].style.filter = colorStr(progress, 90);
 
   titles.style.opacity = Math.floor(progress);
   updating = false
