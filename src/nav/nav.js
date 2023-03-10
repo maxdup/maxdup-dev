@@ -43,13 +43,10 @@ let onScroll = function(){
 }
 
 let setScene = function(sceneName, speed) {
-  if (window.glWorker){
-    window.glWorker.postMessage({
-      msg: 'setScene',
-      value: {
-        name: sceneName,
-        speed: speed
-      }
+  if (window.glInterface){
+    window.glInterface.exec('setScene', {
+      name: sceneName,
+      speed: speed
     });
   }
 }

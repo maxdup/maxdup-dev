@@ -39,6 +39,11 @@ function Void(scene, camera, waves, grid, nodes, sheens){
   let noise = new Array(N*N);
 
   this.targetFPS = 60;
+  this.renderScale = 1.0;
+
+  let minQuality = false;
+  let maxQuality = false;
+  let qualityIncreaseCount = 0;
 
   let frameTiming = Date.now();  // ms
   let frameInterval =  1000 / this.targetFPS;  // ms
@@ -284,14 +289,81 @@ function Void(scene, camera, waves, grid, nodes, sheens){
       frameAvg = frameAvg || deltaT;
       frameCount++;
       frameAvg += (deltaT - frameAvg) / frameCount;
+      this.evalFrameTime();
     }
   }
 
+  this.evalFrameTime = () => {
+    // We make it harder to increase quality than it is to decrease.
+    // This avoids flip-flopping, furthermore, you are capted on the
+    // number of increases.
+    if (frameCount < this.targetFPS * 3){
+      return;
+    }
+    if (frameAvg * 2 > 1 / this.targetFPS * 1000 &&
+        !minQuality){
+      this.decreaseRenderQuality();
+      maxQuality = false;
+    }
+    if (frameAvg * 6 < 1 / this.targetFPS * 1000 &&
+        !maxQuality && qualityIncreaseCount < 6){
+      qualityIncreaseCount++;
+      this.increaseRenderQuality();
+      minQuality = false;
+    }
+  }
+  this.decreaseRenderQuality = () => {
+    let frameCount = 0;
+    let frameAvg = null;
+    if (this.targetFPS == 60){
+      this.setFPS(30);
+      return;
+    }
+    if (this.renderScale == 1) {
+      this.setRenderScale(0.75);
+      return;
+    }
+    if (this.renderScale == 0.75) {
+      this.setRenderScale(0.5);
+      return;
+    }
+    minQuality = true;
+  }
+  this.increaseRenderQuality = () => {
+    let frameCount = 0;
+    let frameAvg = null;
+    if (this.renderScale == 0.5){
+      this.setRenderScale(0.75);
+      return;
+    }
+    if (this.renderScale == 0.75){
+      this.setRenderScale(1);
+      return;
+    }
+    if (this.renderScale == 1 &&
+        this.targetFPS == 30){
+      this.setFPS(60);
+    }
+    maxQuality = true;
+  }
+
+  this.setRenderScale = (val) => {
+    this.renderScale = val;
+    this.updateCanvasSize();
+  }
+
   this.setSize = (width, height) => {
-    c.width = width;
-    c.height = height;
-    gl.viewport(0, 0, width, height);
-    this.camera.updateSize(width, height);
+    this.windowHeight = height;
+    this.windowWidth = width;
+    this.updateCanvasSize();
+  }
+  this.updateCanvasSize = () => {
+    let targetWidth = this.windowWidth * this.renderScale;
+    let targetHeight = this.windowHeight * this.renderScale;
+    c.width = targetWidth;
+    c.height = targetHeight;
+    gl.viewport(0, 0, targetWidth, targetHeight);
+    this.camera.updateSize(targetWidth, targetHeight);
   }
 
   this.setProgress = (val) => {
