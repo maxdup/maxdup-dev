@@ -171,7 +171,7 @@ function GlInterface() {
           reject();
         }
         if (err instanceof TypeError &&
-            err.message.startsWith("canvas.transferControlToOffscreen is not a function")) {
+            err.message.includes("transferControlToOffscreen is not a function")) {
           try {
             require.ensure(['./synchronous-worker.js'], (require) => {
               let SyncWorker = require('./synchronous-worker.js').default;
