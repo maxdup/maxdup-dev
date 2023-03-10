@@ -6,7 +6,7 @@ import {
 } from '../utils';
 
 function Camera(){
-  let initMatrix = matrixTranslate(identityMatrix(4), [-0.5, 0, -4]);
+  let initMatrix = matrixTranslate(identityMatrix(4), [-0.5, 0, -6]);
   this.pjMatrix = null;
   this.mvMatrix = initMatrix;
 

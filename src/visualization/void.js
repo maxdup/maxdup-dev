@@ -18,7 +18,8 @@ let dotProgram = null;
 let daLoc = [];
 let duLoc = [];
 
-let texture = null;
+let dotTexture = null;
+let mtlTexture = null
 
 let dotBuffer;
 let lineBuffer;
@@ -140,6 +141,10 @@ function Void(scene, camera, waves, grid, nodes, sheens){
       uLoc[5] = gl.getUniformLocation(p, "nodeness");
       uLoc[6] = gl.getUniformLocation(p, "gridness");
       uLoc[7] = gl.getUniformLocation(p, "fogginess");
+      uLoc[8] = gl.getUniformLocation(p, "mapness");
+
+      uLoc[9] = gl.getUniformLocation(p, "dotTexture");
+      uLoc[10] = gl.getUniformLocation(p, "mtlTexture");
     }
     function glBuffer(destaLoc, size, data){
       let buffer = gl.createBuffer();
@@ -150,14 +155,6 @@ function Void(scene, camera, waves, grid, nodes, sheens){
     }
 
     function glTexture(){
-      texture = gl.createTexture();
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.texImage2D(
-        gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
-        new Uint8Array([0, 0, 255, 255]));
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     }
 
     // Dots
@@ -166,12 +163,11 @@ function Void(scene, camera, waves, grid, nodes, sheens){
     glSetAttributes(dotProgram, daLoc);
     glSetUniforms(dotProgram, duLoc);
 
-    glTexture();
-
     glBuffer(daLoc[0], 3, positions);
     glBuffer(daLoc[1], 1, connections);
     dotBuffer = glBuffer(daLoc[2], 1, heights);
 
+    glTexture();
     this.setImage();
 
     // Lines
@@ -194,15 +190,43 @@ function Void(scene, camera, waves, grid, nodes, sheens){
   }
 
   this.setImage = async () => {
-    const res = await fetch(require('../images/dot.jpg'), {mode: 'cors'});
-    const blob = await res.blob();
-    const bitmap = await createImageBitmap(blob, {
+
+    gl.activeTexture(gl.TEXTURE0)
+    dotTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, dotTexture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+    const dotres = await fetch(require('../images/dot.jpg'), {mode: 'cors'});
+    const dotblob = await dotres.blob();
+    const dotBitmap = await createImageBitmap(dotblob, {
       premultiplyAlpha: 'none',
       colorSpaceConversion: 'none',
     });
 
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bitmap);
+    gl.bindTexture(gl.TEXTURE_2D, dotTexture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, dotBitmap);
+    gl.uniform1i(duLoc[9], 0);
+
+
+    gl.activeTexture(gl.TEXTURE1)
+    mtlTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, mtlTexture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+    const mtlres = await fetch(require('../images/mtl.png'), {mode: 'cors'});
+    const mtlblob = await mtlres.blob();
+    const mtlBitmap = await createImageBitmap(mtlblob, {
+      premultiplyAlpha: 'none',
+      colorSpaceConversion: 'none',
+    });
+
+    gl.bindTexture(gl.TEXTURE_2D, mtlTexture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, mtlBitmap);
+    gl.uniform1i(duLoc[10], 1);
   }
   let frameCount = 0;
   let frameAvg = null;
@@ -236,6 +260,7 @@ function Void(scene, camera, waves, grid, nodes, sheens){
         gl.uniform1f(uLoc[5], this.scene.nodeness);
         gl.uniform1f(uLoc[6], this.scene.gridness);
         gl.uniform1f(uLoc[7], this.scene.fogginess);
+        gl.uniform1f(uLoc[8], this.scene.mapness);
       }
 
       let glUpdateAttributes = (buffer) => {

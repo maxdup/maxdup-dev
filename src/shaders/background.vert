@@ -7,6 +7,9 @@ uniform float dottedness;
 uniform float nodeness;
 uniform float gridness;
 uniform float fogginess;
+uniform float mapness;
+
+uniform sampler2D mtlTexture;
 
 attribute vec3 position;
 attribute float nconnection;
@@ -15,6 +18,7 @@ attribute float height;
 varying vec4 vColor;
 varying float isDotted;
 varying float isLined;
+varying vec2 texcoord;
 
 const float maxDist = 3.0;
 const float minPSize = 0.2;
@@ -42,7 +46,17 @@ float distToVec(vec2 point, vec2 angle, vec2 origin){
 
 void main()
 {
-  float quaded = max(0.0, sign(position.z - height)) * gridness;
+  texcoord = vec2(position.x / 6.12 + 0.5, position.y / 6.12 + 0.5);
+  vec3 mColor = texture2D(mtlTexture, texcoord).rgb;
+
+  float freezeHeight = 1.0 - mColor.b * mapness * 0.5;
+  float offsetHeight = mColor.g * (0.35 * mapness);
+  float alphaMask = max(1.0 - mapness, (mapness * mColor.b * 2.0));
+
+  float cHeight = height * freezeHeight + offsetHeight;
+
+
+  float quaded = max(0.0, sign(position.z - cHeight)) * gridness;
   float noded = min(1.0, nconnection); // [0,1]
   float nodeFactor = noded * nodeness * nconnection; // [0, nconnection];
 
@@ -52,13 +66,14 @@ void main()
   isDotted = max(noded * nodeness, min(dottedness, 1.0-quaded));
   isLined = max(noded * nodeness, min(0.5, (quaded * gridness) - noded));
 
+
   // POSITION
-  float z = position.z * quaded + height * (1.0-quaded);
+  float z = position.z * quaded + cHeight * (1.0-quaded);
   vec4 pos = vec4(position.x, z + nodeHeightOffset, position.y, 1.0);
   gl_Position = pjMatrix * mvMatrix * pos;
 
   // POINT SIZE
-  float agnosticPointSize = mix(minPSize, maxPSize, min(height*5.0, 1.0));
+  float agnosticPointSize = mix(minPSize, maxPSize, min(cHeight * 5.0, 1.0));
   float scalePointSize = agnosticPointSize * screenScale;
   float scale = screenScale / 100.0;
   gl_PointSize = isDotted * (agnosticPointSize + nodePointSizeOffset) * scale;
@@ -73,5 +88,6 @@ void main()
                     distToVec(position.xy, sheens[5], sheens[4]));
   vec3 distVec = min(vdist + distWidth, maxDist) / maxDist;
   distVec = 1.0 - easeInOut(distVec, distSharpness);
-  vColor = vec4(remap(distVec, 0.5, LINE_COLORS) * fog, 1.0);
+
+  vColor = vec4(remap(distVec, 0.5, LINE_COLORS) * fog, alphaMask);
 }
