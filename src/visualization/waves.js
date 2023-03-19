@@ -18,7 +18,6 @@ function Waves(){
 
   // TODO:
   // - rewrite combining i-j
-  // - rewrite to implement symetry
 
   this.setPositions = (parameter) => {
     let x0 = parameter.x;
@@ -34,7 +33,6 @@ function Waves(){
         }
       }
     }
-
 
     for (let t = 0; t < Tn; t++) {
       for (let i = 0; i < N; i++) {
@@ -61,41 +59,44 @@ function Waves(){
 
     initial = false;
     this.heights = new Array(N*N);
-    makeHeights();
-  }
-
-  let makeHeights = () => {
-
-    for (let i = 0; i < N; i++){
-      for (let j = 0; j < N; j++){
-        this.heights[i*N+j] = f[1][i][j] * 0.02;
+    let makeHeights = () => {
+      for (let i = 0; i < N; i++){
+        for (let j = 0; j < N; j++){
+          this.heights[i*N+j] = f[1][i][j] * 0.02;
+        }
       }
     }
   }
 
-
   this.update = (timeDelta) => {
     dt = timeDelta;
-    for (let i = 1; i < N - 1; i++) {
-      for (let j = 1; j < N - 1; j++) {
+    for (let i = 1; i < N /2; i++) {
+      for (let j = 1; j < N /2; j++) {
+        // initial value
         f[2][i][j] = inertiaFactor *
           (2.0 * f[1][i][j] - f[0][i][j] + V * V * dt * dt / (DD * DD) *
            (f[1][i + 1][j] + f[1][i - 1][j] + f[1][i][j + 1] + f[1][i][j - 1] - 4.0 * f[1][i][j]));
+        // symmetry
+        f[2][N-i-1][N-j-1] = f[2][i][j];
+        f[2][i][N-j-1] = f[2][i][j];
+        f[2][N-i-1][j] = f[2][i][j];
       }
     }
 
     runBoundaries(2);
     runCorners(2);
+    runFrame();
+  }
 
+  let runFrame = () => {
     // Replace the array numbers for the next calculation. Past information is lost here.
     for (let i = 0; i < N; i++) {
       for (let j = 0; j < N; j++) {
         f[0][i][j] = f[1][i][j];
         f[1][i][j] = f[2][i][j];
+        this.heights[i*N+j] = f[1][i][j] * 0.02;
       }
     }
-
-    makeHeights();
   }
 
   let runBoundaries = (s) => {
@@ -107,6 +108,7 @@ function Waves(){
       f[s][N-1][i] = f[s][N - 2][i];
     }
   }
+
   let runCorners = (s) => {
     // Corner processing
     f[s][0][0] = (f[s][0][1] + f[s][1][0]) / 2;
@@ -117,4 +119,5 @@ function Waves(){
   this.offset = 0;
   this.len = N*N;
 }
+
 export default Waves;
