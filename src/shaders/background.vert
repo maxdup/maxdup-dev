@@ -3,10 +3,8 @@ uniform mat4 pjMatrix;
 uniform mat4 mvMatrix;
 uniform float screenScale;
 
-uniform float dottedness;
 uniform float nodeness;
 uniform float gridness;
-uniform float fogginess;
 uniform float mapness;
 
 uniform sampler2D mtlTexture;
@@ -57,42 +55,45 @@ float distToVecAlt(vec2 P, vec2 slope, vec2 O){
 
 void main()
 {
+  float isGrided = 1.0 - abs(sign(nconnection)); // [0<=n<=1]
+  float isNoded = min(1.0, max(0.0, nconnection)); // [0<=n<=1]
+  float isMapped = max(0.0, -1.0 * sign(nconnection)); // [0<=n<=1]
+
+  float gridFactor = isGrided * gridness; // [0<=n<=1]
+  float nodeFactor = isNoded * nodeness; // [0<=n<=1]
+  float mapFactor = isMapped * mapness; // [0<=n<=1]
+
+
   texcoord = vec2(position.x / 6.12 + 0.5, position.y / 6.12 + 0.5);
   vec3 mColor = texture2D(mtlTexture, texcoord).rgb;
-
-  float freezeHeight = 1.0 - mColor.b * mapness * 0.5;
-  float offsetHeight = mColor.g * (0.35 * mapness);
   float alphaMask = max(1.0 - mapness, (mapness * mColor.b * 2.0));
 
-  float cHeight = height * freezeHeight + offsetHeight;
+  float roadHeightFreeze = 1.0 - mColor.b * 0.5;
+  float roadHeightTarget = mColor.g * (0.35) * mapness;
+  float roadHeightOffset = ((height * roadHeightFreeze + roadHeightTarget) - height) * mapness;
+  float gridHeightOffset = max(0.0, (position.z - height) * gridFactor);
+  float nodeHeightOffset = connHOffs * nodeFactor * nconnection;
+  float nodeRadiusOffset = connPSize * nodeFactor * nconnection;
 
-
-  float quaded = max(0.0, sign(position.z - cHeight)) * gridness;
-  float noded = min(1.0, nconnection); // [0,1]
-  float nodeFactor = noded * nodeness * nconnection; // [0, nconnection];
-
-  float nodePointSizeOffset = connPSize * nodeFactor;
-  float nodeHeightOffset = connHOffs * nodeFactor;
-
-  isDotted = max(noded * nodeness, min(dottedness, 1.0-quaded));
-  isLined = max(noded * nodeness, min(0.5, (quaded * gridness) - noded));
-
+  isDotted = max(nodeFactor, min(1.0, 1.0 - gridHeightOffset));
+  isLined = max(max(mapFactor, sign(gridHeightOffset) * 0.3), nodeFactor * 0.6);
 
   // POSITION
-  float z = position.z * quaded + cHeight * (1.0-quaded);
-  vec4 pos = vec4(position.x, z + nodeHeightOffset, position.y, 1.0);
+  float z = height + gridHeightOffset + roadHeightOffset;
+
+  vec4 pos = vec4(position.x, z, position.y, 1.0);
   gl_Position = pjMatrix * mvMatrix * pos;
 
   // POINT SIZE
-  float agnosticPointSize = mix(minPSize, maxPSize, min(cHeight * 5.0, 1.0));
+  float agnosticPointSize = mix(minPSize, maxPSize, min(z * 5.0, 1.0));
   float scalePointSize = agnosticPointSize * screenScale;
   float scale = screenScale / 100.0;
-  gl_PointSize = isDotted * (agnosticPointSize + nodePointSizeOffset) * scale;
+  gl_PointSize = isDotted * (agnosticPointSize + nodeRadiusOffset) * scale;
 
   // COLORS
   float minZ = vec4(pjMatrix * mvMatrix * vec4(0.0, 0.0, 0.0, 1.0)).z;
   float maxZ = vec4(pjMatrix * mvMatrix * vec4(-maxDist, 0.0, -maxDist, 1.0)).z;
-  float fog = 1.0 - (fogginess * (position.x - position.y) / maxDist / 2.0 + 0.5);
+  float fog = 1.0 - (gridness * (position.x - position.y) / maxDist / 2.0 + 0.5);
 
   vec3 vdist = vec3(distToVec(position.xy, sheens[1], sheens[0]),
                     distToVec(position.xy, sheens[3], sheens[2]),

@@ -9,14 +9,11 @@ function Scene(){
   this.dottedness = 1;
   this.nodeness = 0;
   this.gridness = 0;
-  this.fogginess = 0;
   this.mapness = 0;
 
   let targetDottedness = 1;
   let targetNodeness = 0;
   let targetGridness = 0;
-  let targetFogginess = 0;
-  let targetSquareness = 0;
   let targetMapness = 0;
 
   let velocity = 0.3; // seconds
@@ -37,7 +34,6 @@ function Scene(){
     this.dottedness = updated(this.dottedness, targetDottedness);
     this.nodeness = updated(this.nodeness, targetNodeness);
     this.gridness = updated(this.gridness, targetGridness);
-    this.fogginess = updated(this.fogginess, targetFogginess);
     this.mapness = updated(this.mapness, targetMapness);
   }
 
@@ -49,7 +45,6 @@ function Scene(){
       targetDottedness = 1;
       targetNodeness = 0;
       targetGridness = 1;
-      targetFogginess = 1;
       targetMapness = 0;
       break
     case SCENES.services:
@@ -57,7 +52,6 @@ function Scene(){
       targetDottedness = 1;
       targetNodeness = 1;
       targetGridness = 0;
-      targetFogginess = 0;
       targetMapness = 0;
       break
     case SCENES.contact:
@@ -65,7 +59,6 @@ function Scene(){
       targetDottedness = 1;
       targetNodeness = 0;
       targetGridness = 0;
-      targetFogginess = 0;
       targetMapness = 1;
       break
     case SCENES.main:
@@ -74,7 +67,6 @@ function Scene(){
       targetDottedness = 1;
       targetNodeness = 0;
       targetGridness = 0;
-      targetFogginess = 0;
       targetMapness = 0;
     }
   }

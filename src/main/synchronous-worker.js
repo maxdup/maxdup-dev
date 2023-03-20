@@ -4,6 +4,7 @@ import Void from '../visualization/void';
 import Waves from '../visualization/waves';
 import Grid from '../visualization/grid';
 import Nodes from '../visualization/nodes';
+import Roads from '../visualization/roads';
 import Sheens from '../visualization/sheens';
 
 const MSGS = {
@@ -25,8 +26,9 @@ let waves = new Waves();
 let grid = new Grid();
 let sheens = new Sheens();
 let nodes = new Nodes();
+let roads = new Roads();
 
-let v = new Void(scene, camera, waves, grid, nodes, sheens);
+let v = new Void(scene, camera, waves, grid, nodes, roads, sheens);
 
 
 function SyncWorker(){

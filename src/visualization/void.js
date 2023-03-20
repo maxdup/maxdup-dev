@@ -24,17 +24,19 @@ let mtlTexture = null
 let dotBuffer;
 let lineBuffer;
 
-function Void(scene, camera, waves, grid, nodes, sheens){
+function Void(scene, camera, waves, grid, nodes, roads, sheens){
 
   this.scene = scene;
   this.camera = camera;
   this.waves = waves;
   this.grid = grid;
-  this.sheens = sheens;
   this.nodes = nodes;
+  this.roads = roads;
+  this.sheens = sheens;
 
   this.grid.offset = this.waves.len;
   this.nodes.offset = this.waves.len + this.grid.len;
+  this.roads.offset = this.waves.len + this.grid.len + this.nodes.len;
 
   let noise = new Array(N*N);
 
@@ -95,14 +97,16 @@ function Void(scene, camera, waves, grid, nodes, sheens){
   }
 
   let buildHeightBuffer = () => {
-    let gridHeights = mapConnected(this.grid.idTable, this.waves.heights, 1);
     let nodeHeights = mapConnected(this.nodes.idTable, this.waves.heights, 1);
-    return [...this.waves.heights, ...gridHeights, ...nodeHeights];
+    let gridHeights = mapConnected(this.grid.idTable, this.waves.heights, 1);
+    let roadHeights = mapConnected(this.roads.idTable, this.waves.heights, 1);
+    return [...this.waves.heights, ...gridHeights, ...nodeHeights, ...roadHeights];
   }
   let buildConnectionBuffer = () => {
     let connectedConnections = mapConnected(this.nodes.idTable, this.nodes.connections, 1);
     let gridConnections = new Array(this.grid.idTable.length).fill(0);
-    return [...this.nodes.connections, ...gridConnections, ...connectedConnections];
+    let roadConnections = new Array(this.roads.idTable.length).fill(-1);
+    return [...this.nodes.connections, ...gridConnections, ...connectedConnections, ...roadConnections];
   }
   let buildPositionBuffer = () => {
     let positions = Array.from(
@@ -120,7 +124,8 @@ function Void(scene, camera, waves, grid, nodes, sheens){
 
     let connectedPositions = mapConnected(this.nodes.idTable, positions, 3)
     let gridPositions = mapConnected(this.grid.idTable, positions, 3);
-    return [...positions, ...gridPositions, ...connectedPositions];
+    let roadPositions = mapConnected(this.roads.idTable, positions, 3);
+    return [...positions, ...gridPositions, ...connectedPositions, ...roadPositions];
   }
 
   this.initBuffers = () => {
@@ -142,14 +147,12 @@ function Void(scene, camera, waves, grid, nodes, sheens){
       uLoc[2] = gl.getUniformLocation(p, 'screenScale');
       uLoc[3] = gl.getUniformLocation(p, "sheens");
 
-      uLoc[4] = gl.getUniformLocation(p, "dottedness");
-      uLoc[5] = gl.getUniformLocation(p, "nodeness");
-      uLoc[6] = gl.getUniformLocation(p, "gridness");
-      uLoc[7] = gl.getUniformLocation(p, "fogginess");
-      uLoc[8] = gl.getUniformLocation(p, "mapness");
+      uLoc[4] = gl.getUniformLocation(p, "nodeness");
+      uLoc[5] = gl.getUniformLocation(p, "gridness");
+      uLoc[6] = gl.getUniformLocation(p, "mapness");
 
-      uLoc[9] = gl.getUniformLocation(p, "dotTexture");
-      uLoc[10] = gl.getUniformLocation(p, "mtlTexture");
+      uLoc[7] = gl.getUniformLocation(p, "mtlTexture");
+      uLoc[8] = gl.getUniformLocation(p, "dotTexture");
     }
     function glBuffer(destaLoc, size, data){
       let buffer = gl.createBuffer();
@@ -197,25 +200,6 @@ function Void(scene, camera, waves, grid, nodes, sheens){
   this.setImage = async () => {
 
     gl.activeTexture(gl.TEXTURE0)
-    dotTexture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, dotTexture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-
-    const dotres = await fetch(require('../images/dot.jpg'), {mode: 'cors'});
-    const dotblob = await dotres.blob();
-    const dotBitmap = await createImageBitmap(dotblob, {
-      premultiplyAlpha: 'none',
-      colorSpaceConversion: 'none',
-    });
-
-    gl.bindTexture(gl.TEXTURE_2D, dotTexture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, dotBitmap);
-    gl.uniform1i(duLoc[9], 0);
-
-
-    gl.activeTexture(gl.TEXTURE1)
     mtlTexture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, mtlTexture);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -229,9 +213,30 @@ function Void(scene, camera, waves, grid, nodes, sheens){
       colorSpaceConversion: 'none',
     });
 
-    gl.bindTexture(gl.TEXTURE_2D, mtlTexture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, mtlBitmap);
-    gl.uniform1i(duLoc[10], 1);
+    gl.useProgram(lineProgram);
+    gl.uniform1i(luLoc[7], 0);
+    gl.useProgram(dotProgram);
+    gl.uniform1i(duLoc[7], 0);
+
+    gl.activeTexture(gl.TEXTURE1)
+    dotTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, dotTexture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+    const dotres = await fetch(require('../images/dot.jpg'), {mode: 'cors'});
+    const dotblob = await dotres.blob();
+    const dotBitmap = await createImageBitmap(dotblob, {
+      premultiplyAlpha: 'none',
+      colorSpaceConversion: 'none',
+    });
+
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, dotBitmap);
+    gl.uniform1i(duLoc[8], 1);
+
+
   }
   let frameCount = 0;
   let frameAvg = null;
@@ -261,11 +266,9 @@ function Void(scene, camera, waves, grid, nodes, sheens){
         gl.uniform1f(uLoc[2], this.camera.resolutionScale);
         gl.uniform2fv(uLoc[3], new Float32Array(sh));
 
-        gl.uniform1f(uLoc[4], this.scene.dottedness);
-        gl.uniform1f(uLoc[5], this.scene.nodeness);
-        gl.uniform1f(uLoc[6], this.scene.gridness);
-        gl.uniform1f(uLoc[7], this.scene.fogginess);
-        gl.uniform1f(uLoc[8], this.scene.mapness);
+        gl.uniform1f(uLoc[4], this.scene.nodeness);
+        gl.uniform1f(uLoc[5], this.scene.gridness);
+        gl.uniform1f(uLoc[6], this.scene.mapness);
       }
 
       let glUpdateAttributes = (buffer) => {
@@ -276,7 +279,7 @@ function Void(scene, camera, waves, grid, nodes, sheens){
       gl.useProgram(lineProgram);
       glUpdateUniforms(luLoc);
       glUpdateAttributes(lineBuffer);
-      gl.drawArrays(gl.LINES,  this.grid.offset, this.grid.len + this.nodes.len);
+      gl.drawArrays(gl.LINES,  this.grid.offset, this.grid.len + this.roads.len + this.nodes.len);
 
       gl.useProgram(dotProgram);
       glUpdateUniforms(duLoc);
