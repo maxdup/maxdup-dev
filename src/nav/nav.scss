@@ -1,3 +1,4 @@
+@use "sass:math";
 $navHeight: 5.5rem;
 
 // Overrides for nav to work
@@ -15,13 +16,19 @@ $navHeight: 5.5rem;
 // ------------------------------------------
 // Navigation
 // ------------------------------------------
+body {
+    position: relative;
+}
 body>a#home {
     position: fixed;
     top: 0;
     left: 0;
     margin: 0;
-    padding: 1.65rem 2rem;
-    padding-left: 4.65rem;
+    height: $navHeight;
+    padding: 0;
+    padding-top: math.div($navHeight - 4rem, 2);
+    padding-left: math.div($navHeight - 4rem, 2);
+    box-sizing: border-box;
     z-index: 11;
     pointer-events: none;
 
@@ -31,10 +38,11 @@ body>a#home {
     h1 {
         margin: 0;
     }
+    h1, svg {
+        vertical-align: middle;
+        display: inline-block;
+    }
     svg {
-        position: absolute;
-        top: 0.75rem;
-        left: 0.5rem;
         height: 4rem;
         width: 4rem;
         display: inline-block;
@@ -81,21 +89,34 @@ body.js-enabled {
         opacity: 0;
         transition: opacity 0.3s;
     }
+    nav.open,
+    nav[open],
+    nav:hover {
+        &+a#home {
+            color: #ccc;
+            svg path {
+                fill: #ccc;
+            }
+            &:before {
+                opacity: 1;
+            }
+        }
+    }
     &.nav-complete {
         a#home {
             color: #ccc;
             svg path {
                 fill: #ccc;
             }
-        }
-        a#home:before {
-            opacity: 1;
+            &:before {
+                opacity: 1;
+            }
         }
     }
 }
 @mixin frosted {
     background: #222b;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(25px);
 }
 
 body>a#home:before {
@@ -120,70 +141,196 @@ nav {
     right: 0;
     top: 0;
 
-    padding: 2rem;
-    z-index: 11;
+    padding: 1.35rem 1.25rem;
+    z-index: 12;
 
     text-align: right;
-    font-size: 1.25rem;
     font-weight: 800;
     display: table;
     margin-right: 0;
     pointer-events: all;
 
-    a {
-        color: #aaa !important;
-        box-shadow: none !important;
-
-        transition: color 0.2s ease-in !important;
-
-        &:hover {
-            animation-name: abberation-nav !important;
-        }
-
+    >div {
+        position: relative;
+        overflow: hidden;
+    }
+    ul {
+        margin-block-start: unset;
+        margin-block-end: unset;
+        margin-inline-start: unset;
+        margin-inline-end: unset;
+        padding-inline-start: unset;
+        list-style-type: none;
+    }
+    li {
+        font-size: 0;
+        display: inline-block;
         &:not(:first-child):before {
             display: inline-block;
             content: '|';
-            margin: 0 0.7rem;
+            font-size: 1.25rem;
         }
         &:before {
             color: #aaa !important;
             text-shadow: none !important;
         }
     }
+
+    a {
+        font-size: 1.25rem;
+        color: #aaa !important;
+        box-shadow: none !important;
+        padding: 0.75rem 0.75rem;
+
+        transition: color 0.2s ease-in;
+
+        &:hover {
+            background: rgba(255,255,255,0);
+            animation-name: abberation-nav !important;
+        }
+    }
+}
+@mixin menu-container-small {
+    top: $navHeight * 0.75;
+    height: 35rem;
+    max-height: calc(90vh - 4.125rem);
+    text-align: left;
+    ul {
+        min-width: 80%;
+    }
+    &:after {
+        height: $navHeight *0.75;
+        padding: 1rem 1.5rem 0;
+    }
 }
 
 @mixin menu-container {
     text-align: center;
 
-    >a {
+    transition: height 0.3s ease;
+    overflow: hidden;
+
+    &:not([open]) {
+        height: 0;
+    }
+    &.open,
+    &[open],
+    &:hover {
+        height: 25rem;
+    }
+
+    display: block;
+    position: fixed;
+    top: $navHeight;
+    right: 0;
+    left: 0;
+    bottom: unset;
+    padding: 0 10% 0;
+    height: 25rem;
+    text-align: right;
+
+    &:after {
+        content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 100 80' width='40' height='40'%3E%3Crect id='pwease' width='100' height='10'%3E%3C/rect%3E%3Crect y='30' width='100' height='10'%3E%3C/rect%3E%3Crect y='60' width='100' height='10'%3E%3C/rect%3E%3C/svg%3E");
+        height: $navHeight;
+        padding: 1.75rem 2rem 0rem;
+        font-size: 0rem;
+        color: white;
+        display: block;
+        position: fixed;
+        box-sizing: border-box;
+        top: 0;
+        right: 0;
+        left: unset;
+        bottom: unset;
+        opacity: 1 !important;
+
+    }
+
+    &:before {
+        content: '';
+        opacity: 1;
+        position: absolute;
+        z-index: 30;
+        //top: 5.5rem;
+        top: 0;
+        left: 0rem;
+        right: 0rem;
+        bottom: 0;
+        background: linear-gradient(180deg, #111 0px, #181818 5px, #222b 20px, #222b 100%);
+        backdrop-filter: blur(25px);
+        box-shadow: 0px 5px 15px #110000;
+
+        z-index: -1;
+    }
+    &.open,
+    &[open],
+    &:hover {
+        &:after {
+            background: black;
+            filter: invert(1);
+        }
+        ul {
+            opacity: 1;
+            transform: translateY(0%);
+            transition: transform 0.4s ease-out, opacity 0.7s ease-out;
+        }
+    }
+    div {
+        height: 16.5rem;
+        width: 100%;
+    }
+    ul {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        min-width: 33%;
+        display: inline-block;
+        text-align: left;
+        border: 1px solid #333;
+        border-top: 0px;
+        border-right: 0px;
+        border-bottom: 0px;
+        margin: 5.5rem 0 3rem;
+        opacity: 0;
+        transform: translateY(-175%);
+        transition: transform 0.2s ease-in, opacity 0.3s ease-in;
+
+    }
+    li {
+        min-width: 12rem;
+        display: block;
+        &:not(:first-child):before {
+            content: none;
+        }
+    }
+    a {
         touch-action: manipulation;
         user-select: none;
         background-image: none;
         cursor: pointer;
-        &::-webkit-details-marker {
-            display: none;
+        padding: 0.5em 1.75em;
+        display: block;
+        transition: color 0.3s ease-in, background 0.3s ease-in !important;
+
+        &:hover {
+            background: rgba(255,255,255,1) !important;
+            color: #666 !important;
+            text-decoration: underline;
+            text-shadow: none !important;
         }
         &:active {
             outline: 0;
             box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.13);
         }
+        &:before {
+            content: none !important;
+        }
+        &::-webkit-details-marker {
+            display: none;
+        }
+
     }
 
-    transition: right 0.3s ease;
-    &:not([open]) {
-        right: -100%;
-    }
-    &[open],
-    &:hover {
-        right: 0;
-    }
-}
-@media only screen and (min-width: 700px) {
-    nav a:hover {
-        background: none !important;
-        color: white !important;
-        text-decoration: underline;
-    }
 }
 
 @media only screen and (max-width: 700px) {
@@ -191,93 +338,27 @@ nav {
         height: 100vh !important;
     }
     nav {
-        position: fixed;
-        top: 0;
-        right: 0;
-        left: unset;
-        bottom: unset;
-        width: initial !important;
-        padding: $navHeight + 0.5rem 0.5rem 0 0;
-
         @include menu-container;
-
-        &:before {
-            content: '';
-            opacity: 1;
-            position: absolute;
-            top: 6rem;
-            left: 0;
-            bottom: 0;
-            right: 0.5rem;
-            background: #222e !important;
-            z-index: -1;
-            border-top-left-radius: 0.25rem;
-        }
-
-        &:after {
-            content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 100 80' width='40' height='40'%3E%3Crect id='pwease' width='100' height='10'%3E%3C/rect%3E%3Crect y='30' width='100' height='10'%3E%3C/rect%3E%3Crect y='60' width='100' height='10'%3E%3C/rect%3E%3C/svg%3E");
-            padding-top: 1.75rem;
-
-            color: white;
-            display: block;
-            position: fixed;
-            padding-right: 2rem;
-            padding-left: 2rem;
-            height: $navHeight;
-            box-sizing: border-box;
-            top: 0;
-            right: 0;
-            left: unset;
-            bottom: unset;
-            opacity: 1 !important;
-
-        }
-
-        &[open],
-        &:hover {
-            &:after {
-                background: black;
-                filter: invert(1);
-            }
-        }
-
-        a {
-            padding: 1em 2em;
-            margin: 0 !important;
-
-            display: block !important;
-            &:hover {
-                background: #333e !important;
-            }
-            &:before {
-                content: none !important;
-            }
-            border-width: 1px;
-            border-color: #333;
-            border-style: solid;
-
-            border-top-width: 0px;
-            border-bottom-width: 0px;
-            &:first-child {
-                border-top-width: 1px;
-                border-top-left-radius: 0.25rem;
-                border-top-right-radius: 0.25rem;
-            }
-            &:last-child {
-                border-bottom-width: 1px;
-                border-bottom-left-radius: 0.25rem;
-                border-bottom-right-radius: 0.25rem;
-            }
-        }
+    }
+}
+@media only screen and (max-width: 400px) {
+    nav {
+        @include menu-container-small;
     }
 }
 
+
+
 @media only screen and (max-width: 400px) {
     body > a#home {
-        font-size: 1.5rem;
         padding: 1.25rem;
-        height: 2rem * 0.75;
-        height: $navHeight * 0.75 - 2.5rem;
+        height: $navHeight * 0.75;
+        padding-top: math.div($navHeight * 0.75 - 3rem, 2);
+        padding-left: math.div($navHeight * 0.75 - 2.5rem, 2);
+
+        &:before {
+            height: $navHeight * 0.75;
+        }
         svg {
             top: 0.75rem;
             left: 0.5rem;
@@ -288,19 +369,7 @@ nav {
             display: none;
         }
     }
-    nav { padding-top: 4.75rem; }
-    nav:before { top: 4.75rem; }
 
-    body > a#home,
-    nav {
-        &:before, &:after {
-            font-size: 0.5rem;
-        }
-        &:after {
-            height: $navHeight * 0.75;
-            padding: 1rem;
-        }
-    }
     .container {
         padding-top: $navHeight * 0.75 + 2rem !important;
         margin-top: -$navHeight * 0.75 !important;

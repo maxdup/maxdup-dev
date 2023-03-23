@@ -94,8 +94,6 @@ let onResize = function(){
 }
 
 let afterResize = function(){
-  nav.style.maxWidth = windowInnerWidth + 'px';
-  home.style.maxWidth = windowInnerWidth + 'px';
   resizing = false;
 }
 
