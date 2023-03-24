@@ -1,5 +1,6 @@
 let home = document.getElementById('home');
 let nav = document.getElementsByTagName('nav')[0];
+let links = document.querySelectorAll('nav ul a');
 let main = document.getElementById('main');
 
 let about = document.getElementById('about');
@@ -30,8 +31,11 @@ let onNavOut = function(e){
   setScene(scrollScene, 0.3);
 }
 
-let onNavHover = function(e){
+let onNavHrefHover = function(e){
   setScene(e.target.attributes.scene.value, 0.3);
+}
+let onNavHrefClick = function(e){
+  e.target.blur();
 }
 
 // On Scroll
@@ -109,6 +113,7 @@ window.addEventListener('load', function() {
 
 
 nav.addEventListener('mouseout', onNavOut);
-[...nav.children].forEach((n) => {
-  n.addEventListener('mouseover', onNavHover);
+[...links].forEach((n) => {
+  n.addEventListener('mouseover', onNavHrefHover);
+  n.addEventListener('click', onNavHrefClick);
 });

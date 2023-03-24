@@ -47,6 +47,7 @@ body>a#home {
         width: 4rem;
         display: inline-block;
     }
+    &:focus,
     &:hover {
         box-shadow: none !important;
         background: none !important;
@@ -62,6 +63,7 @@ body>a#home {
 
 a#home, nav a {
     text-decoration : none !important;
+    &:focus,
     &:hover {
         color: #fff !important;
         svg path {
@@ -90,8 +92,7 @@ body.js-enabled {
         transition: opacity 0.3s;
     }
     nav.open,
-    nav[open],
-    nav:hover {
+    nav:focus-within {
         &+a#home {
             color: #ccc;
             svg path {
@@ -184,6 +185,7 @@ nav {
 
         transition: color 0.2s ease-in;
 
+        &:focus,
         &:hover {
             background: rgba(255,255,255,0);
             animation-name: abberation-nav !important;
@@ -192,9 +194,13 @@ nav {
 }
 @mixin menu-container-small {
     top: $navHeight * 0.75;
-    height: 35rem;
     max-height: calc(90vh - 4.125rem);
     text-align: left;
+    height: 0rem;
+    &.open,
+    &:focus-within {
+        height: 35rem;
+    }
     ul {
         min-width: 80%;
     }
@@ -210,12 +216,9 @@ nav {
     transition: height 0.3s ease;
     overflow: hidden;
 
-    &:not([open]) {
-        height: 0;
-    }
+    height: 0rem;
     &.open,
-    &[open],
-    &:hover {
+    &:focus-within {
         height: 25rem;
     }
 
@@ -226,7 +229,6 @@ nav {
     left: 0;
     bottom: unset;
     padding: 0 10% 0;
-    height: 25rem;
     text-align: right;
 
     &:after {
@@ -243,7 +245,7 @@ nav {
         left: unset;
         bottom: unset;
         opacity: 1 !important;
-
+        pointer-events: auto !important;
     }
 
     &:before {
@@ -262,9 +264,10 @@ nav {
 
         z-index: -1;
     }
+    pointer-events: all;
     &.open,
-    &[open],
-    &:hover {
+    &:focus,
+    &:focus-within {
         &:after {
             background: black;
             filter: invert(1);
@@ -312,6 +315,7 @@ nav {
         display: block;
         transition: color 0.3s ease-in, background 0.3s ease-in !important;
 
+        &:focus,
         &:hover {
             background: rgba(255,255,255,1) !important;
             color: #666 !important;

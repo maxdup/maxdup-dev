@@ -14,7 +14,6 @@
     border-radius: 4px;
 }
 
-
 // Button Style
 @mixin clickable-button-neutral() {
     @include border-interactive();
@@ -40,6 +39,9 @@
     animation-name: abberation-link;
     background: white;
     color: black;
+}
+@mixin clickable-text-focus() {
+    @include clickable-text-hover();
 }
 
 // inputs style
