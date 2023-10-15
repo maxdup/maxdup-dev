@@ -193,12 +193,8 @@ function GlInterface() {
     }
   });
 
-  this.exec = (fn, value) => {
-    if (this.supportsWorker){
-      this.glWorker.postMessage({msg: fn, value: value});
-    } else {
-      this.glWorker.exec(fn, value);
-    }
+  this.exec = (eventName, value) => {
+    this.glWorker.postMessage({msg: eventName, value: value});
   }
 
   return this;
