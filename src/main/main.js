@@ -93,7 +93,14 @@ let run3D = function(bg){
   window.addEventListener('scroll', () => {
     let scrollProgress = document.documentElement.scrollTop /
         (document.documentElement.scrollHeight - document.documentElement.clientHeight);
-    glInterface.exec('setProgress', scrollProgress)
+    glInterface.exec('setProgress', scrollProgress);
+  });
+
+  window.addEventListener('mousemove', (event) => {
+    glInterface.exec('setCamOffset', {
+      yawOffset: event.y / window.innerHeight * 2 -1,
+      pitchOffset: event.x / window.innerWidth * 2 -1
+    });
   });
 
   window.addEventListener('resize', () => {

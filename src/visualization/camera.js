@@ -12,10 +12,29 @@ function Camera(){
 
   this.resolutionScale = null;
 
+  this.pitch = 0;
+  this.pitchOffset = 0;
+  this.yaw = 0;
+  this.yawOffset = 0;
+  this.roll = 0;
+
+  this._update = () => {
+    this.mvMatrix = matrixRotate(initMatrix, this.pitch + this.pitchOffset, [1,0,0]);
+    this.mvMatrix = matrixRotate(this.mvMatrix, this.yaw + this.yawOffset, [0,1,0]);
+    this.mvMatrix = matrixRotate(this.mvMatrix, this.roll, [0,0,1])
+  }
+
+  this.updateNudge = (pitchNudge, yawNudge) => {
+    this.pitchOffset = pitchNudge * 0.05;
+    this.yawOffset = yawNudge * 0.05;
+    this._update();
+  }
+
   this.updateAngle = (pitch, yaw, roll) => {
-    this.mvMatrix = matrixRotate(initMatrix, pitch, [1,0,0]);
-    this.mvMatrix = matrixRotate(this.mvMatrix, yaw, [0,1,0]);
-    this.mvMatrix = matrixRotate(this.mvMatrix, roll, [0,0,1]);
+    this.pitch = pitch;
+    this.yaw = yaw;
+    this.roll = roll;
+    this._update();
   }
   this.updateSize = (width, height) => {
     this.resolutionScale = height;
