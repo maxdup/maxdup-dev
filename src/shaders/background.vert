@@ -53,6 +53,12 @@ float distToVecAlt(vec2 P, vec2 slope, vec2 O){
     return abs(distance(P, X));
 }
 
+float fogged(float z){
+  const float fogstarts = 4.0;
+  const float fogends = 8.0;
+  return max(0.0, min(1.0, (z - fogstarts) / (fogends - fogstarts)));
+}
+
 void main()
 {
   float isGrided = 1.0 - abs(sign(nconnection)); // [0<=n<=1]
@@ -93,7 +99,7 @@ void main()
   // COLORS
   float minZ = vec4(pjMatrix * mvMatrix * vec4(0.0, 0.0, 0.0, 1.0)).z;
   float maxZ = vec4(pjMatrix * mvMatrix * vec4(-maxDist, 0.0, -maxDist, 1.0)).z;
-  float fog = 1.0 - (gridness * (position.x - position.y) / maxDist / 2.0 + 0.5);
+  float fog = 1.0 - max(0.5, gridness * fogged(gl_Position.z));
 
   vec3 vdist = vec3(distToVec(position.xy, sheens[1], sheens[0]),
                     distToVec(position.xy, sheens[3], sheens[2]),
@@ -102,4 +108,5 @@ void main()
   distVec = 1.0 - easeInOut(distVec, distSharpness);
 
   vColor = vec4(remap(distVec, 0.5, LINE_COLORS) * fog, alphaMask);
+
 }
