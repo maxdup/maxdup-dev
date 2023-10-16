@@ -68,7 +68,6 @@ let sequence = () => {
   glInterface.supports3D && setTimeout(() => {
     glInterface.exec('setSheens', {respawn: true});
   }, DELAY + 8000);
-
 }
 
 let scramble1, scramble2, scramble3;
@@ -89,6 +88,7 @@ function initTextScramble(){
 
 let supports3D = true;
 let run3D = function(bg){
+  var styleElem = document.head.appendChild(document.createElement("style"));
 
   window.addEventListener('scroll', () => {
     let scrollProgress = document.documentElement.scrollTop /
@@ -97,10 +97,24 @@ let run3D = function(bg){
   });
 
   window.addEventListener('mousemove', (event) => {
+    let offx = event.y / window.innerHeight * 2 -1;
+    let offy = event.x / window.innerWidth * 2 -1;
     glInterface.exec('setCamOffset', {
-      yawOffset: event.y / window.innerHeight * 2 -1,
-      pitchOffset: event.x / window.innerWidth * 2 -1
+      yawOffset: offx,
+      pitchOffset: offy,
     });
+
+    const percentRange = 10;
+    let posx = offx * percentRange;
+    let posy = offy * percentRange
+    offy * percentRange;
+    styleElem.innerHTML = `body.gl-enabled:before { 
+      mask-position: ${posy}% ${posx}%;
+      -webkit-mask-position: ${posy}% ${posx}%;
+    }`
+
+    targetCursorX = posx;
+    targetCursorY = posy;
   });
 
   window.addEventListener('resize', () => {
