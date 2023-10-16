@@ -90,31 +90,22 @@ let supports3D = true;
 let run3D = function(bg){
   var styleElem = document.head.appendChild(document.createElement("style"));
 
+  let targetScrollY = 0;
+  let currentScrollY = 0;
+
+  let targetPositionX = 0;
+  let currentPositionX = 0;
+  let targetPositionY = 0;
+  let currentPositionY = 0;
+
   window.addEventListener('scroll', () => {
-    let scrollProgress = document.documentElement.scrollTop /
+    targetScrollY = document.documentElement.scrollTop /
         (document.documentElement.scrollHeight - document.documentElement.clientHeight);
-    glInterface.exec('setProgress', scrollProgress);
   });
 
   window.addEventListener('mousemove', (event) => {
-    let offx = event.y / window.innerHeight * 2 -1;
-    let offy = event.x / window.innerWidth * 2 -1;
-    glInterface.exec('setCamOffset', {
-      yawOffset: offx,
-      pitchOffset: offy,
-    });
-
-    const percentRange = 10;
-    let posx = offx * percentRange;
-    let posy = offy * percentRange
-    offy * percentRange;
-    styleElem.innerHTML = `body.gl-enabled:before { 
-      mask-position: ${posy}% ${posx}%;
-      -webkit-mask-position: ${posy}% ${posx}%;
-    }`
-
-    targetCursorX = posx;
-    targetCursorY = posy;
+    targetPositionX = event.x;
+    targetPositionY = event.y;
   });
 
   window.addEventListener('resize', () => {
@@ -141,6 +132,43 @@ let run3D = function(bg){
   }
   glInterface.exec('setFPS', mobileCheck() ? 30 : 60);
   glInterface.exec('start');
+
+  let smoothing = (current, target, smoothingFactor) => {
+    let diff = (target - current) / smoothingFactor;
+    if (Math.abs(diff) <= 0.000001) {
+      return target;
+    } else {
+      return current + diff;
+    }
+  }
+
+  setInterval(() => {
+    if (currentScrollY != targetScrollY){
+      currentScrollY = smoothing(currentScrollY, targetScrollY, 10);
+      glInterface.exec('setProgress', currentScrollY);
+    }
+    if (currentPositionX != targetPositionX ||
+        currentPositionY != targetPositionY){
+
+      currentPositionX = smoothing(currentPositionX, targetPositionX, 10);
+      currentPositionY = smoothing(currentPositionY, targetPositionY, 10);
+
+      let offx = currentPositionX / window.innerHeight * 2 -1;
+      let offy = currentPositionY / window.innerWidth * 2 -1;
+
+      glInterface.exec('setCamOffset', { yawOffset: offx,
+                                         pitchOffset: offy });
+
+      const percentRange = 10;
+      let posx = offx * percentRange;
+      let posy = offy * percentRange;
+
+      styleElem.innerHTML = `body.gl-enabled:before {
+          mask-position: ${posx}% ${posy}%;
+          -webkit-mask-position: ${posx}% ${posy}%;
+      }`
+    }
+  }, 10);
 }
 
 let run2D = function(){

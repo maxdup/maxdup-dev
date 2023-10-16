@@ -47,8 +47,8 @@ function AgnosticWorker(){
       v.setProgress(value);
       break;
     case MSGS.setCamOffset:
-      camera.updateNudge(value.yawOffset,
-                         value.pitchOffset);
+      camera.updateNudge(value.pitchOffset,
+                         value.yawOffset);
       break;
     case MSGS.setInertia:
       waves.setInertia(1 - value * v.targetFPS / 30);
