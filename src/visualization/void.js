@@ -105,7 +105,7 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
   let buildConnectionBuffer = () => {
     let connectedConnections = mapConnected(this.nodes.idTable, this.nodes.connections, 1);
     let gridConnections = new Array(this.grid.idTable.length).fill(0);
-    let roadConnections = new Array(this.roads.idTable.length).fill(-1);
+    let roadConnections = new Array(this.roads.idTable.length).fill(-2);
     return [...this.nodes.connections, ...gridConnections, ...connectedConnections, ...roadConnections];
   }
   let buildPositionBuffer = () => {
@@ -206,7 +206,7 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-    const mtlres = await fetch(require('../images/mtl.png'), {mode: 'cors'});
+    const mtlres = await fetch(require('../images/mtl3.png'), {mode: 'cors'});
     const mtlblob = await mtlres.blob();
     const mtlBitmap = await createImageBitmap(mtlblob, {
       premultiplyAlpha: 'none',
