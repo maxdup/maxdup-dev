@@ -206,7 +206,7 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-    const mtlres = await fetch(require('../images/mtl3.png'), {mode: 'cors'});
+    const mtlres = await fetch(require('../images/mtl5.png'), {mode: 'cors'});
     const mtlblob = await mtlres.blob();
     const mtlBitmap = await createImageBitmap(mtlblob, {
       premultiplyAlpha: 'none',
