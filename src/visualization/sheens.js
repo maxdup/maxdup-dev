@@ -1,4 +1,4 @@
-import { remap } from "../utils";
+import { remap } from "../js/utils";
 
 function makeSheen (){
   return {

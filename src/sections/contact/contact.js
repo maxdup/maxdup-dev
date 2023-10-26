@@ -1,3 +1,5 @@
+import './contact.scss';
+
 let contactInit = false;
 let secretE, secretP = null;
 

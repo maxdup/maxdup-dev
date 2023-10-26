@@ -2,8 +2,8 @@
 
 @mixin content-container {
     box-sizing: border-box;
-    padding: 1.25rem 1rem 3rem;
-    min-height: 100vh;
+    padding: 1.5rem 1rem 3rem;
+    max-width: 800px;
     margin: auto;
     position: relative;
 
@@ -56,9 +56,11 @@
 
 // form style
 @mixin form-neutral() {
+    @include sub-content-container();
 }
 @mixin form-item-spacing(){
     margin-bottom: 1.5rem;
 }
+
 
 @import './framework';

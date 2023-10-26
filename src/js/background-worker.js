@@ -1,4 +1,4 @@
-import agnosticWorker from '../main/agnostic-worker';
+import agnosticWorker from './agnostic-worker';
 
 self.onmessage = (event) => {
   if (event.data.msg == 'init'){

@@ -1,3 +1,5 @@
+import './main.scss';
+
 import Scrambler from 'scrambling-letters';
 let glInterface = null;
 
@@ -207,7 +209,7 @@ function GlInterface() {
       try {
         const offscreenCanvas = canvas.transferControlToOffscreen();
 
-        this.glWorker = new Worker(new URL('./background-worker.js', import.meta.url));
+        this.glWorker = new Worker(new URL('../../js/background-worker.js', import.meta.url));
         this.glWorker.postMessage({msg: 'init', canvas: offscreenCanvas}, [offscreenCanvas]);
         this.supportsWorker = true;
         resolve();
@@ -222,8 +224,8 @@ function GlInterface() {
         if (err instanceof TypeError &&
             err.message.includes("transferControlToOffscreen is not a function")) {
           try {
-            require.ensure(['./synchronous-worker.js'], (require) => {
-              let SyncWorker = require('./synchronous-worker.js').default;
+            require.ensure(['../../js/synchronous-worker.js'], (require) => {
+              let SyncWorker = require('../../js/synchronous-worker.js').default;
               this.supports3D = true;
               this.supportsWorker = false;
               this.glWorker = new SyncWorker();

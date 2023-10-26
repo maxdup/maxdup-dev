@@ -1,4 +1,6 @@
-import {remap} from "../utils";
+import './services.scss';
+
+import {remap} from "../../js/utils";
 
 let services = document.querySelectorAll('#services .img-bg');
 let progress = new Array(services.length);

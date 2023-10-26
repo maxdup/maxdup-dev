@@ -1,0 +1,179 @@
+@import './defaults';
+
+@mixin base-text(){
+    font-family: Tahoma, sans-serif;
+    font-size: 18px;
+}
+@mixin content-text() {
+    color: #eee;
+    font-size: 1rem;
+}
+
+@mixin border-interactive() {
+    border: 1px solid white;
+    border-radius: 4px;
+}
+
+// Button Style
+@mixin clickable-button-neutral() {
+    @include border-interactive();
+    padding: 0.5rem 0.5rem;
+    background: transparent;
+    background-color: transparent;
+    transition: background 0.3s ease-in;
+}
+@mixin clickable-button-hover() {
+    background: rgba(1,1,1,0.5);
+}
+
+
+// Links Style
+@mixin clickable-text-neutral() {
+    color: #eee;
+    display: inline-block;
+    transition: none;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+}
+@mixin clickable-text-hover() {
+    animation-name: abberation-link;
+    background: white;
+    color: black;
+}
+@mixin clickable-text-focus() {
+    @include clickable-text-hover();
+}
+
+// inputs style
+@mixin input-textarea-common() {
+    color: white;
+    display: block;
+    width: 100%;
+    background: transparent;
+    line-height: 1.25rem;
+    font-size: 1rem;
+
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+
+    background: transparent;
+    background-color: transparent;
+    box-sizing: border-box;
+    box-shadow: 0 0 0 1000px base-color(0%) inset;
+    transition: background-color 99999s ease-in-out;
+
+    &[autocomplete=off]{
+        box-shadow: 0 0 0 0 base-color(0%) inset;
+    }
+    &:focus {
+        outline: none;
+    }
+    ::placeholder {
+        color: base-color(60%);
+    }
+}
+@mixin input-neutral() {
+    height: 2rem;
+    border: none;
+    border-bottom: 1px solid white;
+}
+@mixin textarea-neutral() {
+    @include border-interactive();
+    min-height: 6.75rem;
+    padding-top: 0.5rem;
+    resize: vertical;
+}
+
+body {
+    background: black;
+    margin: 0;
+    overflow-x: hidden;
+
+    h1, h2, h3 {
+        display: block;
+        font-weight: bold;
+    }
+    h1 {
+        font-size: 2rem;
+    }
+    h2 {
+        font-size: 1.5rem;
+        margin: 0.8em 0;
+    }
+    h3 {
+        font-size: 1.17rem;
+    }
+    p {
+        margin: 1rem 0;
+    }
+    form {
+        margin: 1rem 0rem 3rem;
+        padding: 3rem 3rem;
+
+        >button, >input, >textarea {
+            display: block;
+            margin-bottom: 1.5rem;
+        }
+    }
+    img {
+        &[role=presentation]{
+            user-select: none;
+        }
+    }
+}
+
+
+
+// ------------------------------------------
+// Main background
+// ------------------------------------------
+
+$bgImage: url('../images/background.webp');
+$bgNoise: url('../images/noise.png');
+$bgGlow: radial-gradient(circle at 10% 30%, rgba(64,16,16,0.5) 0%, rgba(0,0,0) 50%, rgba(0,0,0) 60%, rgba(16,28,16,1.0) 90%);
+
+canvas,
+body:before {
+    display: block;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+canvas {
+    z-index: -11;
+}
+body:before {
+    content: ' ';
+    z-index: -10;
+    background-image: $bgGlow, $bgImage;
+    background-blend-mode: screen;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    animation-name: delayBackground;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in;
+    animation-duration: 1s;
+}
+body.gl-enabled:before {
+    background-image: $bgGlow;
+    animation-name: none;
+    mix-blend-mode: screen;
+
+    mask-image: $bgNoise;
+    -webkit-mask-image: $bgNoise;
+    mask-repeat: repeat;
+    -webkit-mask-repeat: repeat;
+    mask-position: 0% 0%;
+    -webkit-mask-position: 0% 0%;
+}
+
+@keyframes delayBackground {
+    0%   { background-image: $bgGlow; }
+    50%  { background-image: $bgGlow; }
+    100% { background-image: $bgGlow, $bgImage; }
+}

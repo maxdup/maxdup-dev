@@ -1,0 +1,171 @@
+@use "sass:math";
+
+#trajectory {
+    .container-blurb {
+        float: right;
+    }
+    .trajectory-graph {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        margin: auto;
+    }
+}
+
+
+#trajectory {
+    $fast: 0.15s;
+    @mixin graph-item() {
+        background: #fff;
+        color: #fff;
+        transition: background ease-in $fast,
+                    color ease-in $fast,
+                    font-size ease-in $fast,
+                    height ease-in $fast,
+                    width ease-in $fast;
+    }
+    @mixin graph-item-state-active(){
+        background: #fff;
+        color: #fff;
+        font-size: 3rem;
+    }
+    @mixin graph-item-state-inactive(){
+        background: #888;
+        color: #888;
+        font-size: 2rem;
+    }
+    #trajectory-graph {
+        padding: 0;
+        display: block;
+        float: left;
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+    }
+
+    .graph-node {
+        height: 0px;
+        width: 0px;
+        position: absolute;
+        list-decoration: none;
+        display: flex;
+        justify-content: center;
+
+        .graph-node-text {
+            position: absolute;
+            text-align: right;
+            left: -10rem;
+            top: -1rem;
+            line-height: 0;
+            opacity: 0.5;
+            @include graph-item();
+            @include graph-item-state-inactive();
+        }
+
+        &:hover {
+            &:after {
+                width: 2rem;
+                height: 2rem;
+                @include graph-item-state-active();
+            }
+
+            .graph-node-text {
+                @include graph-item-state-active();
+            }
+        }
+        &:after {
+            content: '';
+            border-radius: 50%;
+            height: 1rem;
+            width: 1rem;
+            @include graph-item();
+            @include graph-item-state-inactive();
+
+            flex-shrink: 0;
+            display: inline;
+            position: absolute;
+
+            top: -100%;
+            bottom: -100%;
+            margin: auto;
+            z-index: 2;
+        }
+        .graph-node-line {
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            overflow: hidden;
+            z-index: -1;
+
+            width: 0;
+            height: 0;
+            z-index: 1;
+            &:before {
+                content: '';
+                display: block;
+                width: 2px;
+                height: 100vh;
+                background: #888;
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                top: 0;
+                margin: auto;
+                transform: var(--line-angle);
+                transform-origin: 50% 50%;
+            }
+        }
+        &:first-child .graph-node-line {
+            content: none;
+        }
+
+    }
+}
+
+$gWidth: 20vw;
+$gHeight: 50vh;
+$nudge: 5; // percent
+$nNode: 5;
+
+#trajectory-graph {
+    height: $gHeight;
+    width: $gWidth;
+}
+
+@function offsetFor($n){
+    $offset: 0;
+    @if $n > 1 and $n < $nNode{
+        @if $n % 2 == 0 {
+            $offset: $nudge;
+        } @else {
+            $offset: $nudge * -1;
+        }
+    }
+    @return $offset;
+}
+
+.graph-node:before,
+.graph-node:after {
+    height: math.div(50vh, 4);
+}
+
+@for $i from 1 through $nNode {
+    #trajectory .graph-node {
+        $offset: offsetFor($i);
+
+        &:nth-child(#{$i}){
+            top: ($i - 1) * math.div(100%, $nNode - 1);
+            left: 100% - ($i - 1) * math.div(100%, $nNode - 1) + $offset;
+            .graph-node-line {
+                height: math.div($gHeight, 100) * 25;
+                width: math.div($gWidth, 100) * (25 - offsetFor($i) + offsetFor($i - 1));
+            }
+        }
+    }
+}

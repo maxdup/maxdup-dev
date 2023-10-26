@@ -3,7 +3,7 @@ import {
   matrixTranslate,
   identityMatrix,
   perspectiveMatrix,
-} from '../utils';
+} from '../js/utils';
 
 function Camera(){
   let initMatrix = matrixTranslate(identityMatrix(4), [-0.5, 0, -6]);

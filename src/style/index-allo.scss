@@ -1,0 +1,29 @@
+@import './theming-allo';
+@import './animations';
+
+@media only screen and (min-width: 480px) {
+    .container {
+	    padding: 2rem 2rem 6rem;
+    }
+}
+
+// ------------------------------------------
+// Container backgrounds
+// ------------------------------------------
+
+#about.container:after {
+    background: #111b;
+    background-attachment: fixed;
+    background: radial-gradient(circle at 60% 100%, #211b 0%, #111a11bb 100%);
+}
+#services.container:after {
+    background: #444c;
+    background-attachment: fixed;
+    background: radial-gradient(circle at 60% 100%, #544b 0%, #444a44bb 100%);
+}
+#contact.container:after {
+    background: #999b;
+    background-attachment: fixed;
+    background: radial-gradient(circle at 60% 100%, #a99b 0%, #9a9b 100%);
+}
+

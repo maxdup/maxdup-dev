@@ -1,4 +1,4 @@
-import agnosticWorker from '../main/agnostic-worker';
+import agnosticWorker from './agnostic-worker';
 
 function SyncWorker(){
   this.init = (canvas) =>{

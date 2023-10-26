@@ -1,4 +1,6 @@
-import {easeOut, haste, remap, HSLStr} from '../utils'
+import './about.scss';
+
+import {easeOut, haste, remap, HSLStr} from '../../js/utils';
 
 let aboutElem = document.getElementById('about');
 let images = document.querySelectorAll('.img-box');

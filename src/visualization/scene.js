@@ -1,8 +1,8 @@
 const SCENES = {
   main: 0,
-  about: 1,
-  services: 2,
-  contact: 3,
+  mountain: 1,
+  network: 2,
+  montreal: 3,
 };
 
 function Scene(){
@@ -40,21 +40,21 @@ function Scene(){
   this.target = (sceneName, speed) => {
     velocity = speed;
     switch(SCENES[sceneName]){
-    case SCENES.about:
+    case SCENES.mountain:
       this.activeScene = sceneName;
       targetDottedness = 1;
       targetNodeness = 0;
       targetGridness = 1;
       targetMapness = 0;
       break
-    case SCENES.services:
+    case SCENES.network:
       this.activeScene = sceneName;
       targetDottedness = 1;
       targetNodeness = 1;
       targetGridness = 0;
       targetMapness = 0;
       break
-    case SCENES.contact:
+    case SCENES.montreal:
       this.activeScene = sceneName;
       targetDottedness = 1;
       targetNodeness = 0;

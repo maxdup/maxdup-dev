@@ -13,7 +13,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
   context: path.join(__dirname, 'src'),
   entry: {
-    app: path.join(dirSrc, 'index.js')
+    index: './index.js',
+    allo: './index-allo.js'
   },
   output: {
     path: dirBuild,
@@ -57,6 +58,13 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: path.join(dirSrc, 'index.html'),
+      filename: 'index.html',
+      chunks: ['index']
+    }),
+    new HtmlWebpackPlugin({
+      template: path.join(dirSrc, 'index-allo.html'),
+      filename: 'index-allo.html',
+      chunks: ['allo']
     }),
     new FaviconsWebpackPlugin({
       logo: path.join(dirSrc, './images/favicon.png'),
@@ -67,7 +75,7 @@ module.exports = {
       }
     }),
     new CopyWebpackPlugin({
-      patterns: [{from: 'static', to: 'static'}]
+      patterns: [{from: 'images/static', to: 'static'}]
     }),
 
   ],
