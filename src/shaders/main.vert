@@ -1,8 +1,8 @@
-uniform vec2 sheens[6];
 uniform mat4 pjMatrix;
 uniform mat4 mvMatrix;
 uniform float screenScale;
 
+uniform vec2 sheens[6];
 uniform float nodeness;
 uniform float gridness;
 uniform float mapness;

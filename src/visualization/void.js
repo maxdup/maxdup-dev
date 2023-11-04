@@ -1,6 +1,8 @@
-import vsScript from "../shaders/background.vert";
-import fsScript from "../shaders/background.frag";
-import sfsScript from "../shaders/sprite.frag";
+import main_vsScript from "../shaders/main.vert";
+import debug_vsScript from "../shaders/debug.vert";
+
+import line_fsScript from "../shaders/line.frag";
+import sprite_fsScript from "../shaders/sprite.frag";
 
 import quickNoise from 'quick-perlin-noise-js';
 
@@ -10,19 +12,30 @@ const HN = Math.floor(N/2);
 let dt = 0;
 let gl, glExt, c;
 
+let maLoc = [];
+let muLoc = [];
+
 let lineProgram = null;
-let laLoc = [];
 let luLoc = [];
 
 let dotProgram = null;
-let daLoc = [];
 let duLoc = [];
+
+let debugProgram = null;
+let xaLoc = [];
+let xuLoc = [];
 
 let dotTexture = null;
 let mtlTexture = null
 
-let dotBuffer;
-let lineBuffer;
+let staticBuffer;
+let dynamicBuffer;
+let debugBuffer;
+
+let dynData;
+
+let DEBUG = true;
+//let DEBUG = false;
 
 function Void(scene, camera, waves, grid, nodes, roads, sheens){
 
@@ -69,27 +82,55 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
   this.initShaders = () => {
     dotProgram = gl.createProgram();
     lineProgram = gl.createProgram();
+    debugProgram = gl.createProgram();
 
-    let vs = gl.createShader(gl.VERTEX_SHADER);
-    let fs = gl.createShader(gl.FRAGMENT_SHADER);
-    let sfs = gl.createShader(gl.FRAGMENT_SHADER);
-    vsScript = vsScript.replace(/\%lineColors\%/g, "mat3("+this.sheens.str+")");
+    let main_vs = gl.createShader(gl.VERTEX_SHADER);
 
-    gl.shaderSource(vs, vsScript);
-    gl.shaderSource(fs, fsScript);
-    gl.shaderSource(sfs, sfsScript);
+    let debug_vs = gl.createShader(gl.VERTEX_SHADER);
+    let line_fs = gl.createShader(gl.FRAGMENT_SHADER);
+    let sprite_fs = gl.createShader(gl.FRAGMENT_SHADER);
+    let debug_fs = gl.createShader(gl.FRAGMENT_SHADER);
+    main_vsScript = main_vsScript.replace(/\%lineColors\%/g, "mat3("+this.sheens.str+")");
 
-    gl.compileShader(vs);
-    gl.compileShader(fs);
-    gl.compileShader(sfs);
+    gl.shaderSource(main_vs, main_vsScript);
+    gl.shaderSource(debug_vs, debug_vsScript);
+    gl.shaderSource(line_fs, line_fsScript);
+    gl.shaderSource(sprite_fs, sprite_fsScript);
+    //gl.shaderSource(debug_fs, sprite_fsScript);
+    gl.shaderSource(debug_fs, line_fsScript);
 
-    gl.attachShader(lineProgram, vs);
-    gl.attachShader(lineProgram, fs);
-    gl.attachShader(dotProgram, vs);
-    gl.attachShader(dotProgram, sfs);
+    gl.compileShader(main_vs);
+    gl.compileShader(debug_vs);
+    gl.compileShader(line_fs);
+    gl.compileShader(sprite_fs);
+    gl.compileShader(debug_fs);
+
+    gl.attachShader(lineProgram, main_vs);
+    gl.attachShader(lineProgram, line_fs);
+    gl.attachShader(dotProgram, main_vs);
+    gl.attachShader(dotProgram, sprite_fs);
 
     gl.linkProgram(dotProgram);
     gl.linkProgram(lineProgram);
+
+
+    if (DEBUG){
+      if(!gl.getProgramParameter(lineProgram, gl.LINK_STATUS)){
+        console.log(gl.getProgramInfoLog(lineProgram))
+      }
+      if(!gl.getProgramParameter(dotProgram, gl.LINK_STATUS)){
+        console.log(gl.getProgramInfoLog(dotProgram))
+      }
+
+      gl.attachShader(debugProgram, debug_vs);
+      gl.attachShader(debugProgram, debug_fs);
+      gl.bindAttribLocation(debugProgram, 5, "debugPosition");
+      gl.linkProgram(debugProgram);
+
+      if(!gl.getProgramParameter(debugProgram, gl.LINK_STATUS)){
+        console.log(gl.getProgramInfoLog(debugProgram))
+      }
+    }
 
     gl.disable(gl.DEPTH_TEST);
     gl.enable(gl.BLEND);
@@ -128,19 +169,26 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
     return [...positions, ...gridPositions, ...connectedPositions, ...roadPositions];
   }
 
-  this.initBuffers = () => {
+  let buildStaticBuffer = () => {
     let positions  = buildPositionBuffer();
-    let heights = buildHeightBuffer();
     let connections = buildConnectionBuffer();
 
-    function glSetAttributes(p, aLoc){
-      aLoc[0] = gl.getAttribLocation(p, "position");
-      aLoc[1] = gl.getAttribLocation(p, "nconnection");
-      aLoc[2] = gl.getAttribLocation(p, "height");
-      gl.enableVertexAttribArray(aLoc[0]);
-      gl.enableVertexAttribArray(aLoc[1]);
-      gl.enableVertexAttribArray(aLoc[2]);
+    let main = [];
+    for (let i = 0; i < connections.length; i++){
+      main.push(positions[i*3]);
+      main.push(positions[i*3+1]);
+      main.push(positions[i*3+2]);
+      main.push(connections[i]);
     }
+    return main;
+  }
+
+  let buildDynamicBuffer = () => {
+    return buildHeightBuffer();
+  }
+
+  this.initBuffers = () => {
+
     function glSetUniforms(p, uLoc){
       uLoc[0] = gl.getUniformLocation(p, "pjMatrix");
       uLoc[1] = gl.getUniformLocation(p, "mvMatrix");
@@ -154,37 +202,68 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
       uLoc[7] = gl.getUniformLocation(p, "mtlTexture");
       uLoc[8] = gl.getUniformLocation(p, "dotTexture");
     }
-    function glBuffer(destaLoc, size, data){
-      let buffer = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.DYNAMIC_DRAW);
-      gl.vertexAttribPointer(destaLoc, size, gl.FLOAT, false, 0, 0);
-      return buffer;
+
+    // Debug Buffer
+    if (DEBUG){
+      debugBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, debugBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.camera.positions), gl.STATIC_DRAW);
+
+      xaLoc[0] = gl.getAttribLocation(debugProgram, "debugPosition");
+
+      gl.enableVertexAttribArray(xaLoc[0]);
+      gl.vertexAttribPointer(xaLoc[0], 3, gl.FLOAT, false, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
     }
 
-    function glTexture(){
-    }
+    // Static Buffer
+    let staticData = buildStaticBuffer();
+
+    staticBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, staticBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(staticData), gl.STATIC_DRAW);
+
+    const vertexSizeInBytes = 4 * Float32Array.BYTES_PER_ELEMENT;
+    const vertexOffsconnect = 3 * Float32Array.BYTES_PER_ELEMENT;
+
+    maLoc[0] = gl.getAttribLocation(dotProgram, "position");
+    gl.enableVertexAttribArray(maLoc[0]);
+    gl.vertexAttribPointer(maLoc[0], 3, gl.FLOAT, false, vertexSizeInBytes, 0);
+
+    maLoc[1] = gl.getAttribLocation(dotProgram, "nconnection");
+    gl.enableVertexAttribArray(maLoc[1]);
+    gl.vertexAttribPointer(maLoc[1], 1, gl.FLOAT, false, vertexSizeInBytes, vertexOffsconnect);
+
+    // Dynamic Buffer
+    dynData = buildDynamicBuffer();
+
+    dynamicBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, dynamicBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(dynData), gl.DYNAMIC_DRAW);
+
+    maLoc[2] = gl.getAttribLocation(dotProgram, "height");
+    gl.enableVertexAttribArray(maLoc[2]);
+    gl.vertexAttribPointer(maLoc[2], 1, gl.FLOAT, false, Float32Array.BYTES_PER_ELEMENT, 0);
+
 
     // Dots
     gl.useProgram(dotProgram);
-
-    glSetAttributes(dotProgram, daLoc);
     glSetUniforms(dotProgram, duLoc);
 
-    glBuffer(daLoc[0], 3, positions);
-    glBuffer(daLoc[1], 1, connections);
-    dotBuffer = glBuffer(daLoc[2], 1, heights);
-
-    glTexture();
     this.setImage();
 
     // Lines
     gl.useProgram(lineProgram);
-
-    glSetAttributes(lineProgram, laLoc);
     glSetUniforms(lineProgram, luLoc);
 
-    lineBuffer = glBuffer(laLoc[2], 1, heights);
+    // Debug
+    if (DEBUG){
+      gl.useProgram(debugProgram);
+
+      xuLoc[0] = gl.getUniformLocation(debugProgram, "pjMatrix");
+      xuLoc[1] = gl.getUniformLocation(debugProgram, "mvMatrix");
+      xuLoc[2] = gl.getUniformLocation(debugProgram, "screenScale");
+      xuLoc[3] = gl.getUniformLocation(debugProgram, "dotTexture");
+    }
   }
 
   function mapConnected(idTable, sourceArray, times){
@@ -216,6 +295,7 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, mtlBitmap);
     gl.useProgram(lineProgram);
     gl.uniform1i(luLoc[7], 0);
+
     gl.useProgram(dotProgram);
     gl.uniform1i(duLoc[7], 0);
 
@@ -234,10 +314,16 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
     });
 
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, dotBitmap);
+
+    gl.useProgram(dotProgram);
     gl.uniform1i(duLoc[8], 1);
 
-
+    if (DEBUG){
+      gl.useProgram(debugProgram);
+      gl.uniform1i(xuLoc[3], 1);
+    }
   }
+
   let frameCount = 0;
   let frameAvg = null;
 
@@ -255,8 +341,6 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
       this.sheens.update(elapsed);
       this.waves.update(dt);
 
-      let heights = buildHeightBuffer();
-
       // ingest sheens
       let sh = Array.from(this.sheens.array, (s,i) => [...s.origin, ...s.angle]).flat();
 
@@ -271,20 +355,41 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
         gl.uniform1f(uLoc[6], this.scene.mapness);
       }
 
-      let glUpdateAttributes = (buffer) => {
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(heights));
-      }
+      dynData = buildDynamicBuffer();
 
+      // Dots
+      gl.useProgram(dotProgram);
+      gl.bindBuffer(gl.ARRAY_BUFFER, dynamicBuffer);
+
+      const vertexSizeInBytes = 4 * Float32Array.BYTES_PER_ELEMENT;
+      const vertexOffsconnect = 3 * Float32Array.BYTES_PER_ELEMENT;
+
+      gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(dynData));
+
+      glUpdateUniforms(duLoc);
+      gl.drawArrays(gl.POINTS, this.waves.offset, this.waves.len);
+
+
+      // Lines
       gl.useProgram(lineProgram);
+      gl.bindBuffer(gl.ARRAY_BUFFER, dynamicBuffer);
+
       glUpdateUniforms(luLoc);
-      glUpdateAttributes(lineBuffer);
       gl.drawArrays(gl.LINES,  this.grid.offset, this.grid.len + this.roads.len + this.nodes.len);
 
-      gl.useProgram(dotProgram);
-      glUpdateUniforms(duLoc);
-      glUpdateAttributes(dotBuffer);
-      gl.drawArrays(gl.POINTS, this.waves.offset, this.waves.len);
+      if (DEBUG){
+        gl.useProgram(debugProgram);
+        gl.bindBuffer(gl.ARRAY_BUFFER, debugBuffer);
+
+        gl.uniformMatrix4fv(xuLoc[0], false, this.camera.pjMatrix);
+        gl.uniformMatrix4fv(xuLoc[1], false, this.camera.mvMatrix);
+        gl.uniform1f(xuLoc[2], this.camera.resolutionScale);
+
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(this.camera.positions));
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.camera.positions), gl.STATIC_DRAW);
+
+        gl.drawArrays(gl.LINES, this.camera.offset, this.camera.len);
+      }
 
       gl.flush();
 
@@ -370,8 +475,8 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
   }
 
   this.setProgress = (val) => {
-    let pitch = 0.6 - 1 * val;
-    let yaw = 0.45 - 0.4 * val;
+    let pitch = 0.6 - 1 * val; // pitch [0.6 -0.4]
+    let yaw = 0.45 - 0.4 * val; //  yaw [0.45 0.5]
     this.camera.updateAngle(pitch, yaw, 0);
   }
 

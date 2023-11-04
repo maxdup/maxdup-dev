@@ -19,6 +19,7 @@ const MSGS = {
   setScene: 8,
   loseCTX: 9,
   setCamOffset: 10,
+  setCamAngle: 11,
 }
 
 let scene = new Scene();
@@ -49,6 +50,9 @@ function AgnosticWorker(){
     case MSGS.setCamOffset:
       camera.updateNudge(value.pitchOffset,
                          value.yawOffset);
+      break;
+    case MSGS.setCamAngle:
+      camera.updateAngle(value.pitch, value.yaw, value.roll);
       break;
     case MSGS.setInertia:
       waves.setInertia(1 - value * v.targetFPS / 30);

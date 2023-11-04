@@ -95,6 +95,38 @@ function matrixRotate(mat, rad, axis){
   return out;
 }
 
+let deCasteljau = (points, t) => {
+  if (points.length === 1) {
+    return points[0];
+  }
+
+  const newPoints = [];
+  for (let i = 0; i < points.length - 1; i++) {
+    let point = [];
+    for (let j = 0; j < points[i].length; j++){
+      point.push((1 - t) * points[i][j] + t * points[i + 1][j]);
+    }
+    newPoints.push(point);
+  }
+
+  return deCasteljau(newPoints, t);
+}
+
+function sphericalToCartesian(pitch, yaw, roll, distance) {
+  // Convert angles from degrees to radians
+  const pitchRad = (pitch * Math.PI) / 180;
+  const yawRad = (yaw * Math.PI) / 180;
+  const rollRad = (roll * Math.PI) / 180;
+
+  // Calculate the x, y, and z coordinates
+  const x = distance * Math.cos(yawRad) * Math.cos(pitchRad);
+  const y = distance * Math.sin(rollRad) * distance * Math.sin(pitchRad);
+  const z = distance * Math.sin(yawRad) * Math.cos(pitchRad);
+
+  return { x, y, z };
+}
+
 
 export { easeOut, easeIn, easeInOut, haste, delay, remap, HSLStr,
-         identityMatrix, perspectiveMatrix, matrixTranslate, matrixRotate }
+         identityMatrix, perspectiveMatrix, matrixTranslate, matrixRotate,
+         deCasteljau, sphericalToCartesian }

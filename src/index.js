@@ -2,45 +2,45 @@ import './style/index.scss';
 
 import nav from './sections/nav/nav';
 
+import glInterface from './js/gl-interface';
+import director from './js/director';
+
 import './sections/main/main';
 import './sections/trajectory/trajectory';
 import './sections/skills/skills';
 import './sections/where/where';
 
-nav.init([{ id: 'main',
-            scene: 'main' },
-          { id: 'trajectory',
-            scene: 'mountain' },
-          { id: 'skills',
-            scene: 'network' },
-          { id: 'where',
-            scene: 'montreal' }]);
+let sections = [{
+  id: 'main',
+  scene: 'main',
+  cameraAngleIn: [0.6,0.4,0],
+  cameraAngle: [0.6,0.4,0],
+}, {
+  id: 'trajectory',
+  scene: 'mountain',
+  cameraAngleIn: [0.4,-0.8,0],
+  cameraAngle: [0.3,-0.8,0]
+}, {
+  id: 'skills',
+  scene: 'network',
+  cameraAngleIn: [0.3,0,0],
+  cameraAngle: [0.3,0.8,0]
+}, {
+  id: 'where',
+  scene: 'montreal',
+  cameraAngleIn: [0.6,-0.8,0],
+  cameraAngle: [0.6,-0.3,0]
+}]
 
-let containers = window.document.querySelectorAll('.container');
-let floaters = [];
+sections.forEach((c) => {
+  c.floater = window.document.querySelector('#' + c.id + ' .floater-container');
+  c.floating = window.document.querySelector('#' + c.id + ' .floating-container');
 
-containers.forEach((c) => {
-  let floater = c.querySelector('.floating-container');
-  if (floater){
-    floaters.push({
-      container: c,
-      floater: floater
-    });
+  c.cameraAngleOut = [];
+  for (let i = 0; i < c.cameraAngle.length; i++){
+    c.cameraAngleOut.push(c.cameraAngle[i] + (c.cameraAngle[i] - c.cameraAngleIn[i]));
   }
 });
 
-window.addEventListener('scroll', () => {
-  floaters.forEach((f) => {
-    let top = f.container.getBoundingClientRect().top;
-    let offset = 0;
-    if (top > 0){
-      offset = Math.min(top, window.innerHeight) / window.innerHeight;
-    } else {
-      offset = Math.max(-1, (1-(top + window.innerHeight) / window.innerHeight) * -1);
-    }
-    f.floater.style.top = (offset/-2*100) + "vh";
-    f.floater.style.opacity = 1.25 - Math.abs(offset);
-  });
-});
-
-
+nav.init(sections);
+director.loadSections(sections);

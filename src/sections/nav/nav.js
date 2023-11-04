@@ -1,4 +1,6 @@
 import './nav.scss';
+
+import glInterface from '../../js/gl-interface';
 function Navigation(){
 
   this.sections = [];
@@ -13,11 +15,6 @@ function Navigation(){
     let navElem = document.getElementsByTagName('nav')[0];
     let linkElems = document.querySelectorAll('nav ul a');
     let mainElem = document.getElementById('main');
-
-    let windowInnerWidth = null;
-    let windowInnerHalfHeight = null;
-
-    let scrolling, resizing = null;
 
     let scrollScene = null;
 
@@ -45,26 +42,12 @@ function Navigation(){
       e.target.blur();
     }
 
-    // On Scroll
-    let onScroll = function(){
-      if (!scrolling) {
-        requestAnimationFrame(afterScroll);
-        scrolling = true;
-      }
-    }
-
     let setScene = function(sceneName, speed) {
-      if (window.glInterface){
-        window.glInterface.exec('setScene', {
+      if (glInterface){
+        glInterface.exec('setScene', {
           name: sceneName,
           speed: speed
         });
-      }
-    }
-    let setScrollScene = function(sceneName) {
-      if (scrollScene != sceneName){
-        scrollScene = sceneName;
-        setScene(sceneName, 0.75);
       }
     }
 
@@ -74,39 +57,13 @@ function Navigation(){
       } else {
         document.body.classList.remove('nav-complete');
       }
-      scrolling = false;
-      let scrollTarget = null;
-      for (let i = 0; i < sections.length; i++){
-        if (sections[i].elem.getBoundingClientRect().bottom > windowInnerHalfHeight){
-          scrollTarget = sections[i].scene;
-          break;
-        }
-      }
-      setScrollScene(scrollTarget);
-    }
-
-
-    // On Resize
-    let onResize = function(){
-      windowInnerWidth = window.innerWidth;
-      windowInnerHalfHeight = window.innerHeight / 2;
-      if (!resizing) {
-        requestAnimationFrame(afterResize);
-        resizing = true
-      }
-    }
-
-    let afterResize = function(){
-      resizing = false;
     }
 
     window.addEventListener('load', function() {
-      window.addEventListener('resize', onResize);
-      window.addEventListener('scroll', onScroll);
-      onResize();
-      afterResize();
-      onScroll();
-      afterScroll();
+      window.addEventListener('scroll', () => {
+        requestAnimationFrame(afterScroll);
+      });
+      afterScroll()
       onInit();
     });
 

@@ -19,7 +19,8 @@ function Camera(){
   this.roll = 0;
 
   this._update = () => {
-    this.mvMatrix = matrixRotate(initMatrix, this.pitch + this.pitchOffset, [1,0,0]);
+    this.mvMatrix = initMatrix;
+    this.mvMatrix = matrixRotate(this.mvMatrix, this.pitch + this.pitchOffset, [1,0,0]);
     this.mvMatrix = matrixRotate(this.mvMatrix, this.yaw + this.yawOffset, [0,1,0]);
     this.mvMatrix = matrixRotate(this.mvMatrix, this.roll, [0,0,1])
   }
@@ -36,10 +37,23 @@ function Camera(){
     this.roll = roll;
     this._update();
   }
+
   this.updateSize = (width, height) => {
     this.resolutionScale = height;
     this.pjMatrix = perspectiveMatrix(45, width / height, 0.1, 1000.0);
   }
 
+  this.offset = 0;
+  this.positions = [1,1,1,
+                    1,1,-1,
+                    1,-1,1,
+                    1,-1,-1,
+                    -1,1,1,
+                    -1,1,-1,
+                    -1,-1,1,
+                    -1,-1,-1];
+
+  this.len = 8;
 }
+
 export default Camera;
