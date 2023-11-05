@@ -6,6 +6,12 @@ function Director(){
   this.sections = [];
 
   this.loadSections = (sections) => {
+    sections.forEach((c) => {
+      c.cameraAngleOut = [];
+      for (let i = 0; i < c.cameraAngle.length; i++){
+        c.cameraAngleOut.push(c.cameraAngle[i] + (c.cameraAngle[i] - c.cameraAngleIn[i]));
+      }
+    });
     this.sections = sections;
   }
 

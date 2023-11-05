@@ -5,7 +5,7 @@ function Navigation(){
 
   this.sections = [];
 
-  this.init = (sections) => {
+  this.loadSections = (sections) => {
     this.sections = sections;
     for (let i = 0; i < this.sections.length; i++){
       this.sections[i].elem = document.getElementById(this.sections[i].id);

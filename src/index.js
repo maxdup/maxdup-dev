@@ -35,12 +35,7 @@ let sections = [{
 sections.forEach((c) => {
   c.floater = window.document.querySelector('#' + c.id + ' .floater-container');
   c.floating = window.document.querySelector('#' + c.id + ' .floating-container');
-
-  c.cameraAngleOut = [];
-  for (let i = 0; i < c.cameraAngle.length; i++){
-    c.cameraAngleOut.push(c.cameraAngle[i] + (c.cameraAngle[i] - c.cameraAngleIn[i]));
-  }
 });
 
-nav.init(sections);
+nav.loadSections(sections);
 director.loadSections(sections);
