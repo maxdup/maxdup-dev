@@ -34,8 +34,8 @@ let debugBuffer;
 
 let dynData;
 
-let DEBUG = true;
-//let DEBUG = false;
+//let DEBUG = true;
+let DEBUG = false;
 
 function Void(scene, camera, waves, grid, nodes, roads, sheens){
 
@@ -474,12 +474,6 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
     this.camera.updateSize(targetWidth, targetHeight);
   }
 
-  this.setProgress = (val) => {
-    let pitch = 0.6 - 1 * val; // pitch [0.6 -0.4]
-    let yaw = 0.45 - 0.4 * val; //  yaw [0.45 0.5]
-    this.camera.updateAngle(pitch, yaw, 0);
-  }
-
   this.setFPS = (fps) => {
     this.targetFPS = fps;
     frameInterval =  1000 / this.targetFPS;
@@ -492,7 +486,6 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
     this.render();
   }
 
-  this.setProgress(0);
   this.setFPS(this.targetFPS);
 }
 

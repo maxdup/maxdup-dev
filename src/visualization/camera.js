@@ -18,8 +18,12 @@ function Camera(){
   this.yawOffset = 0;
   this.roll = 0;
 
+  this.offsetX = -0.5;
+  this.offsetY = 0;
+  this.offsetZ = -6;
+
   this._update = () => {
-    this.mvMatrix = initMatrix;
+    this.mvMatrix = matrixTranslate(identityMatrix(4), [this.offsetX, this.offsetY, this.offsetZ]);
     this.mvMatrix = matrixRotate(this.mvMatrix, this.pitch + this.pitchOffset, [1,0,0]);
     this.mvMatrix = matrixRotate(this.mvMatrix, this.yaw + this.yawOffset, [0,1,0]);
     this.mvMatrix = matrixRotate(this.mvMatrix, this.roll, [0,0,1])
@@ -31,10 +35,13 @@ function Camera(){
     this._update();
   }
 
-  this.updateAngle = (pitch, yaw, roll) => {
+  this.updateAngle = (pitch, yaw, roll, offsetX, offsetY, offsetZ) => {
     this.pitch = pitch;
     this.yaw = yaw;
     this.roll = roll;
+    this.offsetX = offsetX;
+    this.offsetY = offsetY;
+    this.offsetZ = offsetZ;
     this._update();
   }
 

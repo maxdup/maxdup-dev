@@ -33,6 +33,7 @@ let roads = new Roads();
 let v = new Void(scene, camera, waves, grid, nodes, roads, sheens);
 
 function AgnosticWorker(){
+
   this.init = (canvas) => {
     v.initWebGL(canvas);
   }
@@ -52,7 +53,8 @@ function AgnosticWorker(){
                          value.yawOffset);
       break;
     case MSGS.setCamAngle:
-      camera.updateAngle(value.pitch, value.yaw, value.roll);
+      camera.updateAngle(value.pitch, value.yaw, value.roll,
+                         value.offsetX, value.offsetY, value.offsetZ);
       break;
     case MSGS.setInertia:
       waves.setInertia(1 - value * v.targetFPS / 30);

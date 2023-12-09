@@ -1,13 +1,55 @@
-function easeOut(x) {
+function clamp(x, min, max){
+  return Math.min(max, Math.max(x, min));
+}
+function linear(x){
+  return clamp(x, 0, 1);
+}
+function easeOutRound(x){
+  x = clamp(x, 0, 1);
   return Math.sqrt(1 - (x - 1) * (x - 1));
 }
-function easeIn(x) {
-  return Math.sqrt(1 - (x = x - 1) * x);
+function easeInRound(x){
+  x = clamp(x, 0, 1);
+  return Math.sqrt(1- x * x) * -1 + 1;
+}
+function easeInOutRound(x){
+  if (x < 0.5){
+    return easeInRound(x*2) * 0.5;
+  } else {
+    return easeOutRound((x-0.5) * 2) * 0.5 + 0.5;
+  }
+}
+function easeOutInRound(x){
+  if (x < 0.5){
+    return easeOutRound(x * 2) * 0.5;
+  } else {
+    return easeInRound((x - 0.5) * 2) * 0.5 + 0.5;
+  }
+}
+function easeOut(x, steepness) {
+  x = clamp(x, 0, 1);
+  let p = steepness || 3;
+  return 1 - Math.pow(1 - x, p);}
+function easeIn(x, steepness) {
+  x = clamp(x, 0, 1);
+  let p = steepness || 3;
+  return Math.pow(x, 3, p);
 }
 function easeInOut(x, steepness){
-  let p = steepness || 2;
-  let xp = Math.pow(x,p);
-  return xp / (xp  + Math.pow(1 - x, p));
+  let p = steepness || 3;
+  if (x < 0.5){
+    return easeIn(x*2, p) * 0.5;
+  } else {
+    return easeOut((x-0.5) * 2, p) * 0.5 + 0.5;
+  }
+}
+function easeOutIn(x, steepness){
+  let p = steepness || 3;
+  if (x < 0.5){
+    return easeOut(x * 2, p) * 0.5;
+  } else {
+    return easeIn((x - 0.5) * 2, p) * 0.5 + 0.5
+  }
 }
 function haste(x, amount){
   return Math.min(x, amount) * 1 / amount;
@@ -20,6 +62,16 @@ function remap(val, minVal, maxVal){
 }
 function HSLStr(hlsArray){
   return `hsl(${hlsArray[0]}deg ${hlsArray[1]}% ${hlsArray[2]}%)`
+}
+
+let smoothingFn = (current, target, smoothingFactor) => {
+  // Easing toward a target value over iterations
+  let diff = (target - current) / smoothingFactor;
+  if (Math.abs(diff) <= 0.000001) {
+    return target;
+  } else {
+    return current + diff;
+  }
 }
 
 function perspectiveMatrix(fovy, aspect, near, far){
@@ -127,6 +179,8 @@ function sphericalToCartesian(pitch, yaw, roll, distance) {
 }
 
 
-export { easeOut, easeIn, easeInOut, haste, delay, remap, HSLStr,
+export { easeOut, easeIn, easeInOut, easeOutIn,
+         easeOutRound, easeInRound, easeInOutRound, easeOutInRound,
+         clamp, haste, delay, remap, HSLStr, smoothingFn,
          identityMatrix, perspectiveMatrix, matrixTranslate, matrixRotate,
          deCasteljau, sphericalToCartesian }

@@ -1,5 +1,8 @@
 import glInterface from './gl-interface';
-import { deCasteljau } from './utils';
+import { ENABLE_3D } from './constants';
+
+import SectionTransition from './interactive/sectionTransition';
+import MouseMoveNudge from './interactive/mouseMoveNudge';
 
 function Director(){
 
@@ -8,31 +11,19 @@ function Director(){
   this.loadSections = (sections) => {
     sections.forEach((c) => {
       c.cameraAngleOut = [];
+      c.cameraOffsetOut = [];
       for (let i = 0; i < c.cameraAngle.length; i++){
         c.cameraAngleOut.push(c.cameraAngle[i] + (c.cameraAngle[i] - c.cameraAngleIn[i]));
+        c.cameraOffsetOut.push(c.cameraOffset[i] + (c.cameraOffset[i] - c.cameraOffsetIn[i]));
       }
     });
     this.sections = sections;
   }
 
   this.run3D = (bg) => {
-
-    let targetProgress = 0;
-    let currentProgress = 0;
-
-    var styleElem = document.head.appendChild(document.createElement("style"));
-
-
-    let targetPositionX = 0;
-    let currentPositionX = 0;
-    let targetPositionY = 0;
-    let currentPositionY = 0;
-
-    let currentSceneId = null;
-
-    let camScrollSmoothing = false;
-    let camMouseSmoothing = false;
-
+    let mouseNudge = new MouseMoveNudge();
+    let scrollTransition = new SectionTransition(this.sections);
+    let linkTransition = null;
 
     // Initialize
     document.body.classList.add('gl-enabled');
@@ -51,63 +42,22 @@ function Director(){
 
     glInterface.exec('setFPS', mobileCheck() ? 30 : 60);
 
-    // Progression system
-    let progression = () => {
-      let offsets = [];
-
-      for (let i = 0; i < this.sections.length; i++){
-
-        if (!this.sections[i].floater){
-          offsets.push(-1);
-          continue
-        }
-
-        let offset = 0;
-        if (top > 0){
-          let top = this.sections[i].floater.getBoundingClientRect().top;
-          offset = top / window.innerHeight;
-        } else {
-          let bottom = this.sections[i].floater.getBoundingClientRect().bottom;
-          offset = bottom / window.innerHeight - 1;
-        }
-
-        offsets.push(Math.min(1, Math.max(-1, offset)));
-
-        if (this.sections[i].floating){
-          this.sections[i].floating.style.top = (offset/-2*100) + "vh";
-          this.sections[i].floating.style.opacity = 1.25 - Math.abs(offset);
-        }
-      }
-
-      for (let i = 0; i < this.sections.length; i++){
-        if (offsets[i] > 0){
-          targetProgress = i - offsets[i];
-          break;
-        }
-      }
-
-      let targetSceneId = Math.floor(targetProgress + 0.5);
-
-      if (currentSceneId != targetSceneId){
-        currentSceneId = targetSceneId;
-        glInterface.exec('setScene', {
-          name: this.sections[currentSceneId].scene,
-          speed: 0.5,
-        });
-      }
-    }
     // Events
     window.addEventListener('scroll', () => {
-      progression();
-      if (!camScrollSmoothing && !camMouseSmoothing){
+      if (linkTransition) {
+        // --TODO-- //
+        linkTransition.onScroll();
+      } else {
+        scrollTransition.onScroll();
+      }
+      if (mouseNudge.smoothing || scrollTransition.smoothing){
         setTimeout(camSmoothingFunction, 10);
       }
     });
 
     window.addEventListener('mousemove', (event) => {
-      targetPositionX = event.x;
-      targetPositionY = event.y;
-      if (!camScrollSmoothing && !camMouseSmoothing){
+      mouseNudge.onMove(event.x, event.y);
+      if (mouseNudge.smoothing || scrollTransition.smoothing){
         setTimeout(camSmoothingFunction, 10);
       }
     });
@@ -119,64 +69,18 @@ function Director(){
       });
     });
 
-    // Background scroll smoothing
-    let smoothing = (current, target, smoothingFactor) => {
-      let diff = (target - current) / smoothingFactor;
-      if (Math.abs(diff) <= 0.000001) {
-        return target;
-      } else {
-        return current + diff;
-      }
-    }
-
-    let setCamAngle = (from, to, progress) => {
-      let camAngle = deCasteljau([from.cameraAngle, from.cameraAngleOut,
-                                  to.cameraAngleIn, to.cameraAngle], progress);
-      glInterface.exec('setCamAngle', { pitch: camAngle[0],
-                                        yaw: camAngle[1],
-                                        roll: camAngle[2]});
-    }
-
     let camSmoothingFunction = () => {
-      camScrollSmoothing = currentProgress != targetProgress;
-      camMouseSmoothing = currentPositionX != targetPositionX ||
-        currentPositionY != targetPositionY;
+      scrollTransition.smoothing && scrollTransition.tick();
+      mouseNudge.smoothing && mouseNudge.tick();
 
-      if (camScrollSmoothing){
-        currentProgress = smoothing(currentProgress, targetProgress, 10);
-        let currentSectionId = Math.floor(currentProgress);
-
-        let currentFromSection = this.sections[currentSectionId];
-        let currentToSection = this.sections[currentSectionId + 1];
-
-        setCamAngle(currentFromSection, currentToSection, currentProgress % 1);
-      }
-
-      if (camMouseSmoothing){
-
-        currentPositionX = smoothing(currentPositionX, targetPositionX, 100);
-        currentPositionY = smoothing(currentPositionY, targetPositionY, 100);
-
-        let offx = currentPositionX / window.innerHeight * 2 -1;
-        let offy = currentPositionY / window.innerWidth * 2 -1;
-
-        glInterface.exec('setCamOffset', { yawOffset: offx,
-                                           pitchOffset: offy });
-
-        const percentRange = 10;
-        let posx = offx * percentRange;
-        let posy = offy * percentRange;
-
-        styleElem.innerHTML = `body.gl-enabled:before {
-          mask-position: ${posx}% ${posy}%;
-          -webkit-mask-position: ${posx}% ${posy}%;
-      }`
-      }
-
-      if (camScrollSmoothing || camMouseSmoothing){
+      if (scrollTransition.smoothing || mouseNudge.smoothing){
         setTimeout(camSmoothingFunction, 10);
       }
     }
+    scrollTransition.onScroll();
+    mouseNudge.onMove(0,0);
+
+    camSmoothingFunction();
   }
 
   this.run2D = () => {
@@ -185,13 +89,45 @@ function Director(){
     for (let i = 0; i < cs.length; i++){
       cs[i].parentNode.removeChild(cs[i]);
     }
+
+    let mouseNudge = new MouseMoveNudge();
+    let scrollTransition = new SectionTransition(this.sections);
+
+    // Events
+    window.addEventListener('scroll', () => {
+      scrollTransition.onScroll();
+      if (mouseNudge.smoothing || scrollTransition.smoothing){
+        setTimeout(camSmoothingFunction, 10);
+      }
+    });
+
+    window.addEventListener('mousemove', (event) => {
+      mouseNudge.onMove(event.x, event.y);
+      if (mouseNudge.smoothing || scrollTransition.smoothing){
+        setTimeout(camSmoothingFunction, 10);
+      }
+    });
+
+        let camSmoothingFunction = () => {
+      scrollTransition.smoothing && scrollTransition.tick();
+      mouseNudge.smoothing && mouseNudge.tick();
+
+      if (scrollTransition.smoothing || mouseNudge.smoothing){
+        setTimeout(camSmoothingFunction, 10);
+      }
+    }
+    scrollTransition.onScroll();
+    mouseNudge.onMove(0,0);
+
+    camSmoothingFunction();
+
   }
 }
 
 let director = new Director();
 
 let callback = () => {
-  (glInterface.supports3D ? director.run3D : director.run2D)();
+  (glInterface.supports3D && ENABLE_3D ? director.run3D : director.run2D)();
 }
 
 glInterface.loaded.then(callback, callback);

@@ -15,31 +15,34 @@ let sections = [{
   scene: 'main',
   cameraAngleIn: [0.6,0.4,0],
   cameraAngle: [0.6,0.4,0],
+  cameraOffsetIn: [-0.5, 0, -6],
+  cameraOffset: [-0.5, 0, -6],
 }, {
   id: 'about',
   scene: 'mountain',
   cameraAngleIn: [0.4,-0.8,0],
-  cameraAngle: [0.3,-0.8,0]
+  cameraAngle: [0.3,-0.8,0],
+  cameraOffsetIn: [-0.5, 0, -6],
+  cameraOffset: [-0.5, 0, -6],
 }, {
   id: 'services',
   scene: 'network',
   cameraAngleIn: [0.3,0,0],
-  cameraAngle: [0.3,0.8,0]
+  cameraAngle: [0.3,0.8,0],
+  cameraOffsetIn: [-0.5, 0, -6],
+  cameraOffset: [-0.5, 0, -6],
 }, {
   id: 'contact',
   scene: 'montreal',
   cameraAngleIn: [0.6,-0.8,0],
-  cameraAngle: [0.6,-0.3,0]
+  cameraAngle: [0.6,-0.3,0],
+  cameraOffsetIn: [-0.5, 0, -6],
+  cameraOffset: [-0.5, 0, -6],
 }]
 
 sections.forEach((c) => {
   c.floater = window.document.querySelector('#' + c.id);
   c.floating = window.document.querySelector('#' + c.id + ' .floating-container');
-
-  c.cameraAngleOut = [];
-  for (let i = 0; i < c.cameraAngle.length; i++){
-    c.cameraAngleOut.push(c.cameraAngle[i] + (c.cameraAngle[i] - c.cameraAngleIn[i]));
-  }
 });
 
 nav.init(sections);

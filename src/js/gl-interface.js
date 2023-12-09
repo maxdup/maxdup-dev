@@ -1,10 +1,11 @@
-
+import { ENABLE_3D } from './constants';
 
 function GlInterface() {
   this.supports3D = false;
   this.supportsWorker = false;
 
   this.loaded = new Promise((resolve, reject) => {
+    if (!ENABLE_3D){ reject() }
     window.addEventListener('load', async function() {
       if (window.WebGLRenderingContext){
         const canvas = document.createElement("CANVAS");

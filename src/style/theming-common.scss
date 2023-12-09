@@ -133,7 +133,7 @@ $bgNoise: url('../images/noise.png');
 $bgGlow: radial-gradient(circle at 10% 30%, rgba(64,16,16,0.5) 0%, rgba(0,0,0) 50%, rgba(0,0,0) 60%, rgba(16,28,16,1.0) 90%);
 
 canvas,
-body:before {
+body:before, body:after {
     display: block;
     height: 100vh;
     position: fixed;
@@ -145,11 +145,10 @@ body:before {
 canvas {
     z-index: -11;
 }
-body:before {
-    content: ' ';
-    z-index: -10;
-    background-image: $bgGlow, $bgImage;
-    background-blend-mode: screen;
+body:not(.gl-enabled):after {
+    content: '';
+    z-index: -11;
+    background-image: $bgImage;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -159,7 +158,10 @@ body:before {
     animation-timing-function: ease-in;
     animation-duration: 1s;
 }
-body.gl-enabled:before {
+body:before {
+    content: '';
+    z-index: -10;
+
     background-image: $bgGlow;
     animation-name: none;
     mix-blend-mode: screen;
