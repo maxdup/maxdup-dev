@@ -17,6 +17,17 @@ function SectionTransition(sections){
 
   this.smoothing = false;
 
+  let scrollTransitions = [];
+  for (let i = 0; i < this.sections.length-1; i++){
+    scrollTransitions.push({
+      isScrollBased: true,
+      fromId: i,
+      fromSection: this.sections[i],
+      toId: i+1,
+      toSection: this.sections[i+1],
+    });
+  }
+
   this.target = (section) => {
   }
 
@@ -24,49 +35,38 @@ function SectionTransition(sections){
     this.smoothing = this.currentProgress != this.targetProgress;
   }
   this.onNav = (section) => {
-
   }
   this.onScroll = () => {
-    let offsets = [];
+    let determineCurrentTransition = () => {
+      let targetTransition = 0;
 
-    for (let i = 0; i < this.sections.length; i++){
-
-      if (!this.sections[i].floater){
-        offsets.push(-1);
-        continue
+      let offs = [];
+      for (let i = 0; i < this.sections.length; i++){
+        let bounds = this.sections[i].elem.getBoundingClientRect();
+        if(bounds.bottom - window.innerHeight /2 > window.innerHeight/2){
+          targetTransition = i;
+          break;
+        }
       }
+      return scrollTransitions[targetTransition-1];
+    }
+    let determineCurrentProgress = () => {
 
-      let offset = 0;
-      if (top > 0){
-        let top = this.sections[i].floater.getBoundingClientRect().top;
-        offset = top / window.innerHeight;
-      } else {
-        let bottom = this.sections[i].floater.getBoundingClientRect().bottom;
-        offset = bottom / window.innerHeight - 1;
-      }
+      let fromPos = this.currentTransition.fromSection.elem.getBoundingClientRect();
+      let toPos = this.currentTransition.toSection.elem.getBoundingClientRect();
 
-      offsets.push(Math.min(1, Math.max(-1, offset)));
+      let fromBound = fromPos.bottom - window.innerHeight / 2;
+      let toBound = toPos.top + window.innerHeight / 2;
+      let currPos = window.innerHeight / 2;
 
-      if (this.sections[i].floating){
-        this.sections[i].floating.style.top = (offset/-2*100) + "vh";
-        this.sections[i].floating.style.opacity = 1.25 - Math.abs(offset);
-      }
+      let progress = (currPos - fromBound) / (toBound - fromBound)
+      return Math.max(0, Math.min(1, progress));
     }
 
-    for (let i = 0; i < this.sections.length; i++){
-      if (offsets[i] > 0){
-        this.targetProgress = i - offsets[i];
-        break;
-      }
-    }
+    this.currentTransition = determineCurrentTransition();
 
-    let targetSceneId = Math.floor(this.targetProgress + 0.5);
-    if (this.currentSceneId != targetSceneId){
-      this.currentSceneId = targetSceneId;
-      glInterface.exec('setScene', {
-        name: this.sections[this.currentSceneId].scene,
-        speed: 0.5,
-      });
+    if (this.currentTransition){
+      this.targetProgress = determineCurrentProgress();
     }
 
     this._checkSmoothing();
@@ -74,31 +74,52 @@ function SectionTransition(sections){
 
   this.tick = () => {
     this.currentProgress = smoothingFn(this.currentProgress, this.targetProgress, 10);
-    this.currentSectionId = Math.floor(this.currentProgress);
 
-    let currentFromSection = this.sections[this.currentSectionId];
-    let currentToSection = this.sections[this.currentSectionId + 1];
+    if (this.currentTransition){
 
-    let from = currentFromSection;
-    let to = currentToSection;
+      // Set Scene Id
+      if (this.currentTransition.isScrollBased){
+        let targetSceneId;
+        if (this.currentProgress <= 0.5){
+          targetSceneId = this.currentTransition.fromId;
+        } else {
+          targetSceneId = this.currentTransition.toId;
+        }
 
-    let progress = easeInOut(this.currentProgress % 1);
+        if (this.currentSceneId != targetSceneId){
+          this.currentSceneId = targetSceneId;
+          glInterface.exec('setScene', {
+            name: this.sections[this.currentSceneId].scene,
+            speed: 0.5,
+          });
+        }
+      }
 
-    let camAngle = deCasteljau([from.cameraAngle, from.cameraAngleOut,
-                                to.cameraAngleIn, to.cameraAngle], progress);
-    let camOffset = deCasteljau([from.cameraOffset, from.cameraOffsetOut,
-                                 to.cameraOffsetIn, to.cameraOffset], progress);
+      // Set Cam Angle
+      let from = this.currentTransition.fromSection;
+      let to = this.currentTransition.toSection;
 
-    glInterface.exec('setCamAngle', {
-      pitch: camAngle[0],
-      yaw: camAngle[1],
-      roll: camAngle[2],
-      offsetX: camOffset[0],
-      offsetY: camOffset[1],
-      offsetZ: camOffset[2],
-    });
+      let progress = easeInOut(this.currentProgress);
+
+      let camAngle = deCasteljau([from.cameraAngle, from.cameraAngleOut,
+                                  to.cameraAngleIn, to.cameraAngle], progress);
+      let camOffset = deCasteljau([from.cameraOffset, from.cameraOffsetOut,
+                                   to.cameraOffsetIn, to.cameraOffset], progress);
+
+      glInterface.exec('setCamAngle', {
+        pitch: camAngle[0],
+        yaw: camAngle[1],
+        roll: camAngle[2],
+        offsetX: camOffset[0],
+        offsetY: camOffset[1],
+        offsetZ: camOffset[2],
+      });
+    }
+
     this._checkSmoothing();
   }
+  this.onScroll();
+  this.currentProgress = this.targetProgress;
 
 }
 export default SectionTransition;

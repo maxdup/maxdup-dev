@@ -2,7 +2,7 @@ import glInterface from '../gl-interface';
 import { deCasteljau, smoothingFn } from '../utils';
 
 function MouseMoveNudge(){
-  this._currentX = 0;
+  this.currentX = 0;
   this.currentY = 0;
 
   this._targetX = 0;
@@ -19,15 +19,15 @@ function MouseMoveNudge(){
   }
 
   this._checkSmoothing = () => {
-    this.smoothing = (this._targetX != this._currentX) ||
+    this.smoothing = (this._targetX != this.currentX) ||
       (this._targetY != this.currentY);
   }
 
   this.tick = () => {
-    this._currentX = smoothingFn(this._currentX, this._targetX, 100);
+    this.currentX = smoothingFn(this.currentX, this._targetX, 100);
     this.currentY = smoothingFn(this.currentY, this._targetY, 100);
 
-    let camOffsetX = this._currentX / window.innerHeight * 2 -1;
+    let camOffsetX = this.currentX / window.innerHeight * 2 -1;
     let camOffsetY = this.currentY / window.innerWidth * 2 -1;
 
     glInterface.exec('setCamOffset', { yawOffset: camOffsetX,
@@ -44,6 +44,10 @@ function MouseMoveNudge(){
         }`
     this._checkSmoothing();
   }
+
+  this.onMove(window.innerWidth / 2, window.innerHeight / 2);
+  this.currentX = this._targetX;
+  this.currentY = this._targetY;
 }
 
 export default MouseMoveNudge;

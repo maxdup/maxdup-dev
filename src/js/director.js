@@ -2,11 +2,14 @@ import glInterface from './gl-interface';
 import { ENABLE_3D } from './constants';
 
 import SectionTransition from './interactive/sectionTransition';
+import ScrollFloating from './interactive/scrollFloating';
 import MouseMoveNudge from './interactive/mouseMoveNudge';
 
 function Director(){
 
   this.sections = [];
+
+  this.mouseNudge = new MouseMoveNudge();
 
   this.loadSections = (sections) => {
     sections.forEach((c) => {
@@ -18,12 +21,11 @@ function Director(){
       }
     });
     this.sections = sections;
+    this.scrollFloating = new ScrollFloating(this.sections);
   }
 
   this.run3D = (bg) => {
-    let mouseNudge = new MouseMoveNudge();
     let scrollTransition = new SectionTransition(this.sections);
-    let linkTransition = null;
 
     // Initialize
     document.body.classList.add('gl-enabled');
@@ -44,20 +46,16 @@ function Director(){
 
     // Events
     window.addEventListener('scroll', () => {
-      if (linkTransition) {
-        // --TODO-- //
-        linkTransition.onScroll();
-      } else {
-        scrollTransition.onScroll();
-      }
-      if (mouseNudge.smoothing || scrollTransition.smoothing){
+      scrollTransition.onScroll();
+      this.scrollFloating.onScroll();
+      if (this.mouseNudge.smoothing || scrollTransition.smoothing){
         setTimeout(camSmoothingFunction, 10);
       }
     });
 
     window.addEventListener('mousemove', (event) => {
-      mouseNudge.onMove(event.x, event.y);
-      if (mouseNudge.smoothing || scrollTransition.smoothing){
+      this.mouseNudge.onMove(event.x, event.y);
+      if (this.mouseNudge.smoothing || scrollTransition.smoothing){
         setTimeout(camSmoothingFunction, 10);
       }
     });
@@ -71,15 +69,12 @@ function Director(){
 
     let camSmoothingFunction = () => {
       scrollTransition.smoothing && scrollTransition.tick();
-      mouseNudge.smoothing && mouseNudge.tick();
+      this.mouseNudge.smoothing && this.mouseNudge.tick();
 
-      if (scrollTransition.smoothing || mouseNudge.smoothing){
+      if (this.mouseNudge.smoothing || scrollTransition.smoothing){
         setTimeout(camSmoothingFunction, 10);
       }
     }
-    scrollTransition.onScroll();
-    mouseNudge.onMove(0,0);
-
     camSmoothingFunction();
   }
 
@@ -90,34 +85,30 @@ function Director(){
       cs[i].parentNode.removeChild(cs[i]);
     }
 
-    let mouseNudge = new MouseMoveNudge();
-    let scrollTransition = new SectionTransition(this.sections);
-
     // Events
     window.addEventListener('scroll', () => {
-      scrollTransition.onScroll();
-      if (mouseNudge.smoothing || scrollTransition.smoothing){
+      this.scrollFloating.onScroll();
+      if (this.mouseNudge.smoothing){
         setTimeout(camSmoothingFunction, 10);
       }
     });
 
     window.addEventListener('mousemove', (event) => {
-      mouseNudge.onMove(event.x, event.y);
-      if (mouseNudge.smoothing || scrollTransition.smoothing){
+      this.mouseNudge.onMove(event.x, event.y);
+      if (this.mouseNudge.smoothing){
         setTimeout(camSmoothingFunction, 10);
       }
     });
 
-        let camSmoothingFunction = () => {
-      scrollTransition.smoothing && scrollTransition.tick();
-      mouseNudge.smoothing && mouseNudge.tick();
+    let camSmoothingFunction = () => {
+      this.mouseNudge.smoothing && this.mouseNudge.tick();
 
-      if (scrollTransition.smoothing || mouseNudge.smoothing){
+      if (this.mouseNudge.smoothing){
         setTimeout(camSmoothingFunction, 10);
       }
     }
-    scrollTransition.onScroll();
-    mouseNudge.onMove(0,0);
+    this.scrollFloating.onScroll();
+    this.mouseNudge.onMove(0,0);
 
     camSmoothingFunction();
 
