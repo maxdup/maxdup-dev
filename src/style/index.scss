@@ -1,5 +1,6 @@
 @import './theming';
 @import './animations';
+@import './constants';
 
 body {
     background: black;
@@ -54,7 +55,7 @@ body {
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    height: 100vh;
+    min-height: 100vh;
     margin-top: -2rem;
     margin-bottom: -3rem;
 }
@@ -62,12 +63,27 @@ body {
     max-width: 1400px;
     flex-grow: 0;
     position: relative;
+    box-sizing: border-box;
+    padding-top: 8rem;
+    padding-bottom: 8rem;
 }
 body .container-blurb {
     width: 60%;
     float: right;
     h2 { margin-top: 0; }
 }
+
+@media only screen and (max-width: $transition-small) {
+    body .container-blurb {
+        width: 100%;
+    }
+}
+@media only screen and (max-width: $transition-medium) {
+    body .aside-blurb {
+        display: none !important;
+    }
+}
+
 
 
 

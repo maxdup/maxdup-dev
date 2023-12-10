@@ -1,3 +1,5 @@
+@import '../../style/constants';
+
 #main {
     position: relative;
     display: flex;
@@ -32,7 +34,7 @@
     #main-content {
         font-size: 24px;
 
-        @media (min-width: 768px) {
+        @media (min-width: $transition-medium) {
             font-size: 32px;
         }
         position: relative;

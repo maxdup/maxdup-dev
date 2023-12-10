@@ -1,4 +1,5 @@
 @import './theming-common';
+@import './constants';
 
 @mixin content-container {
     box-sizing: border-box;
@@ -6,6 +7,8 @@
     min-height: 100vh;
     margin: auto;
     position: relative;
+    padding-left: 3rem;
+    padding-right: 3rem;
 
     &:after {
         content: '';
@@ -17,6 +20,10 @@
         right: -100vw;
         bottom: 0;
         margin: auto;
+    }
+    @media only screen and (max-width: $transition-small) {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
     }
 }
 
