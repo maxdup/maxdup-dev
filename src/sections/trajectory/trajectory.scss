@@ -11,6 +11,12 @@
         bottom: 0;
         margin: auto;
     }
+    img {
+        position: absolute;
+        top: 0;
+        right: 7vw;
+        margin-right: -2rem;
+    }
 }
 
 
@@ -38,12 +44,11 @@
     #trajectory-graph {
         padding: 0;
         display: block;
-        float: left;
         position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
+        right: 7vw;
+        top: 7rem;
         margin: auto;
+        pointer-events: none;
     }
 
     .graph-node {
@@ -129,7 +134,7 @@
 }
 
 $gWidth: 20vw;
-$gHeight: 50vh;
+$gHeight: 30vh;
 $nudge: 5; // percent
 $nNode: 5;
 
@@ -152,7 +157,7 @@ $nNode: 5;
 
 .graph-node:before,
 .graph-node:after {
-    height: math.div(50vh, 4);
+    height: math.div($gHeight, 4);
 }
 
 @for $i from 1 through $nNode {

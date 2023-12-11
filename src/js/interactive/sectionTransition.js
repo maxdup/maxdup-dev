@@ -34,6 +34,11 @@ function SectionTransition(sections){
     });
   }
 
+  this.sceneIdByName = (sceneName) => {
+    let targetScene = this.sections.find((s)=>s.scene == sceneName);
+    return this.sections.indexOf(targetScene);
+  }
+
   this.lockScene = (sceneName) => {
     if (sceneName != this.sections[this.currentSceneId].scene){
       this.setScene(sceneName, PEEK_TRANSITION_SPEED);
@@ -42,8 +47,7 @@ function SectionTransition(sections){
   }
 
   this.unlockScene = () => {
-    if (this.lockedSceneName != this.sections[this.currentSceneId].scene &&
-        !this.clickTransition){
+    if (this.lockedSceneName != this.sections[this.currentSceneId].scene){
       this.setScene(this.sections[this.currentSceneId].scene,
                     PEEK_TRANSITION_SPEED);
     }
@@ -59,9 +63,7 @@ function SectionTransition(sections){
   this.targetScene = (sceneName) => {
     this.clickTransition && this.endClickTransition();
 
-    let targetSection = this.sections.find((s)=>s.scene == sceneName);
-    let currentSection = this.sections[this.currentSceneId];
-    let ids = [this.sections.indexOf(targetSection), this.currentSceneId];
+    let ids = [this.sceneIdByName(sceneName), this.currentSceneId];
 
     if (ids[0] == ids[1]){ return }
 
@@ -69,7 +71,7 @@ function SectionTransition(sections){
 
     this.clickTransition = {
       isScrollBased: false,
-      lockedSceneName: sceneName,
+      sceneName: sceneName,
       fromId: ids[0],
       fromSection: this.sections[ids[0]],
       toId: ids[1],
@@ -101,16 +103,17 @@ function SectionTransition(sections){
       return scrollTransitions[tid];
   }
   this._determineScrollProgress = (transition) => {
-    if (!transition){return -1};
-      let fromPos = transition.fromSection.elem.getBoundingClientRect();
-      let toPos = transition.toSection.elem.getBoundingClientRect();
+    if (!transition){ return -1 };
 
-      let fromBound = fromPos.bottom - window.innerHeight / 2;
-      let toBound = toPos.top + window.innerHeight / 2;
-      let currPos = window.innerHeight / 2;
+    let fromPos = transition.fromSection.elem.getBoundingClientRect();
+    let toPos = transition.toSection.elem.getBoundingClientRect();
 
-      let progress = (currPos - fromBound) / (toBound - fromBound)
-      return Math.max(0, Math.min(1, progress));
+    let fromBound = fromPos.bottom - window.innerHeight / 2;
+    let toBound = toPos.top + window.innerHeight / 2;
+    let currPos = window.innerHeight / 2;
+
+    let progress = (currPos - fromBound) / (toBound - fromBound)
+    return Math.max(0, Math.min(1, progress));
   }
 
   this.onScroll = () => {
@@ -136,18 +139,20 @@ function SectionTransition(sections){
     this.currentProgress = smoothingFn(this.currentProgress, this.targetProgress, 25);
 
     if (this.currentTransition){
-
-      // Set Scene Id
       let targetSceneId;
-      if (this.currentProgress <= 0.5){
-        targetSceneId = this.currentTransition.fromId;
+      if (this.currentTransition.sceneName){
+        targetSceneId = this.sceneIdByName(this.clickTransition.sceneName);
       } else {
-        targetSceneId = this.currentTransition.toId;
+        if (this.currentProgress <= 0.5){
+          targetSceneId = this.currentTransition.fromId;
+        } else {
+          targetSceneId = this.currentTransition.toId;
+        }
       }
 
       if (this.currentSceneId != targetSceneId){
         this.currentSceneId = targetSceneId;
-        if (!this.lockedSceneName && !this.clickTransition){
+        if (!this.lockedSceneName){
           this.setScene(this.sections[this.currentSceneId].scene, SCROLL_TRANSITION_SPEED)
         }
       }
