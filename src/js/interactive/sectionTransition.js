@@ -1,16 +1,22 @@
 import glInterface from '../gl-interface';
 import { deCasteljau, smoothingFn, easeInOut } from '../utils';
 
+const PEEK_TRANSITION_SPEED = 0.3;
+const SCROLL_TRANSITION_SPEED = 0.5;
+
 function SectionTransition(sections){
   this.sections = sections;
 
   this.currentSceneId = 0;
+  this.lockedSceneId = null;
 
   this.fromSection = null;
   this.toSection = null;
 
   this.targetProgress = null;
   this.currentProgress = null;
+
+  this.currentTransition = null;
 
   this.progressFrom = null;
   this.progressTo = null;
@@ -28,32 +34,76 @@ function SectionTransition(sections){
     });
   }
 
-  this.target = (section) => {
+  this.lockScene = (sceneName) => {
+    if (sceneName != this.sections[this.currentSceneId].scene){
+      this.setScene(sceneName, PEEK_TRANSITION_SPEED);
+    }
+    this.lockedSceneName = sceneName;
+  }
+
+  this.unlockScene = () => {
+    if (this.lockedSceneName != this.sections[this.currentSceneId].scene &&
+        !this.clickTransition){
+      this.setScene(this.sections[this.currentSceneId].scene,
+                    PEEK_TRANSITION_SPEED);
+    }
+    this.lockedSceneName = null;
+  }
+
+  this.endClickTransition = () => {
+    clearTimeout(this.scrollTimeout);
+    this.scrollTimeout = null;
+    this.clickTransition = null;
+  }
+
+  this.targetScene = (sceneName) => {
+    this.clickTransition && this.endClickTransition();
+
+    let targetSection = this.sections.find((s)=>s.scene == sceneName);
+    let currentSection = this.sections[this.currentSceneId];
+    let ids = [this.sections.indexOf(targetSection), this.currentSceneId];
+
+    if (ids[0] == ids[1]){ return }
+
+    ids = ids.sort((a, b)=> a - b);
+
+    this.clickTransition = {
+      isScrollBased: false,
+      lockedSceneName: sceneName,
+      fromId: ids[0],
+      fromSection: this.sections[ids[0]],
+      toId: ids[1],
+      toSection: this.sections[ids[1]],
+    }
+  }
+
+  this.setScene = (sceneName, speed) => {
+    glInterface.exec('setScene', {
+      name: sceneName,
+      speed: speed,
+    });
   }
 
   this._checkSmoothing = () => {
     this.smoothing = this.currentProgress != this.targetProgress;
   }
-  this.onNav = (section) => {
-  }
-  this.onScroll = () => {
-    let determineCurrentTransition = () => {
-      let targetTransition = 0;
 
-      let offs = [];
-      for (let i = 0; i < this.sections.length; i++){
-        let bounds = this.sections[i].elem.getBoundingClientRect();
-        if(bounds.bottom - window.innerHeight /2 > window.innerHeight/2){
-          targetTransition = i;
-          break;
+  this._determineScrollTransition = () => {
+    let determineCurrentTId = () => {
+        for (let i = 0; i < this.sections.length; i++){
+          if (this.sections[i].elem.getBoundingClientRect().top > 0){
+            return i-1;
+          }
         }
+        return this.sections.length-2;
       }
-      return scrollTransitions[targetTransition-1];
-    }
-    let determineCurrentProgress = () => {
-
-      let fromPos = this.currentTransition.fromSection.elem.getBoundingClientRect();
-      let toPos = this.currentTransition.toSection.elem.getBoundingClientRect();
+      let tid = determineCurrentTId();
+      return scrollTransitions[tid];
+  }
+  this._determineScrollProgress = (transition) => {
+    if (!transition){return -1};
+      let fromPos = transition.fromSection.elem.getBoundingClientRect();
+      let toPos = transition.toSection.elem.getBoundingClientRect();
 
       let fromBound = fromPos.bottom - window.innerHeight / 2;
       let toBound = toPos.top + window.innerHeight / 2;
@@ -61,39 +111,47 @@ function SectionTransition(sections){
 
       let progress = (currPos - fromBound) / (toBound - fromBound)
       return Math.max(0, Math.min(1, progress));
+  }
+
+  this.onScroll = () => {
+
+    let activeTransition = this.clickTransition || this._determineScrollTransition();
+    this.targetProgress = this._determineScrollProgress(activeTransition);
+
+    if (this.currentTransition != activeTransition){
+      if (this.currentTransition!== null){
+        this.currentProgress = this.targetProgress;
+      }
+      this.currentTransition = activeTransition;
     }
 
-    this.currentTransition = determineCurrentTransition();
-
-    if (this.currentTransition){
-      this.targetProgress = determineCurrentProgress();
-    }
+    clearTimeout(this.scrollTimeout);
+    this.scrollTimeout = setTimeout(this.endClickTransition, 100);
 
     this._checkSmoothing();
   }
 
   this.tick = () => {
-    this.currentProgress = smoothingFn(this.currentProgress, this.targetProgress, 10);
+
+    this.currentProgress = smoothingFn(this.currentProgress, this.targetProgress, 25);
 
     if (this.currentTransition){
 
       // Set Scene Id
-      if (this.currentTransition.isScrollBased){
-        let targetSceneId;
-        if (this.currentProgress <= 0.5){
-          targetSceneId = this.currentTransition.fromId;
-        } else {
-          targetSceneId = this.currentTransition.toId;
-        }
+      let targetSceneId;
+      if (this.currentProgress <= 0.5){
+        targetSceneId = this.currentTransition.fromId;
+      } else {
+        targetSceneId = this.currentTransition.toId;
+      }
 
-        if (this.currentSceneId != targetSceneId){
-          this.currentSceneId = targetSceneId;
-          glInterface.exec('setScene', {
-            name: this.sections[this.currentSceneId].scene,
-            speed: 0.5,
-          });
+      if (this.currentSceneId != targetSceneId){
+        this.currentSceneId = targetSceneId;
+        if (!this.lockedSceneName && !this.clickTransition){
+          this.setScene(this.sections[this.currentSceneId].scene, SCROLL_TRANSITION_SPEED)
         }
       }
+
 
       // Set Cam Angle
       let from = this.currentTransition.fromSection;

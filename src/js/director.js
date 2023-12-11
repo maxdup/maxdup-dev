@@ -25,7 +25,7 @@ function Director(){
   }
 
   this.run3D = (bg) => {
-    let scrollTransition = new SectionTransition(this.sections);
+    this.scrollTransition = new SectionTransition(this.sections);
 
     // Initialize
     document.body.classList.add('gl-enabled');
@@ -46,16 +46,16 @@ function Director(){
 
     // Events
     window.addEventListener('scroll', () => {
-      scrollTransition.onScroll();
+      this.scrollTransition.onScroll();
       this.scrollFloating.onScroll();
-      if (this.mouseNudge.smoothing || scrollTransition.smoothing){
+      if (this.mouseNudge.smoothing || this.scrollTransition.smoothing){
         setTimeout(camSmoothingFunction, 10);
       }
     });
 
     window.addEventListener('mousemove', (event) => {
       this.mouseNudge.onMove(event.x, event.y);
-      if (this.mouseNudge.smoothing || scrollTransition.smoothing){
+      if (this.mouseNudge.smoothing || this.scrollTransition.smoothing){
         setTimeout(camSmoothingFunction, 10);
       }
     });
@@ -68,10 +68,10 @@ function Director(){
     });
 
     let camSmoothingFunction = () => {
-      scrollTransition.smoothing && scrollTransition.tick();
+      this.scrollTransition.smoothing && this.scrollTransition.tick();
       this.mouseNudge.smoothing && this.mouseNudge.tick();
 
-      if (this.mouseNudge.smoothing || scrollTransition.smoothing){
+      if (this.mouseNudge.smoothing || this.scrollTransition.smoothing){
         setTimeout(camSmoothingFunction, 10);
       }
     }
@@ -107,8 +107,6 @@ function Director(){
         setTimeout(camSmoothingFunction, 10);
       }
     }
-    this.scrollFloating.onScroll();
-    this.mouseNudge.onMove(0,0);
 
     camSmoothingFunction();
 

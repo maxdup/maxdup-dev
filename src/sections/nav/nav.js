@@ -1,6 +1,7 @@
 import './nav.scss';
 
 import glInterface from '../../js/gl-interface';
+import director from '../../js/director';
 function Navigation(){
 
   this.sections = [];
@@ -31,24 +32,14 @@ function Navigation(){
     }
 
     let onNavOut = function(e){
-      if (navElem !== e.target) return;
-      setScene(scrollScene, 0.3);
+      director.scrollTransition.unlockScene();
     }
-
     let onNavHrefHover = function(e){
-      setScene(e.target.attributes.scene.value, 0.3);
+      director.scrollTransition.lockScene(e.target.attributes.scene.value);
     }
     let onNavHrefClick = function(e){
+      director.scrollTransition.targetScene(e.target.attributes.scene.value);
       e.target.blur();
-    }
-
-    let setScene = function(sceneName, speed) {
-      if (glInterface){
-        glInterface.exec('setScene', {
-          name: sceneName,
-          speed: speed
-        });
-      }
     }
 
     let afterScroll = function(){
@@ -69,9 +60,11 @@ function Navigation(){
 
 
     navElem.addEventListener('mouseout', onNavOut);
-    [...linkElems].forEach((n) => {
-      n.addEventListener('mouseover', onNavHrefHover);
-      n.addEventListener('click', onNavHrefClick);
+    homeElem.addEventListener('mouseout', onNavOut);
+
+    [...linkElems, homeElem].forEach((elem) => {
+      elem.addEventListener('mouseover', onNavHrefHover);
+      elem.addEventListener('click', onNavHrefClick);
     });
   }
 }

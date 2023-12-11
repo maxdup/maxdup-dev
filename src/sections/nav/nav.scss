@@ -32,10 +32,10 @@ body>a#home {
     padding-left: math.div($navHeight - 4rem, 2);
     box-sizing: border-box;
     z-index: 11;
-    pointer-events: none;
+    pointer-events: all;
 
-    * {
-        pointer-events: all;
+    *, &:before {
+        pointer-events: none;
     }
     h1 {
         margin: 0;
