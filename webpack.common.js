@@ -14,7 +14,7 @@ module.exports = {
   context: path.join(__dirname, 'src'),
   entry: {
     index: './index.js',
-    allo: './index-allo.js'
+    //allo: './index-allo.js'
   },
   output: {
     path: dirBuild,
@@ -61,11 +61,11 @@ module.exports = {
       filename: 'index.html',
       chunks: ['index']
     }),
-    new HtmlWebpackPlugin({
+    /*new HtmlWebpackPlugin({
       template: path.join(dirSrc, 'index-allo.html'),
       filename: 'index-allo.html',
       chunks: ['allo']
-    }),
+    }),*/
     new FaviconsWebpackPlugin({
       logo: path.join(dirSrc, './images/favicon.png'),
       mode: 'webapp',
