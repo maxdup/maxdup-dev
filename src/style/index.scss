@@ -66,11 +66,26 @@ body {
     box-sizing: border-box;
     padding-top: 8rem;
     padding-bottom: 8rem;
+    width: 100%;
+    display: flex;
+    align-items: stretch;
+
 }
 body .container-blurb {
     width: 60%;
-    float: right;
     h2 { margin-top: 0; }
+}
+body .aside-blurb {
+    position: relative;
+    display: block;
+    width: 20%;
+    flex-grow: 1;
+    margin: 0 3vw;
+
+    img {
+        height: 4rem;
+        width: auto;
+    }
 }
 
 @media only screen and (max-width: $transition-small) {
