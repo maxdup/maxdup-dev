@@ -135,7 +135,7 @@ body {
 
 $bgImage: url('../images/background.webp');
 $bgNoise: url('../images/noise.png');
-$bgGlow: radial-gradient(circle at 10% 30%, rgba(64,16,16,0.5) 0%, rgba(0,0,0) 50%, rgba(0,0,0) 60%, rgba(16,28,16,1.0) 90%);
+$bgGlow: radial-gradient(circle at 10% 30%, rgba(64,16,16,0.55) 0%, rgba(0,0,0) 50%, rgba(0,0,0) 60%, rgba(16,28,16,1.0) 90%);
 
 canvas,
 body:before, body:after {
