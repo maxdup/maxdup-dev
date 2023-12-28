@@ -5,7 +5,6 @@ const dirSrc = path.join(__dirname, 'src');
 const dirBuild = path.join(__dirname, 'build');
 
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -28,7 +27,7 @@ module.exports = {
       },
       { test: /\.scss$/,
         use: [
-          { loader: MiniCssExtractPlugin.loader },
+          { loader: 'style-loader' },
           { loader: 'css-loader' },
           { loader: 'postcss-loader',
             options: {
@@ -53,9 +52,6 @@ module.exports = {
     ]
   },
   plugins:[
-    new MiniCssExtractPlugin({
-      filename: '[name].[contenthash].css'
-    }),
     new HtmlWebpackPlugin({
       template: path.join(dirSrc, 'index.html'),
       filename: 'index.html',

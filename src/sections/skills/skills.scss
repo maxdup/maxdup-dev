@@ -4,53 +4,7 @@
     .floating-container {
         display: block;
     }
-    h3 {
-        font-size: 1.25rem;
-    }
-    .container-blurb {
+    .main-blurb {
         float: none;
     }
-    .columns {
-        display: block;
-        width: 100%;
-        clear: all;
-        margin-top: 4rem;
-        margin-bottom: 1rem;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-    }
-    @media only screen and (max-width: $transition-medium) {
-        .columns {
-            grid-template-columns: 1fr;
-        }
-    }
-    .column {
-        max-width: 25rem;
-        display: inline-block;
-        vertical-align: top;
-        margin-right: 3rem;
-        margin-left: 0;
-        margin-bottom: 1rem;
-
-        overflow: visible;
-        position: relative;
-        margin-top: 1rem;
-
-
-        ul {
-            padding-left: 1rem;
-        }
-        li {
-            display: inline-block;
-            &:not(:last-child):after { content: ", "; }
-        }
-        h3 {
-            margin: 0;
-        }
-
-        >*:not(a) {
-            display: block;
-        }
-    }
-
 }
