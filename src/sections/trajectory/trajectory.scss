@@ -11,11 +11,15 @@
         bottom: 0;
         margin: auto;
     }
-    img {
+
+    i {
+        font-size: 4rem;
+        line-height: 5rem;
         position: absolute;
         top: 0;
         right: 7vw;
-        margin-right: -2rem;
+        color: #888;
+        margin-right: -2.5rem;
     }
 }
 

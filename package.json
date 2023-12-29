@@ -11,6 +11,7 @@
   "license": "ISC",
   "devDependencies": {
     "autoprefixer": "^10.4.8",
+    "boxicons": "^2.1.4",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.1",
     "css-minimizer-webpack-plugin": "^4.0.0",
@@ -22,8 +23,10 @@
     "postcss-loader": "^7.0.1",
     "sass": "^1.54.6",
     "sass-loader": "^13.0.2",
+    "simple-icons": "^10.4.0",
     "style-loader": "^3.3.1",
     "ts-shader-loader": "^2.0.1",
+    "webfonts-loader": "^8.0.1",
     "webpack": "^5.74.0",
     "webpack-bundle-analyzer": "^4.6.1",
     "webpack-cli": "^4.10.0",

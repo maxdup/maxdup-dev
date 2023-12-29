@@ -37,28 +37,21 @@ body>a#home {
     *, &:before {
         pointer-events: none;
     }
-    h1 {
+    h1, i {
         margin: 0;
-    }
-    h1, svg {
         vertical-align: middle;
         display: inline-block;
     }
-    svg {
-        height: 4rem;
-        width: 4rem;
-        display: inline-block;
+    i {
+        font-size: 4rem;
     }
     &:focus,
     &:hover {
         box-shadow: none !important;
         background: none !important;
         animation-name: none !important;
-        h1 {
+        h1, i {
             text-shadow: 0px 0px 5px #555 !important;
-        }
-        svg {
-            filter: drop-shadow(0px 0px 5px #555);
         }
     }
 }
@@ -68,15 +61,15 @@ a#home, nav a {
     &:focus,
     &:hover {
         color: #fff !important;
-        svg path {
-            fill: #fff !important;
-        }
     }
 }
 
 nav {
     max-width: 1400px;
     margin: auto;
+    &.mdi:after{
+        display: none;
+    }
 }
 
 body.js-enabled {
@@ -84,10 +77,6 @@ body.js-enabled {
     >a#home {
         color: #444;
         transition: color 0.3s;
-        svg path {
-            transition: fill 0.3s;
-            fill: #444;
-        }
     }
     >a#home:before {
         opacity: 0;
@@ -97,9 +86,6 @@ body.js-enabled {
     nav:focus-within {
         &+a#home {
             color: #ccc;
-            svg path {
-                fill: #ccc;
-            }
             &:before {
                 opacity: 1;
             }
@@ -108,9 +94,6 @@ body.js-enabled {
     &.nav-complete {
         a#home {
             color: #ccc;
-            svg path {
-                fill: #ccc;
-            }
             &:before {
                 opacity: 1;
             }
@@ -206,7 +189,7 @@ nav {
     ul {
         min-width: 80%;
     }
-    &:after {
+    &.mdi:after {
         height: $navHeight *0.75;
         padding: 0.65rem 1.5rem 0;
     }
@@ -239,11 +222,10 @@ nav {
         padding-top: 3rem;
     }
 
-    &:after {
-        content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 100 80' width='40' height='40'%3E%3Crect id='pwease' width='100' height='10'%3E%3C/rect%3E%3Crect y='30' width='100' height='10'%3E%3C/rect%3E%3Crect y='60' width='100' height='10'%3E%3C/rect%3E%3C/svg%3E");
+    &.mdi:after {
         height: $navHeight;
-        padding: math.div($navHeight,4) 2rem 0rem;
-        font-size: 0rem;
+        padding: 0.75rem 1.5rem 0rem;
+        font-size: 4rem;
         color: white;
         display: block;
         position: fixed;
@@ -276,7 +258,7 @@ nav {
     &.open,
     &:focus,
     &:focus-within {
-        &:after {
+        &.mdi:after {
             background: black;
             filter: invert(1);
         }
@@ -352,6 +334,9 @@ nav {
     nav {
         @include menu-container;
     }
+    body > a#home{
+        padding-left: 1.5rem;
+    }
 }
 @media only screen and (max-width: $transition-small) {
     nav {
@@ -362,20 +347,24 @@ nav {
 
 
 @media only screen and (max-width: $transition-small) {
-    body > a#home {
-        padding: 1.25rem;
-        height: $navHeight * 0.75;
-        padding-top: math.div($navHeight * 0.75 - 3rem, 2);
+    body > a#home i,
+    nav.mdi:after {
+        font-size: 3rem;
+    }
+    body > a#home,
+    nav.mdi:after {
+
         padding-left: math.div($navHeight * 0.75 - 2.5rem, 2);
+        padding-right: math.div($navHeight * 0.75 - 2.5rem, 2);
+    }
+    body > a#home {
+        height: $navHeight * 0.75;
+
+        padding-bottom: 1.25rem;
+        padding-top: math.div($navHeight * 0.75 - 3rem, 2);
 
         &:before {
             height: $navHeight * 0.75;
-        }
-        svg {
-            top: 0.75rem;
-            left: 0.5rem;
-            height: 3rem;
-            width: 3rem;
         }
         h1 {
             display: none;

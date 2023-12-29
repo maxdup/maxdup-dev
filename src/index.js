@@ -1,5 +1,7 @@
 import './style/index.scss';
 
+require('./fonts/maxdup-icons.font');
+
 import nav from './sections/nav/nav';
 
 import glInterface from './js/gl-interface';

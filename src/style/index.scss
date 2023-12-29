@@ -17,10 +17,12 @@ body {
     }
     h2 {
         font-size: 4rem;
+        line-height: 1;
         margin: 0 0 2.5rem;
     }
     h3 {
         font-size: 2rem;
+        line-height: 1;
         margin: 0 0 1rem;
     }
     p {
@@ -133,6 +135,12 @@ body .full-blurb {
     }
     a {
         margin-top: 0.25rem;
+        padding: 0.1rem 0.2rem;
+        vertical-align: middle;
+        i:first-child {
+            vertical-align: middle;
+            margin-right: 0.25rem;
+        }
     }
     h3 {
         margin-bottom: 1rem;
