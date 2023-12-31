@@ -1,4 +1,6 @@
-import { remap } from "../js/utils";
+function remap(val, minVal, maxVal){
+  return (maxVal-minVal) * val + minVal;
+}
 
 function makeSheen (){
   return {

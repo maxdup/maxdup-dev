@@ -20,9 +20,8 @@ module.exports = {
   // html doc
   'html': true,
   'htmlTemplate': './maxdup-icons.html.hbs',
-  'htmlDest': './doc/icons.html',
 
   // file output
-  'dest': './static/',
+  'dest': './static',
   'writeFiles': true
 };

@@ -20,26 +20,14 @@ module.exports = {
     filename: '[name].[contenthash].bundle.js',
     chunkFilename: '[name].[contenthash].bundle.js'
   },
+  devServer: {
+    port: 8000,
+    watchFiles: ['src/**/*']
+  },
   module: {
     rules: [{
       test: /\.html$/,
       loader: 'html-loader'
-    }, {
-      test: /\.scss$/,
-      use: [
-        { loader: 'style-loader' },
-        { loader: 'css-loader' },
-        { loader: 'postcss-loader',
-          options: {
-            postcssOptions: {
-              plugins: [
-                ["autoprefixer",{}],
-              ],
-            },
-          },
-        },
-        { loader: 'sass-loader'}
-      ]
     }, {
       test: /\.(glsl|vs|fs|vert|frag)$/,
       loader: 'ts-shader-loader'
@@ -56,12 +44,14 @@ module.exports = {
         'webfonts-loader'
       ]
     }, {
-      test: /\.(woff|woff2|eot|ttf|otf|svg|jpg|jpeg|png|gif)$/i,
+      test: /\.(woff|woff2|eot|ttf|otf|svg|jpg|jpeg|png|gif|webp)$/i,
       type: "asset/resource",
     }]
   },
   plugins: [
-    new MiniCssExtractPlugin({ filename: '[name].[contenthash].css' }),
+    new MiniCssExtractPlugin({
+      filename: '[name].[contenthash].css'
+    }),
     new HtmlWebpackPlugin({
       template: path.join(dirSrc, 'index.html'),
       filename: 'index.html',
@@ -79,8 +69,5 @@ module.exports = {
       patterns: [{from: 'static', to: 'static'}]
     }),
 
-  ],
-  performance: {
-    maxAssetSize: 400000,
-  }
+  ]
 }

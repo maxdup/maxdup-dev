@@ -1,6 +1,6 @@
-import './style/index.scss';
-
 require('./fonts/maxdup-icons.font');
+
+import './style/index.scss';
 
 import nav from './sections/nav/nav';
 

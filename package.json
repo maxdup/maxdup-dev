@@ -5,7 +5,10 @@
   "main": "webpack.prod.js",
   "scripts": {
     "start": "webpack-dev-server --open --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js"
+    "start-prod": "webpack-dev-server --open --config webpack.prod.js",
+    "start-debug": "webpack-dev-server --open --config webpack.debug.js",
+    "build": "webpack --config webpack.prod.js",
+    "build-debug": "webpack --config webpack.debug.js"
   },
   "author": "",
   "license": "ISC",
@@ -28,7 +31,7 @@
     "ts-shader-loader": "^2.0.1",
     "webfonts-loader": "^8.0.1",
     "webpack": "^5.74.0",
-    "webpack-bundle-analyzer": "^4.6.1",
+    "webpack-bundle-analyzer": "^4.10.1",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.10.1",
     "webpack-merge": "^5.8.0"

@@ -22,17 +22,17 @@ const MSGS = {
   setCamAngle: 11,
 }
 
-let scene = new Scene();
-let camera = new Camera();
-let waves = new Waves();
-let grid = new Grid();
-let sheens = new Sheens();
-let nodes = new Nodes();
-let roads = new Roads();
-
-let v = new Void(scene, camera, waves, grid, nodes, roads, sheens);
-
 function AgnosticWorker(){
+
+  let scene = new Scene();
+  let camera = new Camera();
+  let waves = new Waves();
+  let grid = new Grid();
+  let sheens = new Sheens();
+  let nodes = new Nodes();
+  let roads = new Roads();
+
+  let v = new Void(scene, camera, waves, grid, nodes, roads, sheens);
 
   this.init = (canvas) => {
     v.initWebGL(canvas);

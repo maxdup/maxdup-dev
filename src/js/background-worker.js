@@ -1,10 +1,10 @@
-import agnosticWorker from './agnostic-worker';
+this.agnosticWorker = require('./agnostic-worker').default
 
 self.onmessage = (event) => {
   if (event.data.msg == 'init'){
-    agnosticWorker.init(event.data.canvas);
+    this.agnosticWorker.init(event.data.canvas);
   } else {
-    agnosticWorker.run(event.data.msg,
-                       event.data.value);
+    this.agnosticWorker.run(event.data.msg,
+                            event.data.value);
   }
 }

@@ -1,14 +1,14 @@
-import agnosticWorker from './agnostic-worker';
-
 function SyncWorker(){
+  this.agnosticWorker = require('./agnostic-worker').default
+
   this.init = (canvas) =>{
-    agnosticWorker.init(canvas);
+    this.agnosticWorker.init(canvas);
   }
   this.postMessage = (event) => {
-    agnosticWorker.run(event.msg, event.value);
+    this.agnosticWorker.run(event.msg, event.value);
   }
   this.exec = (eventName, value) => {
-    agnosticWorker.run(eventName, value);
+    this.agnosticWorker.run(eventName, value);
   }
   return this
 }
