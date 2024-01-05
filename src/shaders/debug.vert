@@ -1,7 +1,6 @@
 uniform mat4 pjMatrix;
 uniform mat4 mvMatrix;
 uniform float screenScale;
-uniform sampler2D dotTexture;
 
 attribute vec3 debugPosition;
 

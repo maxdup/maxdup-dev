@@ -10,7 +10,8 @@ import {N, L} from './config';
 const HN = Math.floor(N/2);
 
 let dt = 0;
-let gl, glExt, c;
+let gl, glExt, c, ctx2D;
+let canvas2D, canvas3D;
 
 let maLoc = [];
 let muLoc = [];
@@ -25,10 +26,10 @@ let debugProgram = null;
 let xaLoc = [];
 let xuLoc = [];
 
-let dotTexture = null;
 let mtlTexture = null
 
 let staticBuffer;
+let bakedBuffer;
 let dynamicBuffer;
 let debugBuffer;
 
@@ -37,10 +38,11 @@ let dynData;
 //let DEBUG = true;
 let DEBUG = false;
 
-function Void(scene, camera, waves, grid, nodes, roads, sheens){
+function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens){
 
   this.scene = scene;
   this.camera = camera;
+  this.ticker = ticker;
   this.waves = waves;
   this.grid = grid;
   this.nodes = nodes;
@@ -53,22 +55,12 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
 
   let noise = new Array(N*N);
 
-  this.targetFPS = 60;
-  this.renderScale = 1.0;
-
-  let minQuality = false;
-  let maxQuality = false;
-  let qualityIncreaseCount = 0;
-
-  let frameTiming = Date.now();  // ms
-  let frameInterval =  1000 / this.targetFPS;  // ms
-
   this.loseCTX = () => {
     glExt.loseContext();
   }
 
   this.initWebGL = (canvas) => {
-    c = canvas;
+    canvas3D = canvas;
     gl = canvas.getContext("webgl") || canvas.getContext('experimental-webgl');
     glExt = gl.getExtension('WEBGL_lose_context');
 
@@ -77,6 +69,11 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
       event.preventDefault();
       setTimeout(() => { glExt.restoreContext(); });
     }, false);
+  }
+
+  this.initTextures = (canvas) => {
+    canvas2D = canvas;
+    ctx2D = canvas.getContext("2d", { willReadFrequently: true });
   }
 
   this.initShaders = () => {
@@ -137,19 +134,7 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   }
 
-  let buildHeightBuffer = () => {
-    let nodeHeights = mapConnected(this.nodes.idTable, this.waves.heights, 1);
-    let gridHeights = mapConnected(this.grid.idTable, this.waves.heights, 1);
-    let roadHeights = mapConnected(this.roads.idTable, this.waves.heights, 1);
-    return [...this.waves.heights, ...gridHeights, ...nodeHeights, ...roadHeights];
-  }
-  let buildConnectionBuffer = () => {
-    let connectedConnections = mapConnected(this.nodes.idTable, this.nodes.connections, 1);
-    let gridConnections = new Array(this.grid.idTable.length).fill(0);
-    let roadConnections = new Array(this.roads.idTable.length).fill(-2);
-    return [...this.nodes.connections, ...gridConnections, ...connectedConnections, ...roadConnections];
-  }
-  let buildPositionBuffer = () => {
+  let buildPositionsArray = () => {
     let positions = Array.from(
       { length: N*N }, // [x1, y1, z1, x2, y2, z2, x3, y3, z3, ...]
       (_,xy) => {
@@ -162,7 +147,58 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
                 L * 0.02 * (-N / 2 + y),
                 sinZ + quickNoise.noise(x/N*20, y/N*15, 0) *0.25];
       }).flat();
+    return positions;
+  }
 
+  let buildTopoArray = async () => {
+    const mtlres = await fetch(require('../images/mtl.webp'), {mode: 'cors'});
+    const mtlblob = await mtlres.blob();
+    const mtlBitmap = await createImageBitmap(mtlblob, {
+      premultiplyAlpha: 'none',
+      colorSpaceConversion: 'none',
+    });
+
+    canvas2D.width = mtlBitmap.width;
+    canvas2D.height = mtlBitmap.height;
+    ctx2D.drawImage(mtlBitmap, 0, 0, mtlBitmap.width, mtlBitmap.height);
+
+    return Array.from(
+      { length: N*N }, // [x1, y1, x2, y2, x3, y3, ...]
+      (_,xy) => {
+        let x = Math.floor(xy / N);
+        let y = xy % N;
+
+        let texCoordX = x / N * canvas2D.width;
+        let texCoordY = y / N * canvas2D.height;
+
+        const imageData = ctx2D.getImageData(texCoordX, texCoordY, 1, 1);
+
+        return [imageData.data[1]/256,
+                imageData.data[2]/256];
+      }).flat();
+  }
+
+  let buildHeightBuffer = () => {
+    let gridHeights = mapConnected(this.grid.idTable, this.waves.heights, 1);
+    let nodeHeights = mapConnected(this.nodes.idTable, this.waves.heights, 1);
+    let roadHeights = mapConnected(this.roads.idTable, this.waves.heights, 1);
+    return [...this.waves.heights, ...gridHeights, ...nodeHeights, ...roadHeights];
+  }
+  let buildConnectionBuffer = () => {
+    let gridConnections = new Array(this.grid.idTable.length).fill(0);
+    let nodeConnections = mapConnected(this.nodes.idTable, this.nodes.connections, 1);
+    let roadConnections = new Array(this.roads.idTable.length).fill(-2);
+    return [...this.nodes.connections, ...gridConnections, ...nodeConnections, ...roadConnections];
+  }
+  let buildTopoBuffer = async () => {
+    let topoArray = await buildTopoArray();
+    let gridTopo = mapConnected(this.grid.idTable, topoArray, 2);
+    let nodeTopo = mapConnected(this.nodes.idTable, topoArray, 2);
+    let roadTopo = mapConnected(this.roads.idTable, topoArray, 2);
+    return [...topoArray, ...gridTopo, ...nodeTopo, ...roadTopo];
+  }
+  let buildPositionBuffer = () => {
+    let positions = buildPositionsArray();
     let connectedPositions = mapConnected(this.nodes.idTable, positions, 3)
     let gridPositions = mapConnected(this.grid.idTable, positions, 3);
     let roadPositions = mapConnected(this.roads.idTable, positions, 3);
@@ -183,10 +219,6 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
     return main;
   }
 
-  let buildDynamicBuffer = () => {
-    return buildHeightBuffer();
-  }
-
   this.initBuffers = () => {
 
     function glSetUniforms(p, uLoc){
@@ -197,10 +229,57 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
 
       uLoc[4] = gl.getUniformLocation(p, "nodeness");
       uLoc[5] = gl.getUniformLocation(p, "gridness");
-      uLoc[6] = gl.getUniformLocation(p, "mapness");
+      uLoc[6] = gl.getUniformLocation(p, "toponess");
+    }
 
-      uLoc[7] = gl.getUniformLocation(p, "mtlTexture");
-      uLoc[8] = gl.getUniformLocation(p, "dotTexture");
+    let loadStaticBuffer = () => {
+      let staticData = buildStaticBuffer();
+
+      staticBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, staticBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(staticData), gl.STATIC_DRAW);
+
+      const vertexPosSize = 3 * Float32Array.BYTES_PER_ELEMENT;
+      const vertexConSize = 1 * Float32Array.BYTES_PER_ELEMENT;
+      const vertexPosOff = 0;
+      const vertexConOff = vertexPosOff + vertexPosSize;
+      const vertexStaticSize = vertexPosSize + vertexConSize;
+
+      maLoc[0] = gl.getAttribLocation(dotProgram, "position");
+      gl.enableVertexAttribArray(maLoc[0]);
+      gl.vertexAttribPointer(maLoc[0], 3, gl.FLOAT, false, vertexStaticSize, vertexPosOff);
+
+      maLoc[1] = gl.getAttribLocation(dotProgram, "nconnection");
+      gl.enableVertexAttribArray(maLoc[1]);
+      gl.vertexAttribPointer(maLoc[1], 1, gl.FLOAT, false, vertexStaticSize, vertexConOff);
+    }
+
+    let loadBakedBuffer = async () => {
+      let bakedData = await buildTopoBuffer();
+
+      bakedBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, bakedBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(bakedData), gl.STATIC_DRAW);
+
+      const vertexTopoSize = 2 * Float32Array.BYTES_PER_ELEMENT;
+      const vertexTopoOff = 0;
+      const vertexBakedSize = vertexTopoSize;
+
+      maLoc[2] = gl.getAttribLocation(dotProgram, "topology");
+      gl.enableVertexAttribArray(maLoc[2]);
+      gl.vertexAttribPointer(maLoc[2], 2, gl.FLOAT, false, vertexBakedSize, vertexTopoOff);
+    }
+
+    let loadDynamicBuffer = () => {
+      dynData = buildHeightBuffer();
+
+      dynamicBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, dynamicBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(dynData), gl.DYNAMIC_DRAW);
+
+      maLoc[3] = gl.getAttribLocation(dotProgram, "height");
+      gl.enableVertexAttribArray(maLoc[3]);
+      gl.vertexAttribPointer(maLoc[3], 1, gl.FLOAT, false, Float32Array.BYTES_PER_ELEMENT, 0);
     }
 
     // Debug Buffer
@@ -215,35 +294,9 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
       gl.vertexAttribPointer(xaLoc[0], 3, gl.FLOAT, false, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
     }
 
-    // Static Buffer
-    let staticData = buildStaticBuffer();
-
-    staticBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, staticBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(staticData), gl.STATIC_DRAW);
-
-    const vertexSizeInBytes = 4 * Float32Array.BYTES_PER_ELEMENT;
-    const vertexOffsconnect = 3 * Float32Array.BYTES_PER_ELEMENT;
-
-    maLoc[0] = gl.getAttribLocation(dotProgram, "position");
-    gl.enableVertexAttribArray(maLoc[0]);
-    gl.vertexAttribPointer(maLoc[0], 3, gl.FLOAT, false, vertexSizeInBytes, 0);
-
-    maLoc[1] = gl.getAttribLocation(dotProgram, "nconnection");
-    gl.enableVertexAttribArray(maLoc[1]);
-    gl.vertexAttribPointer(maLoc[1], 1, gl.FLOAT, false, vertexSizeInBytes, vertexOffsconnect);
-
-    // Dynamic Buffer
-    dynData = buildDynamicBuffer();
-
-    dynamicBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, dynamicBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(dynData), gl.DYNAMIC_DRAW);
-
-    maLoc[2] = gl.getAttribLocation(dotProgram, "height");
-    gl.enableVertexAttribArray(maLoc[2]);
-    gl.vertexAttribPointer(maLoc[2], 1, gl.FLOAT, false, Float32Array.BYTES_PER_ELEMENT, 0);
-
+    loadStaticBuffer();
+    loadBakedBuffer();
+    loadDynamicBuffer();
 
     // Dots
     gl.useProgram(dotProgram);
@@ -262,7 +315,6 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
       xuLoc[0] = gl.getUniformLocation(debugProgram, "pjMatrix");
       xuLoc[1] = gl.getUniformLocation(debugProgram, "mvMatrix");
       xuLoc[2] = gl.getUniformLocation(debugProgram, "screenScale");
-      xuLoc[3] = gl.getUniformLocation(debugProgram, "dotTexture");
     }
   }
 
@@ -277,69 +329,29 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
   }
 
   this.setImage = async () => {
-
-    gl.activeTexture(gl.TEXTURE0)
-    mtlTexture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, mtlTexture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-
-    const mtlres = await fetch(require('../images/mtl.webp'), {mode: 'cors'});
-    const mtlblob = await mtlres.blob();
-    const mtlBitmap = await createImageBitmap(mtlblob, {
-      premultiplyAlpha: 'none',
-      colorSpaceConversion: 'none',
-    });
-
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, mtlBitmap);
-    gl.useProgram(lineProgram);
-    gl.uniform1i(luLoc[7], 0);
-
-    gl.useProgram(dotProgram);
-    gl.uniform1i(duLoc[7], 0);
-
-    gl.activeTexture(gl.TEXTURE1)
-    dotTexture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, dotTexture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-
-    const dotres = await fetch(require('../images/dot.jpg'), {mode: 'cors'});
-    const dotblob = await dotres.blob();
-    const dotBitmap = await createImageBitmap(dotblob, {
-      premultiplyAlpha: 'none',
-      colorSpaceConversion: 'none',
-    });
-
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, dotBitmap);
-
-    gl.useProgram(dotProgram);
-    gl.uniform1i(duLoc[8], 1);
-
     if (DEBUG){
       gl.useProgram(debugProgram);
       gl.uniform1i(xuLoc[3], 1);
     }
   }
 
-  let frameCount = 0;
-  let frameAvg = null;
-
   this.render = () => {
 
     requestAnimationFrame(this.render);
 
-    let now = Date.now();
-    let elapsed = now - frameTiming; // ms
-    if (elapsed > frameInterval) {
+    if (this.ticker.frameReady()){
+      this.ticker.frameStart();
 
-      frameTiming = now - (elapsed % frameInterval);
+      if (this.camera.resized){
+        canvas3D.width = this.camera.viewWidth;
+        canvas3D.height = this.camera.viewHeight;
+        gl.viewport(0, 0, this.camera.viewWidth, this.camera.viewHeight);
+        this.camera.resized = false;
+      }
 
-      this.scene.update(elapsed);
-      this.sheens.update(elapsed);
-      this.waves.update(dt);
+      this.scene.update(this.ticker.timeDelta);
+      this.sheens.update(this.ticker.timeDelta);
+      this.waves.update(this.ticker.fixedTimeDelta);
 
       // ingest sheens
       let sh = Array.from(this.sheens.array, (s,i) => [...s.origin, ...s.angle]).flat();
@@ -347,15 +359,15 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
       let glUpdateUniforms = (uLoc) => {
         gl.uniformMatrix4fv(uLoc[0], false, this.camera.pjMatrix);
         gl.uniformMatrix4fv(uLoc[1], false, this.camera.mvMatrix);
-        gl.uniform1f(uLoc[2], this.camera.resolutionScale);
+        gl.uniform1f(uLoc[2], this.camera.renderHeight);
         gl.uniform2fv(uLoc[3], new Float32Array(sh));
 
         gl.uniform1f(uLoc[4], this.scene.nodeness);
         gl.uniform1f(uLoc[5], this.scene.gridness);
-        gl.uniform1f(uLoc[6], this.scene.mapness);
+        gl.uniform1f(uLoc[6], this.scene.toponess);
       }
 
-      dynData = buildDynamicBuffer();
+      dynData = buildHeightBuffer();
 
       // Dots
       gl.useProgram(dotProgram);
@@ -383,7 +395,7 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
 
         gl.uniformMatrix4fv(xuLoc[0], false, this.camera.pjMatrix);
         gl.uniformMatrix4fv(xuLoc[1], false, this.camera.mvMatrix);
-        gl.uniform1f(xuLoc[2], this.camera.resolutionScale);
+        gl.uniform1f(xuLoc[2], this.camera.renderHeight);
 
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(this.camera.positions));
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.camera.positions), gl.STATIC_DRAW);
@@ -392,101 +404,16 @@ function Void(scene, camera, waves, grid, nodes, roads, sheens){
       }
 
       gl.flush();
-
-      let deltaT = Date.now() - now;
-      frameAvg = frameAvg || deltaT;
-      frameCount++;
-      frameAvg += (deltaT - frameAvg) / frameCount;
-      this.evalFrameTime();
+      this.ticker.frameEnd();
     }
   }
 
-  this.evalFrameTime = () => {
-    // We make it harder to increase quality than it is to decrease.
-    // This avoids flip-flopping, furthermore, you are capted on the
-    // number of increases.
-    if (frameCount < this.targetFPS * 3){
-      return;
-    }
-    if (frameAvg * 2 > 1 / this.targetFPS * 1000 &&
-        !minQuality){
-      this.decreaseRenderQuality();
-      maxQuality = false;
-    }
-    if (frameAvg * 6 < 1 / this.targetFPS * 1000 &&
-        !maxQuality && qualityIncreaseCount < 6){
-      qualityIncreaseCount++;
-      this.increaseRenderQuality();
-      minQuality = false;
-    }
-  }
-  this.decreaseRenderQuality = () => {
-    let frameCount = 0;
-    let frameAvg = null;
-    if (this.targetFPS == 60){
-      this.setFPS(30);
-      return;
-    }
-    if (this.renderScale == 1) {
-      this.setRenderScale(0.75);
-      return;
-    }
-    if (this.renderScale == 0.75) {
-      this.setRenderScale(0.5);
-      return;
-    }
-    minQuality = true;
-  }
-  this.increaseRenderQuality = () => {
-    let frameCount = 0;
-    let frameAvg = null;
-    if (this.renderScale == 0.5){
-      this.setRenderScale(0.75);
-      return;
-    }
-    if (this.renderScale == 0.75){
-      this.setRenderScale(1);
-      return;
-    }
-    if (this.renderScale == 1 &&
-        this.targetFPS == 30){
-      this.setFPS(60);
-    }
-    maxQuality = true;
-  }
-
-  this.setRenderScale = (val) => {
-    this.renderScale = val;
-    this.updateCanvasSize();
-  }
-
-  this.setSize = (width, height) => {
-    this.windowHeight = height;
-    this.windowWidth = width;
-    this.updateCanvasSize();
-  }
-  this.updateCanvasSize = () => {
-    let targetWidth = this.windowWidth * this.renderScale;
-    let targetHeight = this.windowHeight * this.renderScale;
-    c.width = targetWidth;
-    c.height = targetHeight;
-    gl.viewport(0, 0, targetWidth, targetHeight);
-    this.camera.updateSize(targetWidth, targetHeight);
-  }
-
-  this.setFPS = (fps) => {
-    this.targetFPS = fps;
-    frameInterval =  1000 / this.targetFPS;
-    dt = 0.10 / (this.targetFPS / 30)  /3 *2;
-  }
 
   this.start = () => {
     this.initShaders()
     this.initBuffers();
     this.render();
   }
-
-  this.setFPS(this.targetFPS);
 }
 
 export default Void;

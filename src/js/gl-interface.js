@@ -7,12 +7,17 @@ function GlInterface() {
     if (!ENABLE_3D){ reject() }
     window.addEventListener('load', async function() {
       if (window.WebGLRenderingContext){
-        const canvas = document.createElement("CANVAS");
-        document.body.prepend(canvas);
+        const canvas3D = document.createElement("CANVAS");
+        const canvas2D = document.createElement("CANVAS");
+        document.body.prepend(canvas3D);
         try {
-          const offscreenCanvas = canvas.transferControlToOffscreen();
+          const offscreenCanvas3D = canvas3D.transferControlToOffscreen();
+          const offscreenCanvas2D = canvas2D.transferControlToOffscreen();
           this.glWorker = new Worker(new URL('./background-worker.js', import.meta.url));
-          this.glWorker.postMessage({msg: 'init', canvas: offscreenCanvas}, [offscreenCanvas]);
+          this.glWorker.postMessage({msg: 'init',
+                                     canvas3D: offscreenCanvas3D,
+                                     canvas2D: offscreenCanvas2D,
+                                    }, [offscreenCanvas3D, offscreenCanvas2D]);
           this.supports3D = true;
           resolve();
         }
@@ -29,7 +34,7 @@ function GlInterface() {
                 let SyncWorker = require('./synchronous-worker.js').default;
                 this.supports3D = true;
                 this.glWorker = new SyncWorker();
-                this.glWorker.init(canvas);
+                this.glWorker.init(canvas3D, canvas2D);
                 resolve();
               });
             } catch (err) {

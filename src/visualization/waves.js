@@ -10,7 +10,7 @@ function Waves(){
   let f = new Array(Tn);
   let inertiaFactor = 0;
   let initial = true;
-  let dt = 0.033;
+  let dt = 0.033; // seconds
 
   this.setInertia = (i) => {
     inertiaFactor = i;

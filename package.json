@@ -1,6 +1,6 @@
 {
   "name": "maxdup-dev",
-  "version": "0.1.0",
+  "version": "1.2.0",
   "description": "",
   "main": "webpack.prod.js",
   "scripts": {
@@ -27,6 +27,7 @@
     "sass": "^1.54.6",
     "sass-loader": "^13.0.2",
     "simple-icons": "^10.4.0",
+    "spectorjs": "^0.9.29",
     "style-loader": "^3.3.1",
     "ts-shader-loader": "^2.0.1",
     "webfonts-loader": "^8.0.1",

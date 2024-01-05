@@ -1,8 +1,8 @@
 function SyncWorker(){
   this.agnosticWorker = require('./agnostic-worker').default
 
-  this.init = (canvas) =>{
-    this.agnosticWorker.init(canvas);
+  this.init = (canvas3D, canvas2D) =>{
+    this.agnosticWorker.init(canvas3D, canvas2D);
   }
   this.postMessage = (event) => {
     this.agnosticWorker.run(event.msg, event.value);

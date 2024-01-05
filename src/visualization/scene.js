@@ -9,17 +9,17 @@ function Scene(){
   this.dottedness = 1;
   this.nodeness = 0;
   this.gridness = 0;
-  this.mapness = 0;
+  this.toponess = 0;
 
   let targetDottedness = 1;
   let targetNodeness = 0;
   let targetGridness = 0;
-  let targetMapness = 0;
+  let targetToponess = 0;
 
   let velocity = 0.3; // seconds
 
   this.update = (dt) => {
-    let deltaness = dt / velocity / 1000;
+    let deltaness = dt / velocity;
     let updated = (val, target) => {
       if (val == target){
         return val;
@@ -34,7 +34,7 @@ function Scene(){
     this.dottedness = updated(this.dottedness, targetDottedness);
     this.nodeness = updated(this.nodeness, targetNodeness);
     this.gridness = updated(this.gridness, targetGridness);
-    this.mapness = updated(this.mapness, targetMapness);
+    this.toponess = updated(this.toponess, targetToponess);
   }
 
   this.target = (sceneName, speed) => {
@@ -45,21 +45,21 @@ function Scene(){
       targetDottedness = 1;
       targetNodeness = 0;
       targetGridness = 1;
-      targetMapness = 0;
+      targetToponess = 0;
       break
     case SCENES.network:
       this.activeScene = sceneName;
       targetDottedness = 1;
       targetNodeness = 1;
       targetGridness = 0;
-      targetMapness = 0;
+      targetToponess = 0;
       break
     case SCENES.montreal:
       this.activeScene = sceneName;
       targetDottedness = 1;
       targetNodeness = 0;
       targetGridness = 0;
-      targetMapness = 1;
+      targetToponess = 1;
       break
     case SCENES.main:
       this.activeScene = sceneName;
@@ -67,7 +67,7 @@ function Scene(){
       targetDottedness = 1;
       targetNodeness = 0;
       targetGridness = 0;
-      targetMapness = 0;
+      targetToponess = 0;
     }
   }
 }

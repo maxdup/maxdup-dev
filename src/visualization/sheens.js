@@ -64,7 +64,7 @@ function Sheens(){
   }
 
   let updateSheen = (sheen, dt) => {
-    let dist = sheen.speed * dt / 1000;
+    let dist = sheen.speed * dt;
     sheen.angle[0] = Math.min(-0.25, sheen.angle[0] + dist/10);
     sheen.origin[0] += dist;
     sheen.origin[1] += dist;

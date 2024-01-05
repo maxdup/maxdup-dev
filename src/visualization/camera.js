@@ -10,7 +10,15 @@ function Camera(){
   this.pjMatrix = null;
   this.mvMatrix = initMatrix;
 
-  this.resolutionScale = null;
+  this.viewWidth = null;
+  this.viewHeight = null;
+
+  this.renderScale = 1.0;
+
+  this.renderHeight = null;
+  this.renderWidth = null;
+
+  this.resized = false;
 
   this.pitch = 0;
   this.pitchOffset = 0;
@@ -22,17 +30,11 @@ function Camera(){
   this.offsetY = 0;
   this.offsetZ = -6;
 
-  this._update = () => {
-    this.mvMatrix = matrixTranslate(identityMatrix(4), [this.offsetX, this.offsetY, this.offsetZ]);
-    this.mvMatrix = matrixRotate(this.mvMatrix, this.pitch + this.pitchOffset, [1,0,0]);
-    this.mvMatrix = matrixRotate(this.mvMatrix, this.yaw + this.yawOffset, [0,1,0]);
-    this.mvMatrix = matrixRotate(this.mvMatrix, this.roll, [0,0,1])
-  }
 
   this.updateNudge = (pitchNudge, yawNudge) => {
     this.pitchOffset = pitchNudge * 0.05;
     this.yawOffset = yawNudge * 0.05;
-    this._update();
+    _onAngleChanged();
   }
 
   this.updateAngle = (pitch, yaw, roll, offsetX, offsetY, offsetZ) => {
@@ -42,12 +44,41 @@ function Camera(){
     this.offsetX = offsetX;
     this.offsetY = offsetY;
     this.offsetZ = offsetZ;
-    this._update();
+    _onAngleChanged();
+  }
+
+  this.updateRenderScale = (scale) => {
+    if (scale == this.renderScale) { return }
+    this.renderScale = scale;
+    _onRenderSizeChanged();
   }
 
   this.updateSize = (width, height) => {
-    this.resolutionScale = height;
-    this.pjMatrix = perspectiveMatrix(45, width / height, 0.1, 1000.0);
+    if (width == this.viewWidth && height == this.viewHeight) { return }
+    this.viewWidth = width;
+    this.viewHeight = height;
+    _onRenderSizeChanged();
+
+    this.aspectRatio = width / height;
+    _onAspectRatioChanged();
+
+    this.resized = true;
+  }
+
+  let _onAngleChanged = () => {
+    this.mvMatrix = matrixTranslate(identityMatrix(4), [this.offsetX, this.offsetY, this.offsetZ]);
+    this.mvMatrix = matrixRotate(this.mvMatrix, this.pitch + this.pitchOffset, [1,0,0]);
+    this.mvMatrix = matrixRotate(this.mvMatrix, this.yaw + this.yawOffset, [0,1,0]);
+    this.mvMatrix = matrixRotate(this.mvMatrix, this.roll, [0,0,1])
+  }
+
+  let _onRenderSizeChanged = () => {
+    this.renderWidth = this.viewWidth * this.renderScale;
+    this.renderHeight = this.viewHeight * this.renderScale;
+  }
+
+  let _onAspectRatioChanged = () => {
+    this.pjMatrix = perspectiveMatrix(45, this.aspectRatio, 0.1, 1000.0);
   }
 
   this.offset = 0;
