@@ -1,8 +1,8 @@
-html, input, textarea {
-    @include base-text();
-}
 html, body, input, textarea, button {
-    @include content-text();
+    @include base-text();
+    &::selection {
+        @include base-text-selected();
+    }
 }
 button {
     @include clickable-button();

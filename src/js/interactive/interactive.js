@@ -1,9 +1,11 @@
+let accent1 = '#ffcccc';
+let accent2 = '#ccffcc';
 // ----------------------------
 // Selection Color
 // ----------------------------
 let selectColorToggle = false;
 let applySelectColor = (event) => {
-  let clr = HSLStr(selectColorToggle ? accent2 : accent1);
+  let clr = selectColorToggle ? accent2 : accent1;
   document.documentElement.style.setProperty('--select-background', clr);
 }
 let selectionChanged = () => {
@@ -21,7 +23,7 @@ applySelectColor();
 // ----------------------------
 // Link Color
 // ----------------------------
-let linkColorToggle = false;
+/*let linkColorToggle = false;
 let applyLinkColor = (event) => {
   let clr = HSLStr(linkColorToggle ? accent2 : accent1);
   document.documentElement.style.setProperty('--link-background', clr);
@@ -35,5 +37,6 @@ let links = document.getElementsByTagName('a');
   l.addEventListener('mouseover', linkHovered);
 });
 linkHovered();
+*/
 
-document.documentElement.style.setProperty('--highlight-color', 'white');
+document.documentElement.style.setProperty('--highlight-color', 'black');

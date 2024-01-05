@@ -1,4 +1,7 @@
 // Links mixins
+@mixin base-text(){}
+@mixin base-text-selected(){}
+
 @mixin clickable-text-neutral() {}
 @mixin clickable-text-hover() {}
 @mixin clickable-text-focus() {}
@@ -33,7 +36,7 @@
     &:focus { @include input-focus(); }
 }
 
-// textarea mixins
+// Textarea mixins
 @mixin textarea-neutral(){}
 @mixin textarea-hover(){}
 @mixin textarea-focus(){}
@@ -45,6 +48,6 @@
     &:focus { @include textarea-focus(); }
 }
 
-// content
+// Content
 @mixin content-container (){}
 @mixin sub-content-container (){}

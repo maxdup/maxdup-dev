@@ -3,6 +3,8 @@
 @import './constants';
 
 @mixin base-text(){
+    color: #eee;
+
     font-family: Tahoma, sans-serif;
     font-size: 18px;
 
@@ -14,8 +16,9 @@
         font-size: 12px;
     }
 }
-@mixin content-text() {
-    color: #eee;
+@mixin base-text-selected() {
+    background: var(--select-background);
+    color: var(--highlight-color);
 }
 
 @mixin border-interactive() {
