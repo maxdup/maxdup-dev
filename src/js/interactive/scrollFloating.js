@@ -3,6 +3,11 @@ function ScrollFloating(sections){
   this.sections = sections;
   this.sectionsOffset
 
+  let nav = document.getElementsByTagName('nav')[0];
+
+  //let scrolling = window.body;
+  let scrolling = document.body;
+
   this.onScroll = () => {
 
     // TODO: magnetize
@@ -14,13 +19,13 @@ function ScrollFloating(sections){
       }
 
       let offset = 0;
-      let top = this.sections[i].floater.getBoundingClientRect().top;
+      let top = this.sections[i].floater.getBoundingClientRect().top - nav.clientHeight;
       let bottom = this.sections[i].floater.getBoundingClientRect().bottom;
 
       if (top > 0){
-        offset = top / window.innerHeight;
+        offset = top / scrolling.innerHeight;
       } else {
-        offset = Math.min(0, (bottom - window.innerHeight) / window.innerHeight);
+        offset = Math.min(0, (bottom - scrolling.innerHeight) / scrolling.innerHeight);
       }
 
       if (this.sections[i].floating){

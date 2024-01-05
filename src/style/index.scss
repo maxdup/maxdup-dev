@@ -54,6 +54,7 @@ body {
 .container {
     overflow: hidden;
 }
+
 .floater-container {
     width: 100%;
     position: relative;
@@ -61,21 +62,29 @@ body {
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    min-height: 100vh;
-    margin-top: -2rem;
-    margin-bottom: -3rem;
+    min-height: calc(100vh - 5.5rem);
 }
+
 .floating-container {
-    max-width: 1400px;
-    flex-grow: 0;
     position: relative;
     box-sizing: border-box;
-    padding-top: 8rem;
-    padding-bottom: 8rem;
-    width: 100%;
     display: flex;
+    flex-grow: 0;
     align-items: stretch;
+
+    width: 100%;
+    max-width: 1600px;
+    padding: 8rem 4rem;
+
+    @media only screen and (max-width: $transition-medium) {
+        max-width: 1300px;
+        padding: 8rem 3rem;
+    }
+    @media only screen and (max-width: $transition-small) {
+        padding: 8rem 2rem;
+    }
 }
+
 body .aside-blurb {
     position: relative;
     display: block;
@@ -196,7 +205,6 @@ body .full-blurb {
     background: #444c;
     background-attachment: fixed;
     background: radial-gradient(circle at 60% 100%, #5448 0%, #222a22aa 100%);
-    //mask-image: linear-gradient(230deg, transparent 0%,  rgba(0,0,0, 0.75) 40%, black 60%);
     mask-image: radial-gradient(circle at bottom left, black 0%, rgba(0,0,0, 0.75) 40%, rgba(0,0,0,0.65) 100%);
 }
 #where.container:after {

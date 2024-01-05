@@ -97,27 +97,20 @@
 
 @mixin content-container {
     box-sizing: border-box;
-    padding: 1.25rem 1rem 3rem;
     min-height: 100vh;
     margin: auto;
     position: relative;
-    padding-left: 3rem;
-    padding-right: 3rem;
 
     &:after {
         content: '';
         position: absolute;
         z-index: -1;
-        top: 0;
         width: 100vw;
-        left: -100vw;
-        right: -100vw;
+        top: 0;
         bottom: 0;
+        right: -100vw;
+        left: -100vw;
         margin: auto;
-    }
-    @media only screen and (max-width: $transition-small) {
-        padding-left: 1.5rem;
-        padding-right: 1.5rem;
     }
 }
 

@@ -15,7 +15,7 @@ function MouseMoveNudge(){
   styleElem.innerHTML = `
     body:before {
         mask-position: var(--bg-offset-x) var(--bg-offset-y);
-        -webkit-mask-position: var(--bgOffset-x) var(--bg-offset-y);
+        -webkit-mask-position: var(--bg-offset-x) var(--bg-offset-y);
     }`
 
   this.onMove = (x, y) => {
@@ -43,8 +43,8 @@ function MouseMoveNudge(){
     let bgOffsetX = camOffsetX * PERCENT_RANGE;
     let bgOffsetY = camOffsetY * PERCENT_RANGE;
 
-    document.documentElement.style.setProperty("--bg-offset-x", bgOffsetX+"%");
-    document.documentElement.style.setProperty("--bg-offset-y", bgOffsetY+"%");
+    document.documentElement.style.setProperty("--bg-offset-x", bgOffsetX + "%");
+    document.documentElement.style.setProperty("--bg-offset-y", bgOffsetY + "%");
 
     this._checkSmoothing();
   }

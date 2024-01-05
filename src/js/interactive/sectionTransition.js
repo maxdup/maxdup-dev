@@ -141,7 +141,7 @@ function SectionTransition(sections){
     if (this.currentTransition){
       let targetSceneId;
       if (this.currentTransition.sceneName){
-        targetSceneId = this.sceneIdByName(this.clickTransition.sceneName);
+        targetSceneId = this.sceneIdByName(this.currentTransition.sceneName);
       } else {
         if (this.currentProgress <= 0.5){
           targetSceneId = this.currentTransition.fromId;
