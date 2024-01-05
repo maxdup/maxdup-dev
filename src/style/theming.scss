@@ -1,5 +1,99 @@
-@import './theming-common';
+@import './scaffold/reset';
+@import './scaffold/defaults';
 @import './constants';
+
+@mixin base-text(){
+    font-family: Tahoma, sans-serif;
+    font-size: 18px;
+
+    @media only screen and (max-width: $transition-large) {
+        font-size: 15px;
+    }
+
+    @media only screen and (max-width: $transition-medium) {
+        font-size: 12px;
+    }
+}
+@mixin content-text() {
+    color: #eee;
+}
+
+@mixin border-interactive() {
+    border: 1px solid white;
+    border-radius: 4px;
+}
+
+// Button Style
+@mixin clickable-button-neutral() {
+    @include border-interactive();
+    padding: 0.5rem 0.5rem;
+    background: transparent;
+    background-color: transparent;
+    transition: background 0.3s ease-in;
+}
+@mixin clickable-button-hover() {
+    background: rgba(1,1,1,0.5);
+}
+
+
+// Links Style
+@mixin clickable-text-neutral() {
+    color: #eee;
+    display: inline-block;
+    transition: none;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+}
+@mixin clickable-text-hover() {
+    animation-name: abberation-link;
+    background: white;
+    color: black;
+}
+@mixin clickable-text-focus() {
+    @include clickable-text-hover();
+}
+
+// inputs style
+@mixin input-textarea-common() {
+    color: white;
+    display: block;
+    width: 100%;
+    background: transparent;
+    line-height: 1.25rem;
+    font-size: 1rem;
+
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+
+    background: transparent;
+    background-color: transparent;
+    box-sizing: border-box;
+    box-shadow: 0 0 0 1000px base-color(0%) inset;
+    transition: background-color 99999s ease-in-out;
+
+    &[autocomplete=off]{
+        box-shadow: 0 0 0 0 base-color(0%) inset;
+    }
+    &:focus {
+        outline: none;
+    }
+    ::placeholder {
+        color: base-color(60%);
+    }
+}
+
+@mixin input-neutral() {
+    height: 2rem;
+    border: none;
+    border-bottom: 1px solid white;
+}
+
+@mixin textarea-neutral() {
+    @include border-interactive();
+    min-height: 6.75rem;
+    padding-top: 0.5rem;
+    resize: vertical;
+}
 
 @mixin content-container {
     box-sizing: border-box;
@@ -68,4 +162,4 @@
     margin-bottom: 1.5rem;
 }
 
-@import './framework';
+@import './scaffold/framework';

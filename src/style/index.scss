@@ -1,4 +1,3 @@
-@import './reset';
 @import './theming';
 @import './animations';
 @import './constants';
@@ -76,7 +75,6 @@ body {
     width: 100%;
     display: flex;
     align-items: stretch;
-
 }
 body .aside-blurb {
     position: relative;
@@ -197,12 +195,75 @@ body .full-blurb {
 #skills.container:after {
     background: #444c;
     background-attachment: fixed;
-    background: radial-gradient(circle at 60% 100%, #5448 0%, #444a4488 100%);
+    background: radial-gradient(circle at 60% 100%, #5448 0%, #222a22aa 100%);
     //mask-image: linear-gradient(230deg, transparent 0%,  rgba(0,0,0, 0.75) 40%, black 60%);
-    mask-image: radial-gradient(circle at bottom left, black 0%, rgba(0,0,0, 0.75) 40%, transparent 100%);
+    mask-image: radial-gradient(circle at bottom left, black 0%, rgba(0,0,0, 0.75) 40%, rgba(0,0,0,0.65) 100%);
 }
 #where.container:after {
     background: #999b;
     background-attachment: fixed;
     background: radial-gradient(circle at 60% 100%, #a99b 0%, #9a9b 100%);
+}
+
+// ------------------------------------------
+// Main background
+// ------------------------------------------
+
+body > * {
+    animation-delay: 1s;
+    animation: fadeInAnimation ease 2s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+$bgImage: url('../images/background.webp');
+$bgNoise: url('../images/noise.webp');
+$bgGlow: radial-gradient(circle at 10% 30%, rgba(64,16,16,0.55) 0%, rgba(0,0,0) 50%, rgba(0,0,0) 60%, rgba(16,28,16,1.0) 90%);
+
+canvas,
+body:before, body:after {
+    display: block;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+canvas {
+    z-index: -11;
+}
+body:not(.gl-enabled):after {
+    content: '';
+    z-index: -11;
+    background-image: $bgImage;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    animation-name: delayBackground;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in;
+    animation-duration: 1s;
+}
+body:before {
+    content: '';
+    z-index: -10;
+
+    background-image: $bgGlow;
+    animation-name: none;
+    mix-blend-mode: screen;
+
+    mask-image: $bgNoise;
+    -webkit-mask-image: $bgNoise;
+    mask-repeat: repeat;
+    -webkit-mask-repeat: repeat;
+    mask-position: 0% 0%;
+    -webkit-mask-position: 0% 0%;
+}
+
+@keyframes delayBackground {
+    0%   { background-image: $bgGlow; }
+    50%  { background-image: $bgGlow; }
+    100% { background-image: $bgGlow, $bgImage; }
 }

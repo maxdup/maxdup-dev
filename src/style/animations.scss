@@ -23,3 +23,12 @@
     40% { @include abberation-box(1); }
     100% { @include abberation-box(2); }
 }
+
+@keyframes fadeInAnimation {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+     }
+}
