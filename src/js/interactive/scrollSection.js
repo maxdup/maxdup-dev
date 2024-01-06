@@ -2,9 +2,9 @@ import glInterface from '../gl-interface';
 import { deCasteljau, smoothingFn, easeInOut } from '../utils';
 
 const PEEK_TRANSITION_SPEED = 0.3;
-const SCROLL_TRANSITION_SPEED = 0.5;
+const SCROLL_TRANSITION_SPEED = 0.35;
 
-function SectionTransition(sections){
+function ScrollSection(sections){
   this.sections = sections;
 
   this.currentSceneId = 0;
@@ -21,7 +21,8 @@ function SectionTransition(sections){
   this.progressFrom = null;
   this.progressTo = null;
 
-  this.smoothing = false;
+  this.active = false;
+  this.hooksOn = (eventType) => { return eventType == 'scroll' }
 
   let scrollTransitions = [];
   for (let i = 0; i < this.sections.length-1; i++){
@@ -86,8 +87,8 @@ function SectionTransition(sections){
     });
   }
 
-  this._checkSmoothing = () => {
-    this.smoothing = this.currentProgress != this.targetProgress;
+  this._checkActive = () => {
+    this.active = this.currentProgress != this.targetProgress;
   }
 
   this._determineScrollTransition = () => {
@@ -116,7 +117,7 @@ function SectionTransition(sections){
     return Math.max(0, Math.min(1, progress));
   }
 
-  this.onScroll = () => {
+  this.onEvent = (event) => {
 
     let activeTransition = this.clickTransition || this._determineScrollTransition();
     this.targetProgress = this._determineScrollProgress(activeTransition);
@@ -131,7 +132,7 @@ function SectionTransition(sections){
     clearTimeout(this.scrollTimeout);
     this.scrollTimeout = setTimeout(this.endClickTransition, 100);
 
-    this._checkSmoothing();
+    this._checkActive();
   }
 
   this.tick = () => {
@@ -179,10 +180,9 @@ function SectionTransition(sections){
       });
     }
 
-    this._checkSmoothing();
+    this._checkActive();
   }
-  this.onScroll();
+  this.onEvent();
   this.currentProgress = this.targetProgress;
-
 }
-export default SectionTransition;
+export default ScrollSection;

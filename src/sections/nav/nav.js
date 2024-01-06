@@ -1,7 +1,7 @@
 import './nav.scss';
 
 import glInterface from '../../js/gl-interface';
-import director from '../../js/director';
+import mainLoop from '../../js/main-loop';
 function Navigation(){
 
   this.sections = [];
@@ -32,13 +32,13 @@ function Navigation(){
     }
 
     let onNavOut = function(e){
-      director.scrollTransition.unlockScene();
+      mainLoop.scrollSection.unlockScene();
     }
     let onNavHrefHover = function(e){
-      director.scrollTransition.lockScene(e.target.attributes.scene.value);
+      mainLoop.scrollSection.lockScene(e.target.attributes.scene.value);
     }
     let onNavHrefClick = function(e){
-      director.scrollTransition.targetScene(e.target.attributes.scene.value);
+      mainLoop.scrollSection.targetScene(e.target.attributes.scene.value);
       e.target.blur();
     }
 

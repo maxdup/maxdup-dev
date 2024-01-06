@@ -1,15 +1,43 @@
 import glInterface from './gl-interface';
 import { ENABLE_3D } from './constants';
 
-import SectionTransition from './interactive/sectionTransition';
+import ScrollSection from './interactive/scrollSection';
 import ScrollFloating from './interactive/scrollFloating';
+import ScrollSnapping from './interactive/scrollSnapping';
 import MouseMoveNudge from './interactive/mouseMoveNudge';
+import MouseSelection from './interactive/mouseSelection';
 
-function Director(){
+function MainLoop(){
 
   this.sections = [];
+  this.interactibles = [];
 
-  this.mouseNudge = new MouseMoveNudge();
+  this.register = (interactible) => {
+    this.interactibles.push(interactible);
+  }
+
+  this.active = () => {
+    for (let i = 0; i < this.interactibles.length; i++) {
+      if (this.interactibles[i].active) { return true }
+    }
+    return false;
+  }
+
+  this.onEvent = (event) => {
+    this.interactibles.forEach((interactible) => {
+      if (interactible.hooksOn(event.type)){
+        interactible.onEvent(event);
+      }
+    });
+    this.active() && setTimeout(this.tick.bind(this), 50);
+  }
+
+  this.tick = () => {
+    this.interactibles.forEach((interactible) => {
+      interactible.active && interactible.tick();
+    });
+    this.active() && setTimeout(this.tick.bind(this), 50);
+  }
 
   this.loadSections = (sections) => {
     sections.forEach((c) => {
@@ -21,18 +49,25 @@ function Director(){
       }
     });
     this.sections = sections;
-    this.scrollFloating = new ScrollFloating(this.sections);
   }
 
   this.run3D = (bg) => {
-    this.scrollTransition = new SectionTransition(this.sections);
+    this.scrollSection = new ScrollSection(this.sections);
 
-    // Initialize
+    // Events
+    this.bindEvents();
+    let onResize = () => {
+      glInterface.exec('setSize', {
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    }
+    window.addEventListener('resize', onResize);
+
+    // Initialize 3D
     document.body.classList.add('gl-enabled');
-    glInterface.exec('setSize', {
-      width: window.innerWidth,
-      height: window.innerHeight
-    });
+    onResize();
+    this.tick();
 
     if (navigator.getBattery){
       navigator.getBattery().then(function(result) {
@@ -41,87 +76,47 @@ function Director(){
         }
       });
     }
-
     glInterface.exec('setFPS', mobileCheck() ? 30 : 60);
 
-    // Events
-    window.addEventListener('scroll', () => {
-      this.scrollTransition.onScroll();
-      this.scrollFloating.onScroll();
-      if (this.mouseNudge.smoothing || this.scrollTransition.smoothing){
-        setTimeout(camSmoothingFunction, 10);
-      }
-    });
-
-    window.addEventListener('mousemove', (event) => {
-      this.mouseNudge.onMove(event.x, event.y);
-      if (this.mouseNudge.smoothing || this.scrollTransition.smoothing){
-        setTimeout(camSmoothingFunction, 10);
-      }
-    });
-
-    window.addEventListener('resize', () => {
-      glInterface.exec('setSize', {
-        width: window.innerWidth,
-        height: window.innerHeight
-      });
-    });
-
-    let camSmoothingFunction = () => {
-      this.scrollTransition.smoothing && this.scrollTransition.tick();
-      this.mouseNudge.smoothing && this.mouseNudge.tick();
-
-      if (this.mouseNudge.smoothing || this.scrollTransition.smoothing){
-        setTimeout(camSmoothingFunction, 10);
-      }
-    }
-    camSmoothingFunction();
   }
 
   this.run2D = () => {
+
+    // Events
+    this.bindEvents();
+
     // cleanup, remove the canvas
     let cs = document.getElementsByTagName('canvas');
     for (let i = 0; i < cs.length; i++){
       cs[i].parentNode.removeChild(cs[i]);
     }
 
-    // Events
-    window.addEventListener('scroll', () => {
-      this.scrollFloating.onScroll();
-      if (this.mouseNudge.smoothing){
-        setTimeout(camSmoothingFunction, 10);
-      }
-    });
+    this.tick();
+  }
 
-    window.addEventListener('mousemove', (event) => {
-      this.mouseNudge.onMove(event.x, event.y);
-      if (this.mouseNudge.smoothing){
-        setTimeout(camSmoothingFunction, 10);
-      }
-    });
-
-    let camSmoothingFunction = () => {
-      this.mouseNudge.smoothing && this.mouseNudge.tick();
-
-      if (this.mouseNudge.smoothing){
-        setTimeout(camSmoothingFunction, 10);
-      }
+  this.bindEvents = () => {
+    this.register(new MouseMoveNudge());
+    this.register(new MouseSelection());
+    this.register(new ScrollSnapping(this.sections));
+    this.register(new ScrollFloating(this.sections));
+    if (this.scrollSection) {
+      this.register(this.scrollSection);
     }
-
-    camSmoothingFunction();
-
+    window.addEventListener('wheel', this.onEvent.bind(this), {passive: false});
+    window.addEventListener('scroll', this.onEvent.bind(this));
+    window.addEventListener('mousemove', this.onEvent.bind(this));
   }
 }
 
-let director = new Director();
+let mainLoop = new MainLoop();
 
 let callback = () => {
-  (glInterface.supports3D && ENABLE_3D ? director.run3D : director.run2D)();
+  (glInterface.supports3D && ENABLE_3D ? mainLoop.run3D : mainLoop.run2D)();
 }
 
 glInterface.loaded.then(callback, callback);
 
-export default director;
+export default mainLoop;
 
 function mobileCheck() {
   let check = false;

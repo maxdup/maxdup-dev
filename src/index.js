@@ -5,7 +5,7 @@ import './style/index.scss';
 import nav from './sections/nav/nav';
 
 import glInterface from './js/gl-interface';
-import director from './js/director';
+import mainLoop from './js/main-loop';
 
 import './sections/main/main';
 import './sections/trajectory/trajectory';
@@ -48,4 +48,4 @@ sections.forEach((c) => {
 });
 
 nav.loadSections(sections);
-director.loadSections(sections);
+mainLoop.loadSections(sections);

@@ -5,13 +5,12 @@ function ScrollFloating(sections){
 
   let nav = document.getElementsByTagName('nav')[0];
 
-  //let scrolling = window.body;
-  let scrolling = document.body;
+  let scrolling = window;
 
-  this.onScroll = () => {
+  this.active = false;
+  this.hooksOn = (eventType) => { return eventType == 'scroll' }
 
-    // TODO: magnetize
-
+  this.onEvent = (event) => {
     for (let i = 0; i < this.sections.length; i++){
 
       if (!this.sections[i].floater){
@@ -35,6 +34,7 @@ function ScrollFloating(sections){
     }
 
   }
-  this.onScroll();
+  this.onEvent();
+  this.tick = () => {}
 }
 export default ScrollFloating;

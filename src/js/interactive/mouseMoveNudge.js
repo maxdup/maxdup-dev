@@ -8,7 +8,8 @@ function MouseMoveNudge(){
   this._targetX = 0;
   this._targetY = 0;
 
-  this.smoothing = false;
+  this.active = false;
+  this.hooksOn = (eventType) => { return eventType == 'mousemove' }
 
   let styleElem = document.head.appendChild(document.createElement("style"));
 
@@ -18,14 +19,14 @@ function MouseMoveNudge(){
         -webkit-mask-position: var(--bg-offset-x) var(--bg-offset-y);
     }`
 
-  this.onMove = (x, y) => {
-    this._targetX = x;
-    this._targetY = y;
-    this._checkSmoothing();
+  this.onEvent = (event) => {
+    this._targetX = event.x;
+    this._targetY = event.y;
+    this._checkActive();
   }
 
-  this._checkSmoothing = () => {
-    this.smoothing = (this._targetX != this.currentX) ||
+  this._checkActive = () => {
+    this.active = (this._targetX != this.currentX) ||
       (this._targetY != this.currentY);
   }
 
@@ -46,10 +47,11 @@ function MouseMoveNudge(){
     document.documentElement.style.setProperty("--bg-offset-x", bgOffsetX + "%");
     document.documentElement.style.setProperty("--bg-offset-y", bgOffsetY + "%");
 
-    this._checkSmoothing();
+    this._checkActive();
   }
 
-  this.onMove(window.innerWidth / 2, window.innerHeight / 2);
+  this.onEvent({x: window.innerWidth / 2,
+                y: window.innerHeight / 2});
   this.currentX = this._targetX;
   this.currentY = this._targetY;
 }
