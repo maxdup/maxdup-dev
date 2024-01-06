@@ -1,30 +1,42 @@
 html, body, input, textarea, button {
     @include base-text();
-    &::selection {
-        @include base-text-selected();
-    }
 }
+
+::selection {
+    @include base-text-selected();
+}
+
+h1, h2, h3, h4, h5, h6 {
+    @include heading-text();
+}
+
 button {
     @include clickable-button();
 }
+
 a {
     @include clickable-text();
 }
+
 input {
     @include input();
 }
+
 textarea {
     @include textarea();
 }
+
 form {
     @include sub-content-container();
     >button, >input, >textarea {
         @include form-item-spacing();
     }
 }
+
 .container {
     @include content-container();
 }
+
 .sub-container {
     @include sub-content-container();
 }

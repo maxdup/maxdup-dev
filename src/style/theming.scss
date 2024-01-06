@@ -16,9 +16,15 @@
         font-size: 12px;
     }
 }
+
 @mixin base-text-selected() {
     background: var(--select-background);
     color: var(--highlight-color);
+}
+
+@mixin heading-text(){
+    display: block;
+    font-weight: bold;
 }
 
 @mixin border-interactive() {
@@ -34,6 +40,7 @@
     background-color: transparent;
     transition: background 0.3s ease-in;
 }
+
 @mixin clickable-button-hover() {
     background: rgba(1,1,1,0.5);
 }
@@ -47,11 +54,13 @@
     animation-duration: 1s;
     animation-fill-mode: forwards;
 }
+
 @mixin clickable-text-hover() {
     animation-name: abberation-link;
     background: white;
     color: black;
 }
+
 @mixin clickable-text-focus() {
     @include clickable-text-hover();
 }
@@ -150,10 +159,10 @@
     }
 }
 
-
 // form style
 @mixin form-neutral() {
 }
+
 @mixin form-item-spacing(){
     margin-bottom: 1.5rem;
 }

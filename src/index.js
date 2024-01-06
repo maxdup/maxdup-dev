@@ -6,7 +6,6 @@ import nav from './sections/nav/nav';
 
 import glInterface from './js/gl-interface';
 import director from './js/director';
-import './js/interactive/interactive';
 
 import './sections/main/main';
 import './sections/trajectory/trajectory';
