@@ -28,7 +28,7 @@ function ScrollFloating(sections){
       }
 
       if (this.sections[i].floating){
-        this.sections[i].floating.style.top = (offset/-2*100) + "vh";
+        this.sections[i].floating.style.top = (offset/-2*65) + "vh";
         this.sections[i].floating.style.opacity = 1 - Math.abs(offset);
       }
     }

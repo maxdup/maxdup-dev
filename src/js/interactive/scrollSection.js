@@ -1,8 +1,8 @@
 import glInterface from '../gl-interface';
 import { deCasteljau, smoothingFn, easeInOut } from '../utils';
 
-const PEEK_TRANSITION_SPEED = 0.3;
-const SCROLL_TRANSITION_SPEED = 0.35;
+const PEEK_TRANSITION_SPEED = 0.3; // scene transitions
+const SCROLL_TRANSITION_SPEED = 0.75; // scene transitions
 
 function ScrollSection(sections){
   this.sections = sections;
