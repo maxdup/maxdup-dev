@@ -2,6 +2,7 @@ import './nav.scss';
 
 import glInterface from '../../js/gl-interface';
 import mainLoop from '../../js/main-loop';
+
 function Navigation(){
 
   this.sections = [];
@@ -14,7 +15,7 @@ function Navigation(){
 
     let homeElem = document.getElementById('home');
     let navElem = document.getElementsByTagName('nav')[0];
-    let linkElems = document.querySelectorAll('nav ul a');
+    let linkElems = document.querySelectorAll('nav ul#nav-links a');
     let mainElem = document.getElementById('main');
 
     let scrollScene = null;

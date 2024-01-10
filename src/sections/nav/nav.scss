@@ -57,7 +57,6 @@ body>a#home {
     &:hover {
         box-shadow: none !important;
         background: none !important;
-        animation-name: none !important;
         h1, i {
             text-shadow: 0px 0px 5px #555 !important;
         }
@@ -144,6 +143,10 @@ nav {
     margin-right: 0;
     pointer-events: all;
 
+    li:first-child {
+        display: none;
+    }
+
     >div {
         position: relative;
         overflow: hidden;
@@ -159,12 +162,12 @@ nav {
     li {
         font-size: 0;
         display: inline-block;
-        &:not(:first-child):before {
+        &:not(:last-child):after {
             display: inline-block;
             content: '|';
             font-size: 1.25rem;
         }
-        &:before {
+        &:after {
             color: #aaa !important;
             text-shadow: none !important;
         }
@@ -194,9 +197,23 @@ nav {
     &:focus-within {
         height: 35rem;
     }
-    ul {
-        min-width: 80%;
+    ul#nav-links {
+        min-width: calc(100vw - 8.25rem);
+        margin-left: 1rem;
+        li:not(:last-child):before {
+            right: -2.5rem;
+        }
+        li:after {
+            right: -3.125rem;
+        }
     }
+    li {
+        display: list-item;
+    }
+    li:first-child {
+        display: inline-block;
+    }
+
     &.mdi:after {
         height: $navHeight *0.75;
         padding: 0.65rem 1.5rem 0;
@@ -224,8 +241,8 @@ nav {
     right: 0;
     left: 0;
     bottom: unset;
-    padding: 0 10% 0;
     text-align: right;
+
     >div {
         padding-top: 3rem;
     }
@@ -279,6 +296,9 @@ nav {
         height: 16.5rem;
         width: 100%;
     }
+    #social-links {
+        display: block;
+    }
     ul {
         position: absolute;
         bottom: 0;
@@ -290,25 +310,83 @@ nav {
         border-top: 0px;
         border-right: 0px;
         border-bottom: 0px;
-        margin: 5.5rem 0 3rem;
         opacity: 0;
         transform: translateY(-175%);
         transition: transform 0.2s ease-in, opacity 0.3s ease-in;
-
     }
     li {
-        min-width: 12rem;
+        min-width: 16rem;
         display: block;
         &:not(:first-child):before {
             content: none;
         }
     }
-    a {
+    ul#nav-links {
+        margin-right: 30px;
+        margin-left: 30px;
+        text-align: right;
+        direction: rtl;
+        margin-right: 6rem;
+        vertical-align: bottom;
+        position: relative;
+
+        a {
+            display: inline-block;
+        }
+
+        li {
+            position: relative;
+            display: list-item;
+            vertical-align: bottom;
+            font-size: 2rem;
+            line-height: 2rem;
+            &:after,
+            &:not(:last-child):before {
+                content: '';
+                display: block;
+                position: absolute;
+            }
+
+            &:after {
+                height: 1rem;
+                width: 1rem;
+                top: 0;
+                right: -4.25rem;
+                bottom: 0;
+                margin: auto;
+                border-radius: 50%;
+                border: solid 2px #aaa;
+            }
+            &:not(:last-child):before {
+                width: 2px;
+                background: #aaa;
+                right: -3.67rem;
+                top: 2.5rem;
+                bottom: -1.25rem;
+            }
+
+            &::marker {
+                display: inline-block;
+                padding: 0.5em 0.5em;
+                margin-top: 0.5em;
+                vertical-align: bottom;
+                font-size: 2rem;
+                line-height: 2rem;
+                margin: 0;
+            }
+        }
+    }
+    ul#social-links {
+        display: block;
+        right: unset;
+        left: 0 ;
+    }
+    ul#nav-links a {
         touch-action: manipulation;
         user-select: none;
         background-image: none;
         cursor: pointer;
-        padding: 0.5em 1.75em;
+        padding: 0.5em 0.5em;
         display: block;
         transition: color 0.3s ease-in, background 0.3s ease-in !important;
 
