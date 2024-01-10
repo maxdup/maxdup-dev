@@ -1,6 +1,7 @@
 @import './scaffold/reset';
 @import './scaffold/defaults';
 @import './constants';
+@import './mixins';
 
 @mixin base-text(){
     color: #eee;
@@ -27,24 +28,42 @@
     font-weight: bold;
 }
 
-@mixin border-interactive() {
-    border: 1px solid white;
-    border-radius: 4px;
-}
 
 // Button Style
 @mixin clickable-button-neutral() {
-    @include border-interactive();
-    padding: 0.5rem 0.5rem;
-    background: transparent;
-    background-color: transparent;
+    font-size: 1rem;
+    line-height: 1rem;
+    padding: 1rem;
+    border: 1px solid white;
+    border-radius: 6rem;
+    color: #eee;
+    background: black;
+    background-color: black;
     transition: background 0.3s ease-in;
+    text-decoration: none;
+    vertical-align: middle;
+
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+
+    i, &:before, &:after {
+        font-size: 1.5rem;
+    }
+    i:first-child, &:before {
+        margin-right: 0.5rem;
+    }
+    i:last-child, &:after {
+        margin-right: 0.5rem;
+    }
 }
 
 @mixin clickable-button-hover() {
-    background: rgba(1,1,1,0.5);
+    animation-name: abberation-link;
+    background: rgba(1,1,1,0.75);
 }
-
+@mixin clickable-button-focus() {
+    background: rgba(1,1,1,0.75);
+}
 
 // Links Style
 @mixin clickable-text-neutral() {
@@ -101,7 +120,6 @@
 }
 
 @mixin textarea-neutral() {
-    @include border-interactive();
     min-height: 6.75rem;
     padding-top: 0.5rem;
     resize: vertical;
@@ -149,9 +167,9 @@
         box-shadow: 0 -2rem 20px $shadowcolor;
     }
     &:after {
-	height: 100%;
+        height: 100%;
         width: 3rem;
-	top: 0;
+        top: 0;
         left: 100%;
         transform: rotate(6deg);
         transform-origin: bottom right;

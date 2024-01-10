@@ -5,11 +5,8 @@ import createScrollSnap from 'scroll-snap'
 function ScrollSnapping(sections){
   this.sections = sections;
 
-  const AUTO_SCROLL_DURATION = 350; // how long the scroll smoothing lasts
+  const AUTO_SCROLL_DURATION = 350; // how long the scroll smoothing lasts (ms)
   const AUTO_SCROLL_INSTANT = 0.25; // how much scrolling is to be applied instantly
-
-  const stickDiff = window.innerHeight / 10;
-  const snapDiff = window.innerHeight / 3.33;
 
   let autoScrollStartAt;
 
@@ -24,87 +21,96 @@ function ScrollSnapping(sections){
 
   // Event listener for mouse wheel scrolling
   this.onEvent = (event) => {
+
     event.preventDefault();
 
-    let newNow = performance.now();
-    const stuntedScroll = event.deltaY * AUTO_SCROLL_INSTANT;
+    const stickyDiff = window.innerHeight / 8;
+    const snappyDiff = window.innerHeight / 3.33;
 
-    let targetY = window.scrollY + event.deltaY
+    const now = performance.now();
+
+    const wheelDirection = Math.sign(event.deltaY);
+    const transitionDirection = Math.sign(transitionDiffY)
+
+    const stuntedScrollY = event.deltaY * AUTO_SCROLL_INSTANT;
+    let targetScrollY = window.scrollY + event.deltaY
+
 
     // leftover from previous wheel events
-    if (this.active &&
-        Math.sign(event.deltaY) == Math.sign(transitionDiffY)){
-      targetY += transitionToY - window.scrollY;
-    } else {
-      transitionToY = 0;
+    if (this.active){
+      if (wheelDirection == transitionDirection){
+        targetScrollY += transitionToY - window.scrollY;
+      }
     }
-    transitionToY = targetY;
+    transitionToY = targetScrollY;
 
-    const currdiff = Math.abs(window.scrollY - targetY);
+    let snapTargetY = false;
 
-    let snapEligible = false;
-
+    const what = [];
     this.sections.forEach((section) => {
-      const targetDiff = Math.abs(targetY - section.elem.offsetTop);
-      const currentDiff = Math.abs(window.scrollY - section.elem.offsetTop);
 
-      if ((targetDiff < stickDiff) ||
-          (targetDiff < snapDiff &&
-           currentDiff > snapDiff) ||
-          (snapping && targetDiff < snapDiff)){
-        snapEligible = section.elem.offsetTop;
+      const targetDiff = Math.abs(targetScrollY - section.elem.offsetTop);
+      const currentDiff = Math.abs(window.scrollY - section.elem.offsetTop );
+
+      const snapDirection = Math.sign(section.elem.offsetTop - window.scrollY);
+
+      // small range that snaps back to current panel
+      const stickyValid = targetDiff < stickyDiff;
+
+      // large range that snaps to upcoming panels
+      const snappyValid = snapDirection == wheelDirection &&
+            targetDiff < snappyDiff;
+
+      if (snappyValid || stickyValid){
+        snapTargetY = section.elem.offsetTop;
       }
     });
 
-
+    let initTransition = (from, to) => {
+      autoScrollStartAt = now;
+      transitionFromY = from;
+      transitionDiffY = to - transitionFromY;
+    }
     let proceedUserTakeOver = () => {
+      // snap release to user
       snapping = false;
-      proceedUserEvent();
+      initTransition(window.scrollY + stuntedScrollY, targetScrollY);
+      window.scrollBy(0, stuntedScrollY);
     }
 
     let proceedUserEvent = () => {
-
-      autoScrollStartAt = newNow;
-      transitionFromY = window.scrollY + stuntedScroll;
-      transitionDiffY = targetY - transitionFromY;
-
-      window.scrollBy(0, stuntedScroll);
+      // no snap
+      initTransition(window.scrollY + stuntedScrollY, targetScrollY);
+      window.scrollBy(0, stuntedScrollY);
     }
 
     let proceedSnappingUpdate = () =>{
       // snap target changed
-      targetY = snapEligible;
-      console.log('we snapping', transitionToY);
-
-      autoScrollStartAt = newNow;
-      transitionFromY = window.scrollY + stuntedScroll;
-      transitionDiffY = targetY - transitionFromY;
-
-      window.scrollBy(0, stuntedScroll);
-      proceedSnapping();
+      snapping = true;
+      targetScrollY = snapTargetY;
+      initTransition(window.scrollY + stuntedScrollY, targetScrollY);
+      window.scrollBy(0, stuntedScrollY);
     }
 
     let proceedSnapping = () => {
-      targetY = snapEligible;
+      // new snap
       snapping = true;
-
-      autoScrollStartAt = newNow;
-      transitionFromY = window.scrollY;
-      transitionDiffY = targetY - transitionFromY;
+      targetScrollY = snapTargetY;
+      initTransition(window.scrollY, targetScrollY);
     }
 
     if (snapping){
-      if (snapEligible === false){
+      if (snapTargetY === false){
         proceedUserTakeOver();
       } else {
-        if (snapEligible !== false &&
-            snapEligible != transitionToY){
+        if (snapTargetY !== false &&
+            snapTargetY != transitionToY){
           proceedSnappingUpdate();
         }
       }
     } else {
-      if (snapEligible !== false &&
-          snapEligible != window.scrollY){
+      if (snapTargetY !== false &&
+          snapTargetY != window.scrollY){
         proceedSnapping();
       } else {
         proceedUserEvent();

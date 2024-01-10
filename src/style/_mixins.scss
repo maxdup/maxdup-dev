@@ -1,3 +1,5 @@
+@import './constants';
+
 $accent1: hsla(146deg, 50%, 52%, 0.5);
 $accent2: hsla(0deg, 70%, 58%, 0.5);
 
@@ -7,3 +9,13 @@ $accent2: hsla(0deg, 70%, 58%, 0.5);
 @mixin abberation-box($dist) {
     box-shadow: $dist * 0.10em $dist * 0.1em 0px $accent2, $dist * -0.15em 0px 0px $accent1;
 }
+
+
+@mixin media-xsmall {
+    @media (max-width: #{$transition-small}) { @content }}
+@mixin media-small {
+    @media (max-width: #{$transition-medium}) { @content }}
+@mixin media-large {
+    @media (max-width: #{$transition-large}) { @content }}
+@mixin media-xlarge {
+    @content}
