@@ -34,7 +34,7 @@
             width: 100%;
             max-width: 1200px;
 
-            @include media-large() {
+            @include media-desktop() {
                 max-width: 800px;
             }
 

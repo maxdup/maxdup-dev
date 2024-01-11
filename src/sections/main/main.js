@@ -53,10 +53,10 @@ let sequence = () => {
   setTimeout(() => {
     scramble1.style.opacity = 1;
     scramble1.style.transform = 'none';
-    scramble1.style.animationName = 'abberation-main';
+    scramble1.style.animationName = 'aberration-main';
     scramble2.style.opacity = 1;
     scramble2.style.transform = 'none';
-    scramble2.style.animationName = 'abberation-main';
+    scramble2.style.animationName = 'aberration-main';
 
     glInterface.supports3D && glInterface.exec('setPositions', initialPeakPosition);
   }, DELAY);
@@ -64,7 +64,7 @@ let sequence = () => {
   setTimeout(() => {
     scramble3.style.opacity = 1;
     scramble3.style.transform = 'scale(1)';
-    scramble3.style.animationName = 'abberation-main';
+    scramble3.style.animationName = 'aberration-main';
 
     glInterface.supports3D && glInterface.exec('setInertia', 0);
 

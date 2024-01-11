@@ -4,10 +4,13 @@ import { deCasteljau, smoothingFn, easeInOut } from '../utils';
 const PEEK_TRANSITION_SPEED = 0.3; // scene transitions
 const SCROLL_TRANSITION_SPEED = 0.75; // scene transitions
 
+const navLinks = window.document.querySelectorAll('nav #nav-links a');
+
+
 function ScrollSection(sections){
   this.sections = sections;
 
-  this.currentSceneId = 0;
+  this.currentSceneId = null;
   this.lockedSceneId = null;
 
   this.fromSection = null;
@@ -153,8 +156,16 @@ function ScrollSection(sections){
 
       if (this.currentSceneId != targetSceneId){
         this.currentSceneId = targetSceneId;
+        const currentSceneName = this.sections[this.currentSceneId].scene;
+        navLinks.forEach((navLink) =>{
+          if (currentSceneName == navLink.attributes.scene.value){
+            navLink.parentElement.classList.add('active');
+          } else {
+            navLink.parentElement.classList.remove('active');
+          }
+        });
         if (!this.lockedSceneName){
-          this.setScene(this.sections[this.currentSceneId].scene, SCROLL_TRANSITION_SPEED)
+          this.setScene(currentSceneName, SCROLL_TRANSITION_SPEED)
         }
       }
 
