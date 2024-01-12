@@ -8,8 +8,6 @@
     justify-content: center;
     height: 100vh;
 
-    color: white;
-
     overflow: hidden;
     padding: 24px;
 
@@ -40,21 +38,20 @@
         position: relative;
         text-align: left;
         .main-title {
-            font-size: 2em;
+            font-size: 1em;
             line-height: 1em;
             margin-bottom: 0;
         }
         .main-subtitle {
-            font-size: 1em;
+            font-size: 1.75em;
             margin-top: 0;
         }
-        .main-blurb {
+        .main-descriptor {
             font-size: 0.75em;
         }
         p {
             margin: 0;
             line-height: 1.25em;
-            margin-bottom: 0.75em;
         }
 
     }
