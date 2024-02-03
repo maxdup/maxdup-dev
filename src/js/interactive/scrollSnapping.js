@@ -1,7 +1,5 @@
 import { easeOut } from '../utils';
 
-import createScrollSnap from 'scroll-snap'
-
 function ScrollSnapping(sections){
   this.sections = sections;
 
