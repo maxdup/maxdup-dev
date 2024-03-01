@@ -11,6 +11,7 @@ import './sections/main/main';
 import './sections/trajectory/trajectory';
 import './sections/skills/skills';
 import './sections/where/where';
+import './sections/foss/foss';
 
 let sections = [{
   id: 'main',

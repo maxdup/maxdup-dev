@@ -17,39 +17,4 @@
             margin-bottom: 1rem;
         }
     }
-
-    .foss {
-        display: block;
-        color: black;
-        background: white;
-        text-align: center;
-        min-height: 13vh;
-
-        div.message {
-            display: inline-block;
-            text-align: left;
-            padding: 2.5rem 4rem 2rem;
-            box-sizing: border-box;
-
-            width: 100%;
-            max-width: 1200px;
-
-            @include media-desktop() {
-                max-width: 800px;
-            }
-
-            p {
-                margin-top: 0.5rem;
-                font-size: 1rem;
-                line-height: 1.25rem;
-            }
-        }
-        .source-link {
-            float: right;
-            vertical-align: top;
-            margin-left: 4rem;
-            margin-top: 0.5rem;
-            margin-bottom: 1rem;
-        }
-    }
 }

@@ -66,7 +66,7 @@ $navHeight: 5.5rem;
 
     &:focus,
     &:hover {
-        color: white !important;
+        color: #fff !important;
         background: rgba(255,255,255,0) !important;
         animation-name: aberration-nav !important;
     }
@@ -80,7 +80,7 @@ $navHeight: 5.5rem;
 
     &:focus,
     &:hover {
-        color: white !important;
+        color: #fff !important;
         box-shadow: none !important;
         background: none !important;
         text-shadow: 0px 0px 5px #555 !important;
@@ -121,7 +121,7 @@ body>a#home {
 a#home, nav a {
     &:focus,
     &:hover {
-        color: white !important;
+        color: #fff !important;
     }
 }
 
@@ -135,15 +135,6 @@ body.js-enabled {
         opacity: 0;
         transition: opacity 0.3s;
     }
-    nav.open,
-    nav:focus-within {
-        &+a#home {
-            color: #ccc;
-            &:after {
-                opacity: 1;
-            }
-        }
-    }
     &.nav-complete {
         a#home {
             color: #ccc;
@@ -152,7 +143,20 @@ body.js-enabled {
             }
         }
     }
+    @include media-mobile(){
+        nav.open,
+        nav:focus-within {
+            &+a#home {
+                color: #ccc;
+                &:after {
+                    opacity: 1;
+                }
+            }
+        }
+    }
 }
+
+
 @mixin frosted {
     background: #222b;
     backdrop-filter: blur(25px);
@@ -170,7 +174,7 @@ body>a#home:after {
     margin: auto;
     height: $navHeight;
     @include frosted;
-    box-shadow: 0px 0px 30px black;
+    box-shadow: 0px 0px 30px #000;
     box-sizing: border-box;
 }
 
@@ -198,7 +202,7 @@ nav {
 
     > div {
         position: relative;
-        overflow: hidden;
+        overflow: visible;
     }
     ul {
         list-style-type: none;
@@ -254,7 +258,7 @@ nav {
         width: 7rem;
         text-align: center;
         padding: 0.75rem 1.5rem 0rem;
-        color: white;
+        color: #fff;
         display: block;
         position: fixed;
         box-sizing: border-box;
@@ -297,7 +301,7 @@ nav {
             transition: transform 0.4s ease-out, opacity 0.7s ease-out;
         }
         &.mdi:after {
-            background: black;
+            background: #000;
             filter: invert(1);
         }
     }
@@ -311,7 +315,7 @@ nav > div {
 #social-links {
     display: none;
     flex-grow: 1;
-    flex-flow: column;
+    flex-direction: column;
     text-align: left;
     justify-content: end;
     min-width: 11rem;
@@ -325,18 +329,20 @@ nav > div {
     ul {
         max-width: 14rem;
         display: flex;
+        flex-direction: row;
     }
     li {
         text-align: center;
         flex-grow: 1;
-        a {
-            padding-left: 0;
-            padding-right: 0;
-        }
     }
-
-    a { @include text-link-aberration(); }
-    a { font-size: 1.75rem; }
+    a {
+        padding-left: 0;
+        padding-right: 0;
+        @include text-link-aberration();
+        font-size: 1.5rem;
+        flex-grow: 1;
+        width: 100%;
+    }
 
 }
 
@@ -357,6 +363,7 @@ nav > div {
         display: inline-block;
         &:after {
             font-size: 1.25rem;
+            margin-left: 5px;
             color: #aaa;
             text-shadow: none;
         }
@@ -375,7 +382,6 @@ nav > div {
         direction: rtl;
         flex-grow: 1;
 
-        //min-width: 33%;
         display: inline-block;
 
         border: 1px solid #333;
@@ -388,16 +394,12 @@ nav > div {
             @include boxy-link();
             font-size: 1.5rem;
         }
-        li {
+        li, li:first-child {
             display: block;
         }
         li.active a {
-            color: white;
+            color: #fff;
         }
-        li:first-child {
-            display: block;
-        }
-
         li:not(:last-child):after {
             content: none;
         }
@@ -407,7 +409,6 @@ nav > div {
         width: 100%;
 
         a {
-            @include boxy-link();
             font-size: 2rem;
         }
     }

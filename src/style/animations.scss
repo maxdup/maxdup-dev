@@ -19,9 +19,9 @@
 
 @keyframes aberration-link {
     0% { @include aberration-box(0); }
-    10% { @include aberration-box(2); }
-    40% { @include aberration-box(1); }
-    100% { @include aberration-box(2); }
+    10% { @include aberration-box(2.5); }
+    40% { @include aberration-box(1.5); }
+    100% { @include aberration-box(2.5); }
 }
 
 @keyframes fadeInAnimation {

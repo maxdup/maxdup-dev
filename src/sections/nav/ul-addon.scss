@@ -23,7 +23,7 @@
         right: 0rem;
         transform: translateX(50%);
         box-sizing: border-box;
-        border-color: white !important;
+        border-color: #fff !important;
     }
     li:after { // dots
         height: 0px;
@@ -50,15 +50,15 @@
 
     // Active Style
     li.active {
-        color: white;
+        color: #fff;
         &:after { // dot
             border-color: #aaa;
             background: #aaa;
         }
         &:after,
         &:before {
-            background: white !important;
-            border-color: white !important;
+            background: #fff !important;
+            border-color: #fff !important;
         }
         &:not(:last-child):before,
         ~ li:not(:last-child):before,
@@ -72,16 +72,16 @@
         &:after {
             width: 2rem;
             height: 2rem;
-            background: white;
+            background: #fff;
             border-color: transparent;
         }
         &:after,
         &:before {
-            border-color: white !important;
+            border-color: #fff !important;
         }
     }
     li ~ li:hover:after {
-        border-color: white !important;
+        border-color: #fff !important;
     }
 
     @include media-mobile(){
