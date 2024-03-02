@@ -1,5 +1,3 @@
-import './trajectory.scss';
-
 let lines = window.document.querySelectorAll('.graph-node-line')
 
 function graphRotate(){

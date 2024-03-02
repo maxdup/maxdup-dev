@@ -1,10 +1,9 @@
 @import './scaffold/reset';
 @import './scaffold/defaults';
 @import './constants';
-@import './mixins';
 
 @mixin base-text(){
-    color: #eee;
+    color: base-color(e);
 
     font-family: Tahoma, sans-serif;
     font-size: 18px;
@@ -34,11 +33,11 @@
     font-size: 1rem;
     line-height: 1rem;
     padding: 1rem;
-    border: 1px solid white;
+    border: 1px solid base-color(f);
     border-radius: 6rem;
-    color: #eee;
-    background: black;
-    background-color: black;
+    color: base-color(e);
+    background: base-color(0);
+    background-color: base-color(0);
     transition: background 0.3s ease-in;
     text-decoration: none;
     vertical-align: middle;
@@ -60,17 +59,17 @@
 @mixin clickable-button-hover() {
     outline: none;
     animation-name: aberration-link;
-    background: rgba(1,1,1,0.75);
+    background: base-color(0,c);
 }
 @mixin clickable-button-focus() {
     outline: none;
     animation-name: aberration-link;
-    background: rgba(1,1,1,0.75);
+    background: base-color(0,c);
 }
 
 // Links Style
 @mixin clickable-text-neutral() {
-    color: #eee;
+    color: base-color(e);
     display: inline-block;
     transition: none;
     animation-duration: 1s;
@@ -79,8 +78,8 @@
 
 @mixin clickable-text-hover() {
     animation-name: aberration-link;
-    background: white;
-    color: black;
+    background: base-color(f);
+    color: base-color(0);
 }
 
 @mixin clickable-text-focus() {
@@ -89,7 +88,7 @@
 
 // inputs style
 @mixin input-textarea-common() {
-    color: white;
+    color: base-color(f);
     display: block;
     width: 100%;
     background: transparent;
@@ -102,24 +101,24 @@
     background: transparent;
     background-color: transparent;
     box-sizing: border-box;
-    box-shadow: 0 0 0 1000px base-color(0%) inset;
+    box-shadow: 0 0 0 1000px base-color(0) inset;
     transition: background-color 99999s ease-in-out;
 
     &[autocomplete=off]{
-        box-shadow: 0 0 0 0 base-color(0%) inset;
+        box-shadow: 0 0 0 0 base-color(0) inset;
     }
     &:focus {
         outline: none;
     }
     ::placeholder {
-        color: base-color(60%);
+        color: base-color(6);
     }
 }
 
 @mixin input-neutral() {
     height: 2rem;
     border: none;
-    border-bottom: 1px solid white;
+    border-bottom: 1px solid base-color(f);
 }
 
 @mixin textarea-neutral() {

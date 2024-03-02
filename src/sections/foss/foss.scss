@@ -1,9 +1,7 @@
-@import '../../style/mixins';
-
 #foss {
     display: block;
-    color: #000;
-    background: #fff;
+    color: base-color(0);
+    background: base-color(f);
     text-align: center;
     min-height: 5.5rem;
 

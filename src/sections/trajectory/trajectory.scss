@@ -18,7 +18,7 @@
         position: absolute;
         top: 0;
         right: 7vw;
-        color: #888;
+        color: base-color(8);
         margin-right: -2.5rem;
     }
 }
@@ -27,8 +27,8 @@
 #trajectory {
     $fast: 0.15s;
     @mixin graph-item() {
-        background: #fff;
-        color: #fff;
+        background: base-color(f);
+        color: base-color(f);
         transition: background ease-in $fast,
                     color ease-in $fast,
                     font-size ease-in $fast,
@@ -36,13 +36,13 @@
                     width ease-in $fast;
     }
     @mixin graph-item-state-active(){
-        background: #fff;
-        color: #fff;
+        background: base-color(f);
+        color: base-color(f);
         font-size: 3rem;
     }
     @mixin graph-item-state-inactive(){
-        background: #888;
-        color: #888;
+        background: base-color(8);
+        color: base-color(8);
         font-size: 2rem;
     }
     #trajectory-graph {
@@ -119,7 +119,7 @@
                 display: block;
                 width: 2px;
                 height: 100vh;
-                background: #888;
+                background: base-color(8);
                 position: absolute;
                 left: 0;
                 right: 0;

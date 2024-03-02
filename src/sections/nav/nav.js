@@ -1,5 +1,3 @@
-import './nav.scss';
-
 import glInterface from '../../js/gl-interface';
 import mainLoop from '../../js/main-loop';
 

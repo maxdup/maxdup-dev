@@ -1,7 +1,5 @@
 require('./fonts/maxdup-icons.font');
 
-import './style/index.scss';
-
 import nav from './sections/nav/nav';
 
 import glInterface from './js/gl-interface';
@@ -12,6 +10,8 @@ import './sections/trajectory/trajectory';
 import './sections/skills/skills';
 import './sections/where/where';
 import './sections/foss/foss';
+
+import './style/index.scss';
 
 let sections = [{
   id: 'main',

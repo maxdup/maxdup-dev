@@ -1,10 +1,8 @@
-@import '../../style/mixins';
-
 #where {
     .aside-blurb {
         padding-top: 4rem;
 
-        color: #ccc;
+        color: base-color(c);
         font-size: 2rem;
         line-height: 2rem;
         text-align: center;

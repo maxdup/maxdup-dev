@@ -1,6 +1,4 @@
 @use "sass:math";
-@import '../../style/constants';
-@import '../../style/mixins';
 @import './ul-addon';
 
 $navHeight: 5.5rem;
@@ -24,70 +22,6 @@ $navHeight: 5.5rem;
 .container {
     @include naved-container(1);
 }
-
-// Mixins
-@mixin boxy-link(){
-    touch-action: manipulation;
-    user-select: none;
-    background-image: none;
-    cursor: pointer;
-    padding: 0.5em 0.5em;
-    display: block;
-    transition: color 0.3s ease-in, background 0.3s ease-in !important;
-
-    &:focus,
-    &:hover {
-        background: rgba(255,255,255,1) !important;
-        color: #666 !important;
-        text-decoration: underline;
-        text-shadow: none !important;
-    }
-    &:active {
-        outline: 0;
-        box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.13);
-    }
-    &:before {
-        content: none !important;
-    }
-    &::-webkit-details-marker {
-        display: none;
-    }
-}
-
-@mixin text-link-aberration() {
-    text-decoration : none !important;
-    font-size: 1.25rem;
-
-    color: #aaa;
-    box-shadow: none;
-    padding: 0.75rem 0.75rem;
-
-    transition: color 0.2s ease-in;
-
-    &:focus,
-    &:hover {
-        color: #fff !important;
-        background: rgba(255,255,255,0) !important;
-        animation-name: aberration-nav !important;
-    }
-}
-
-@mixin text-link-header(){
-    text-decoration : none !important;
-    *, &:before, &:after {
-        vertical-align: middle;
-    }
-
-    &:focus,
-    &:hover {
-        color: #fff !important;
-        box-shadow: none !important;
-        background: none !important;
-        text-shadow: 0px 0px 5px #555 !important;
-
-    }
-}
-
 a#home {
     @include text-link-header();
 }
@@ -121,14 +55,14 @@ body>a#home {
 a#home, nav a {
     &:focus,
     &:hover {
-        color: #fff !important;
+        color: base-color(f) !important;
     }
 }
 
 body.js-enabled {
 
     >a#home {
-        color: #444;
+        color: base-color(4);
         transition: color 0.3s;
     }
     >a#home:after {
@@ -137,7 +71,7 @@ body.js-enabled {
     }
     &.nav-complete {
         a#home {
-            color: #ccc;
+            color: base-color(c);
             &:after {
                 opacity: 1;
             }
@@ -147,7 +81,7 @@ body.js-enabled {
         nav.open,
         nav:focus-within {
             &+a#home {
-                color: #ccc;
+                color: base-color(c);
                 &:after {
                     opacity: 1;
                 }
@@ -158,7 +92,7 @@ body.js-enabled {
 
 
 @mixin frosted {
-    background: #222b;
+    background: base-color(2,b);
     backdrop-filter: blur(25px);
 }
 
@@ -174,7 +108,7 @@ body>a#home:after {
     margin: auto;
     height: $navHeight;
     @include frosted;
-    box-shadow: 0px 0px 30px #000;
+    box-shadow: 0px 0px 30px base-color(0);
     box-sizing: border-box;
 }
 
@@ -258,7 +192,7 @@ nav {
         width: 7rem;
         text-align: center;
         padding: 0.75rem 1.5rem 0rem;
-        color: #fff;
+        color: base-color(f);
         display: block;
         position: fixed;
         box-sizing: border-box;
@@ -279,7 +213,8 @@ nav {
         left: 0rem;
         right: 0rem;
         bottom: 0;
-        background: linear-gradient(180deg, #111 0px, #181818 5px, #222b 20px, #222b 100%);
+        background: linear-gradient(180deg, base-color(1,f) 0px, base-color(2,f) 5px, base-color(2,b) 20px, base-color(2,b) 100%);
+        background: linear-gradient(180deg, #111f 0px, #222f 5px, #222b 20px, #222b 100%);
         backdrop-filter: blur(25px);
         box-shadow: 0px 5px 15px #110000;
 
@@ -301,7 +236,7 @@ nav {
             transition: transform 0.4s ease-out, opacity 0.7s ease-out;
         }
         &.mdi:after {
-            background: #000;
+            background: base-color(0);
             filter: invert(1);
         }
     }
@@ -364,7 +299,7 @@ nav > div {
         &:after {
             font-size: 1.25rem;
             margin-left: 5px;
-            color: #aaa;
+            color: base-color(a);
             text-shadow: none;
         }
         &:not(:last-child):after {
@@ -384,7 +319,7 @@ nav > div {
 
         display: inline-block;
 
-        border: 1px solid #333;
+        border: 1px solid base-color(3);
         box-sizing: border-box;
         border-top: 0px;
         border-right: 0px;
@@ -398,7 +333,7 @@ nav > div {
             display: block;
         }
         li.active a {
-            color: #fff;
+            color: base-color(f);
         }
         li:not(:last-child):after {
             content: none;

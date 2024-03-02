@@ -1,5 +1,3 @@
-import './main.scss';
-
 import glInterface from '../../js/gl-interface';
 
 import Scrambler from 'scrambling-letters';

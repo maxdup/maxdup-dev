@@ -16,6 +16,9 @@ devConfig = {
     ignored: ['**/node_modules/**/*', '**/\.\#*',
               '**/soulzone-web-shared/static/**/*'],
   },
+  stats: {
+    loggingDebug: ["sass-loader"],
+  },
   module: {
     rules: [{
       test: /\.scss$/,

@@ -1,9 +1,19 @@
+@import './constants';
+@import './mixins';
+
 @import './theming';
 @import './animations';
-@import './constants';
+
+@import '../sections/nav/nav';
+@import '../sections/main/main';
+@import '../sections/trajectory/trajectory';
+@import '../sections/skills/skills';
+@import '../sections/where/where';
+@import '../sections/foss/foss';
+
 
 body {
-    background: #000;
+    background: base-color(0);
     margin: 0;
     overflow-x: hidden;
 
@@ -192,19 +202,19 @@ body .full-blurb {
 // ------------------------------------------
 
 #trajectory.container:after {
-    background: #111b;
+    background: base-color(1,b);
     background-attachment: fixed;
     background: radial-gradient(circle at 60% 100%, #211b 0%, #111a11bb 100%);
     mask-image: linear-gradient(155deg, transparent 10%, black 40%);
 }
 #skills.container:after {
-    background: #444c;
+    background: base-color(4,c);
     background-attachment: fixed;
     background: radial-gradient(circle at 60% 100%, #5448 0%, #222a22aa 100%);
     mask-image: radial-gradient(circle at bottom left, black 0%, rgba(0,0,0, 0.75) 40%, rgba(0,0,0,0.65) 100%);
 }
 #where.container:after {
-    background: #999b;
+    background: base-color(9,b);
     background-attachment: fixed;
     background: radial-gradient(circle at 60% 100%, #a99b 0%, #9a9b 100%);
 }
