@@ -6,6 +6,7 @@ import ScrollFloating from './interactive/scrollFloating';
 import ScrollSnapping from './interactive/scrollSnapping';
 import MouseMoveNudge from './interactive/mouseMoveNudge';
 import MouseSelection from './interactive/mouseSelection';
+import ThemeSelection from './interactive/themeSelection';
 
 function MainLoop(){
 
