@@ -1,0 +1,66 @@
+@media print {
+    canvas, nav, a#home:after, #color-theme {
+        display: none !important;
+    }
+    #trajectory.container:after {
+        background-image: none;
+        background: white !important;
+    }
+    #skills.container:after {
+        background-image: none;
+        background: white !important;
+    }
+    #where.container:after {
+        background-image: none;
+        background: white !important;
+    }
+    .floating-container {
+        opacity: 1 !important;
+        top: unset !important;
+    }
+    .aside-blurb {
+        display: none !important;
+    }
+    .main-blurb {
+        width: 100% !important;
+    }
+    h2 {
+        font-size: 2.5rem !important;
+    }
+    h3 {
+        font-size: 1.75rem !important;
+    }
+    #skills h3 {
+        font-size: 1.25rem !important;
+    }
+    html, body, input, textarea, button {
+        font-size: 12px !important;
+    }
+    #foss {
+        display: none !important
+    }
+    #where {
+        a {
+            text-decoration: none !important;
+        }
+        #external-links a::after {
+            content: attr(href);
+            text-decoration: underline;
+            display: block;
+            margin-left: 1.25rem;
+        }
+    }
+    #main, .container, .floater-container {
+        height: 50vh !important;
+        min-height: 50vh !important;
+    }
+    #main {
+        padding-top: 30vh;
+        .reserved-space:not(.stand-in){
+            opacity: 1 !important;
+        }
+        .stand-in {
+            display: none;
+        }
+    }
+}

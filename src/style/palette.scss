@@ -67,5 +67,8 @@ $shade-values: sort($shade-values);
     @include generate-palette(100%);
 }
 
+@media print {
+    :root, :root.light-theme {
+        @include generate-palette(100%);
     }
 }
