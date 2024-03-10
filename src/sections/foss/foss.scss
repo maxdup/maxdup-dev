@@ -4,9 +4,11 @@
     background: base-color(f);
     text-align: center;
     min-height: 5.5rem;
+    display: flex;
+    justify-content: center;
 
-    div.message {
-        display: inline-block;
+    div.foss-container {
+        display: block;
         text-align: left;
         padding: 2.5rem 4rem 2rem;
         box-sizing: border-box;
@@ -23,12 +25,35 @@
             font-size: 1rem;
             line-height: 1.25rem;
         }
+
+
+    }
+    .foss-text {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 0 30px;
+        p {
+            flex-grow: 1;
+        }
+        a {
+            flex-grow: 0;
+            flex-shrink: 0;
+        }
     }
     .source-link {
-        float: right;
         vertical-align: top;
-        margin-left: 4rem;
         margin-top: 0.5rem;
         margin-bottom: 1rem;
+    }
+}
+
+@include media-mobile-small(){
+    #foss .foss-text {
+        flex-flow: column wrap;
+        justify-content: flex-end;
+        a {
+            margin-left: auto;
+        }
     }
 }

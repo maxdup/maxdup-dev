@@ -9,5 +9,5 @@ float circle(in vec2 _st){
 
 void main() // DOTS
 {
-  gl_FragColor = vColor * vec4(circle(gl_PointCoord.xy)) * vec4(1.0, 1.0, 1.0, isDotted);
+  gl_FragColor = vColor * vec4(1.0, 1.0, 1.0, isDotted * circle(gl_PointCoord.xy));
 }

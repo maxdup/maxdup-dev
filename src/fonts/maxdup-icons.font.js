@@ -9,6 +9,8 @@ module.exports = {
     '../../node_modules/boxicons/svg/solid/bxs-file.svg*',
     '../../node_modules/boxicons/svg/solid/bxs-map.svg*',
     '../../node_modules/boxicons/svg/solid/bxs-flag-alt.svg*',
+    '../../node_modules/boxicons/svg/regular/bx-sun.svg*',
+    '../../node_modules/boxicons/svg/regular/bx-moon.svg*',
   ],
   'fontName': 'maxdup_icons',
   'cssTemplate': './maxdup-icons.css.hbs',

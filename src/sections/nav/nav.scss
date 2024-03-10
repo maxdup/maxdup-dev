@@ -213,8 +213,12 @@ nav {
         left: 0rem;
         right: 0rem;
         bottom: 0;
-        background: linear-gradient(180deg, base-color(1,f) 0px, base-color(2,f) 5px, base-color(2,b) 20px, base-color(2,b) 100%);
-        background: linear-gradient(180deg, #111f 0px, #222f 5px, #222b 20px, #222b 100%);
+        background: linear-gradient(
+            180deg,
+            base-color(1,f) 0px,
+            base-color(2,f) 5px,
+            base-color(2,b) 20px,
+            base-color(2,b) 100%);
         backdrop-filter: blur(25px);
         box-shadow: 0px 5px 15px #110000;
 

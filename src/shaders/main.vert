@@ -3,9 +3,9 @@ uniform mat4 mvMatrix;
 uniform float screenScale;
 
 uniform vec2 sheens[6];
-uniform float nodeness;
-uniform float gridness;
-uniform float toponess;
+uniform float nodeness; // 0≤r≤1 transition
+uniform float gridness; // 0≤r≤1 transition
+uniform float toponess; // 0≤r≤1 transition
 
 attribute vec3 position;
 attribute float nconnection;
@@ -56,21 +56,21 @@ float fogged(float z){
 
 void main()
 {
-  float isGrided = 1.0 - abs(sign(nconnection)); // [0<=n<=1]
-  float isNoded = clamp(nconnection, 0.0, 1.0); // [0<=n<=1]
-  float isTopoed = clamp(-nconnection - 1.0, 0.0, 1.0); // [0<=n<=1]
+  float isGrided = 1.0 - abs(sign(nconnection));  // [0, 1]
+  float isNoded = max(0.0, sign(nconnection)); // [0, 1]
+  float isTopoed = clamp(-nconnection - 1.0, 0.0, 1.0); // [0, 1]
 
-  float nodeFactor = isNoded * nodeness; // [0<=n<=1]
-  float topoFactor = isTopoed * toponess; // [0<=n<=1]
+  float nodeFactor = isNoded * nodeness; // 0≤r≤1 transition
+  float topoFactor = isTopoed * toponess; // 0≤r≤1 transition
 
   // Effect calcs - grid
   float gridHeight = max(0.0, position.z - height);
-  float gridHeightOffset = gridHeight * gridness;
+  float gridHeightOffset = gridHeight * gridness; // 0≤r≤gridHeight
 
   // Effect calcs - nodes
-  float connFactor = nodeFactor * nconnection;
-  float nodeHeightOffset = connHOffs * connFactor;
-  float nodeRadiusOffset = connPSize * connFactor;
+  float connFactor = nodeFactor * nconnection; // 0≤r≤1
+  float nodeHeightOffset = connHOffs * connFactor; // [0, 0.075]
+  float nodeRadiusOffset = connPSize * connFactor; // [0, 1.5]
 
   // Effect calcs - topography
   float topoAlphaMask = max(1.0 - toponess, (toponess * topology.y * 2.0));
@@ -79,8 +79,8 @@ void main()
   float topoHeightTarget = max(-0.1, topology.x - 0.6) * 0.65 * toponess; // need opt
   float topoHeightOffset = (height * topoHeightFreeze + topoHeightTarget - height) * toponess;
 
-  isDotted = clamp(1.0 - gridHeightOffset, nodeFactor, 1.0);
-  isLined = clamp(gridHeightOffset * isGrided, max(topoFactor, nodeFactor * 0.6), 0.3);
+  isDotted = clamp(1.0 - gridHeightOffset, nodeFactor, 1.0); // 0≤r≤1
+  isLined = clamp(min(1.0, (gridHeightOffset* 3.0)) * isGrided, max(topoFactor, nodeFactor), 1.0);
 
   // POSITION
   float z = height + gridHeightOffset + nodeHeightOffset + topoHeightOffset;

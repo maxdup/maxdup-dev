@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 @import './constants';
 @import './mixins';
 
@@ -10,6 +12,8 @@
 @import '../sections/skills/skills';
 @import '../sections/where/where';
 @import '../sections/foss/foss';
+
+@import './print';
 
 
 body {
@@ -110,7 +114,6 @@ body .main-blurb {
 body .full-blurb {
     display: block;
     width: 100%;
-    clear: all;
 }
 
 
@@ -181,6 +184,7 @@ body .full-blurb {
 
     ul {
         padding-left: 1rem;
+        font-size: 1.4rem;
     }
     li {
         display: inline-block;
@@ -201,22 +205,58 @@ body .full-blurb {
 // Container backgrounds
 // ------------------------------------------
 
-#trajectory.container:after {
-    background: base-color(1,b);
-    background-attachment: fixed;
-    background: radial-gradient(circle at 60% 100%, #211b 0%, #111a11bb 100%);
-    mask-image: linear-gradient(155deg, transparent 10%, black 40%);
+@mixin backgrounds($invert){
+    #trajectory.container:after {
+        background: base-color(1,b);
+        background-attachment: fixed;
+        //background: radial-gradient(circle at 60% 100%,
+        //                            invertLum(hsla(0, 33.33%, 10%, 0.73), $invert) 0%,
+        //                            invertLum(hsla(120, 20.93%, 8.43%, 0.53), $invert) 100%);
+        background: radial-gradient(circle at 60% 100%,
+                                    invertLum(hsla(0, 33.33%, 10%, 0.73), $invert) 0%,
+                                    invertLum(hsla(120, 20.93%, 8.43%, 0.53), $invert) 100%);
+        mask-image: linear-gradient(155deg,
+                                    invertLum(hsla(0, 0.0%, 0.0%, 0), $invert) 10%,
+                                    invertLum(hsla(0, 0.0%, 0.0%, 1), $invert) 40%);
+    }
+    #skills.container:after {
+        background: base-color(4,c);
+        background-attachment: fixed;
+        //background: radial-gradient(circle at 60% 100%,
+        //                            invertLum(hsla(0, 11.11%, 30%, 0.53), $invert) 0%,
+        //                            invertLum(hsla(120, 10.53%, 14.9%, 0.67), $invert) 100%);
+        background: radial-gradient(circle at 60% 100%,
+                                    invertLum(hsla(0, 11.11%, 30%, 0.73), $invert) 0%,
+                                    invertLum(hsla(120, 10.53%, 14.9%, 0.87), $invert) 100%);
+        mask-image: radial-gradient(circle at bottom left,
+                                    invertLum(hsla(0, 0.0%, 0.0%, 1), $invert),
+                                    invertLum(hsla(0, 0.0%, 0.0%, 0.95), $invert) 40%,
+                                    invertLum(hsla(0, 0.0%, 0.0%, 0.65), $invert) 100%);
+    }
+    #where.container:after {
+        background: base-color(9,b);
+        background-attachment: fixed;
+        background: radial-gradient(circle at 60% 100%,
+                                    invertLum(hsla(0, 9.09%, 33.33%, 0.73), $invert) 0%,
+                                    invertLum(hsla(120, 9.09%, 33.33%, 0.73), $invert) 100%);
+    }
+
 }
-#skills.container:after {
-    background: base-color(4,c);
-    background-attachment: fixed;
-    background: radial-gradient(circle at 60% 100%, #5448 0%, #222a22aa 100%);
-    mask-image: radial-gradient(circle at bottom left, black 0%, rgba(0,0,0, 0.75) 40%, rgba(0,0,0,0.65) 100%);
+
+canvas {
+    filter: opacity(0.75);
 }
-#where.container:after {
-    background: base-color(9,b);
-    background-attachment: fixed;
-    background: radial-gradient(circle at 60% 100%, #a99b 0%, #9a9b 100%);
+
+:root {
+    @include backgrounds(-1);
+}
+
+:root.light-theme {
+    @include backgrounds(+1);
+
+    body:not(.gl-enabled):after {
+        filter: invert(1);
+    }
 }
 
 // ------------------------------------------
@@ -281,3 +321,52 @@ body:before {
     50%  { background-image: $bgGlow; }
     100% { background-image: $bgGlow, $bgImage; }
 }
+
+// ------------------------------------------
+// Theme Selection
+// ------------------------------------------
+
+#color-theme {
+    display: block;
+    position: fixed;
+    height: 3rem;
+    width: 3rem;
+    bottom: 0;
+    left: 0;
+    padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    a {
+        font-size: 2rem;
+        @include text-link-aberration;
+        color: base-color(f);
+        position: relative;
+
+        &:after {
+            content: '';
+            position: absolute;
+            z-index: -1;
+            top: 0;
+            left: 0;
+            display: block;
+            height: 100%;
+            width: 100%;
+            background: radial-gradient(
+                base-color(0,5) 30%,
+                base-color(0,2) 50%,
+                base-color(0,0) 70%
+            );
+        }
+    }
+    text-shadow: 1px 1px 2px base-color(0);
+}
+
+@include media-mobile {
+    #color-theme {
+        padding: 0.1rem;
+    }
+}
+
+@import './palette';

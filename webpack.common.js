@@ -53,9 +53,10 @@ module.exports = {
       filename: '[name].[contenthash].css'
     }),
     new HtmlWebpackPlugin({
-      template: path.join(dirSrc, 'index.html'),
+      template: path.join(dirSrc, 'index.ejs'),
       filename: 'index.html',
-      chunks: ['index']
+      chunks: ['index'],
+      baseUrl: 'https://maxdup.dev',
     }),
     new FaviconsWebpackPlugin({
       logo: path.join(dirSrc, './images/favicon.png'),

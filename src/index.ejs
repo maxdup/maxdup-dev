@@ -7,15 +7,15 @@
 
     <!-- Twitter Card data -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="https://maxdup.dev">
+    <meta name="twitter:site" content="<%= htmlWebpackPlugin.options.baseUrl %>">
     <meta name="twitter:title" content="Maxime Dupuis">
     <meta name="twitter:description" content="Web Developer">
-    <meta name="twitter:image:src" content="https://maxdup.dev/static/og-thumbnail.jpg">
+    <meta name="twitter:image:src" content="<%= htmlWebpackPlugin.options.baseUrl %>/static/og-thumbnail.jpg">
     <!-- Open Graph data -->
     <meta property="og:title" content="Maxime Dupuis" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://maxdup.dev" />
-    <meta property="og:image" content="https://maxdup.dev/static/og-thumbnail.jpg" />
+    <meta property="og:url" content="<%= htmlWebpackPlugin.options.baseUrl %>" />
+    <meta property="og:image" content="<%= htmlWebpackPlugin.options.baseUrl %>/static/og-thumbnail.jpg" />
     <meta property="og:site_name" content="maxdup.dev" />
     <!-- Metadata -->
     <meta name="description" content="Montréal based web developer expertise">
@@ -174,7 +174,7 @@
             <h2>Where to&nbsp;find&nbsp;me</h2>
             <p>Have a project or idea? Let's discuss software! </br>My expertise is available to turn your vision into rich digital experiences.</p>
 
-            <div class="float-columns">
+            <div class="float-columns" id="contact-links">
               <div class="float-column">
                 <h3>Contact Me</h3>
                 <ul>
@@ -189,11 +189,11 @@
                 </ul>
               </div>
 
-              <div class="float-column">
+              <div class="float-column" id="external-links">
                 <h3>Find Me Online</h3>
                 <ul>
                   <li>
-                    <a href="/static/Maxime-Dupuis-resume.pdf" target="_blank">
+                    <a href="<%= htmlWebpackPlugin.options.baseUrl %>/static/Maxime-Dupuis-resume.pdf" target="_blank">
                       <i class="mdi mdi-bxs-file"></i>My Resume</a>
                   </li>
                   <li>
@@ -212,13 +212,15 @@
       </div>
     </div>
     <div id="foss">
-      <div class="message">
+      <div class="foss-container">
         <h4>Licensed under GNU GPLv3.</h4>
-        <a href="https://github.com/maxdup/maxdup-dev" class="button source-link mdi mdi-github"
-           target="_blank">See source</a>
-        <p>As a proponent of free open source software principles.</br>
-          This personal web page is made available as an open-source project on GitHub.
-        </p>
+        <div class="foss-text">
+          <p>As a proponent of free open source software principles.</br>
+            This personal web page is made available as an open-source project on GitHub.
+          </p>
+          <a href="https://github.com/maxdup/maxdup-dev" class="button source-link mdi mdi-github"
+             target="_blank">See source</a>
+        </div>
       </div>
     </div>
   </body>
