@@ -1,11 +1,10 @@
 #where {
-    .aside-blurb {
-        padding-top: 4rem;
-
+    #location.aside-blurb {
         color: base-color(c);
         font-size: 2rem;
         line-height: 2rem;
         text-align: center;
+        height: 12rem;
 
         * {
             display: block;

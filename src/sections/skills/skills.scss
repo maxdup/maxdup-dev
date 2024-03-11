@@ -5,4 +5,45 @@
     .main-blurb {
         float: none;
     }
+
+    #skill-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        margin-top: 4.5rem;
+    }
+
+    .grid-column {
+        max-width: 25rem;
+        display: inline-block;
+        vertical-align: top;
+        margin-top: 0;
+        margin-right: 3rem;
+        margin-left: 0;
+        margin-bottom: 2rem;
+
+        overflow: visible;
+        position: relative;
+
+        ul {
+            padding-left: 1rem;
+            font-size: 1.25rem;
+        }
+        li {
+            display: inline-block;
+            &:not(:last-child):after { content: ", "; }
+        }
+        h3 {
+            font-size: 1.25rem;
+        }
+
+        >*:not(a) {
+	        display: block;
+        }
+    }
+}
+
+@media only screen and (max-width: $transition-medium) {
+    #skills #skill-grid {
+        grid-template-columns: 1fr;
+    }
 }

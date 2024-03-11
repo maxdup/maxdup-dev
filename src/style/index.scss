@@ -80,7 +80,7 @@ body {
     box-sizing: border-box;
     display: flex;
     flex-grow: 0;
-    align-items: stretch;
+    align-items: center;
 
     width: 100%;
     max-width: 1600px;
@@ -106,6 +106,13 @@ body .aside-blurb {
         height: 4rem;
         width: auto;
     }
+    .floating-aside-blurb {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        top: calc(var(--bg-offset-y) / 4);
+        left: calc(var(--bg-offset-x) / 3);
+    }
 }
 body .main-blurb {
     width: 60%;
@@ -123,9 +130,6 @@ body .full-blurb {
     }
     body .aside-blurb {
         display: none !important;
-    }
-    .grid-blurb {
-        grid-template-columns: 1fr;
     }
 }
 
@@ -161,44 +165,7 @@ body .full-blurb {
     h3 {
         margin-bottom: 1rem;
     }
-
 }
-
-.grid-columns {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr;
-    margin-top: 4.5rem;
-}
-
-.grid-column {
-    max-width: 25rem;
-    display: inline-block;
-    vertical-align: top;
-    margin-top: 0;
-    margin-right: 3rem;
-    margin-left: 0;
-    margin-bottom: 2rem;
-
-    overflow: visible;
-    position: relative;
-
-    ul {
-        padding-left: 1rem;
-        font-size: 1.4rem;
-    }
-    li {
-        display: inline-block;
-        &:not(:last-child):after { content: ", "; }
-    }
-    h3 {
-        font-size: 1.25rem;
-    }
-
-    >*:not(a) {
-        display: block;
-    }
-}
-
 
 
 // ------------------------------------------
@@ -329,11 +296,11 @@ body:before {
 #color-theme {
     display: block;
     position: fixed;
-    height: 3rem;
+    height: $navHeight;
     width: 3rem;
     bottom: 0;
     left: 0;
-    padding: 0.5rem;
+    padding: 0 0.5rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -365,6 +332,7 @@ body:before {
 
 @include media-mobile {
     #color-theme {
+        height: 4rem;
         padding: 0.1rem;
     }
 }
