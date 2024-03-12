@@ -17,7 +17,14 @@
 
 
 body {
-    background: base-color(0);
+    background: #000;
+    transition: background $theme-tran-speed ease-in;
+}
+:root.light-theme body {
+    background: #fff;
+}
+
+body {
     margin: 0;
     overflow-x: hidden;
 
@@ -316,10 +323,11 @@ body:before {
     justify-content: center;
     align-items: center;
 
-    a {
+    button {
         font-size: 2rem;
         @include text-link-aberration;
         color: base-color(f);
+        background: transparent;
         position: relative;
 
         &:after {

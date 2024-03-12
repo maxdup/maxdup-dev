@@ -36,7 +36,6 @@ $hex-chars: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a, b, c, d, e, f;
         $A: hexToDec($Ai);
         $varname: base-color-varname($Si, $Ai);
         @if ($invert == 100%){
-            @debug $S;
             $S: 15 - $S;
         }
         #{$varname}: colorCompose($S, $A);

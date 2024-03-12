@@ -11,8 +11,9 @@ function ThemeSelection(){
     container.id = "color-theme";
     document.body.appendChild(container);
 
-    this.button = document.createElement("a");
+    this.button = document.createElement("button");
     this.button.classList.add('mdi', ICON_SUN); // or mdi-moon
+    this.button.setAttribute('aria-label', "Theme selection");
     this.button.addEventListener("click", this.toggle);
     container.appendChild(this.button);
   }

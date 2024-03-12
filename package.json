@@ -5,10 +5,10 @@
   "main": "webpack.prod.js",
   "scripts": {
     "start": "webpack-dev-server --open --config webpack.dev.js",
-    "start-prod": "webpack-dev-server --open --config webpack.prod.js",
-    "start-debug": "webpack-dev-server --open --config webpack.debug.js",
+    "start:prod": "webpack-dev-server --open --config webpack.prod.js",
+    "start:debug": "webpack-dev-server --open --config webpack.debug.js",
     "build": "webpack --config webpack.prod.js",
-    "build-debug": "webpack --config webpack.debug.js"
+    "build:debug": "webpack --config webpack.debug.js"
   },
   "author": "",
   "license": "ISC",

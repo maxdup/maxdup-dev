@@ -31,13 +31,13 @@ $shade-values: [];
     $s: saturation($color);
     $l: 50% + (50% - color.lightness($color)) * $percent;
     $a: alpha($color);
-    @debug $h $s $l $a;
     @return unquote('hsla(#{$h}, #{$s}, #{$l}, #{$a})');
 }
 
 @mixin aberration-text($dist) {
     text-shadow: $dist * 0.10em $dist * 0.05em 0px $accent2, $dist * -0.15em 0px 0px $accent1;
 }
+
 @mixin aberration-box($dist) {
     box-shadow: $dist * 0.10em $dist * 0.1em 0px $accent2, $dist * -0.15em 0px 0px $accent1;
 }
