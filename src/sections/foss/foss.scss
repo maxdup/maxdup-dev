@@ -2,6 +2,8 @@
     display: block;
     color: base-color(0);
     background: base-color(f);
+    transition: color $theme-tran-speed ease-in,
+                background $theme-tran-speed ease-in;
     text-align: center;
     min-height: 5.5rem;
     display: flex;

@@ -133,7 +133,7 @@
     margin: auto;
     position: relative;
 
-    &:after {
+    &:after, &:before {
         content: '';
         position: absolute;
         z-index: -1;

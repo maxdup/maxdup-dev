@@ -10,7 +10,7 @@ $navHeight: 5.5rem;
     padding-top: $scaledNavHeight !important;
     margin-top: -$scaledNavHeight !important;
 
-    &:after {
+    &:before, &:after {
         top: $scaledNavHeight !important;
     }
 }

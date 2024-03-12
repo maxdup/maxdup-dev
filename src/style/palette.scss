@@ -20,13 +20,26 @@ $hex-chars: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a, b, c, d, e, f;
     @return $N;
 }
 
+
+@function colorCompose($S, $A) {
+
+    $SS: nth($hex-chars, $S + 1);
+    $AA: nth($hex-chars, $A + 1);
+    @return ##{$SS}#{$SS}#{$SS}#{$SS}#{$SS}#{$SS}#{$AA}#{$AA};
+}
+
 @mixin generate-palette($invert: 0%){
     @each $shade in $shade-values {
-        $S: hexToRGB(nth($shade, 1));
-        $A: hexToFrac(nth($shade, 2));
-        $varname: base-color-varname(nth($shade, 1), nth($shade, 2));
-        $rgba: color.invert(rgba($S,$S,$S,$A), $invert);
-        #{$varname}: #{$rgba};
+        $Si: nth($shade, 1);
+        $Ai: nth($shade, 2);
+        $S: hexToDec($Si);
+        $A: hexToDec($Ai);
+        $varname: base-color-varname($Si, $Ai);
+        @if ($invert == 100%){
+            @debug $S;
+            $S: 15 - $S;
+        }
+        #{$varname}: colorCompose($S, $A);
     }
 }
 

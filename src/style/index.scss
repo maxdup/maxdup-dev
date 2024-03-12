@@ -172,13 +172,10 @@ body .full-blurb {
 // Container backgrounds
 // ------------------------------------------
 
-@mixin backgrounds($invert){
-    #trajectory.container:after {
+@mixin backgrounds($pseudo, $invert){
+    #trajectory.container:#{$pseudo} {
         background: base-color(1,b);
         background-attachment: fixed;
-        //background: radial-gradient(circle at 60% 100%,
-        //                            invertLum(hsla(0, 33.33%, 10%, 0.73), $invert) 0%,
-        //                            invertLum(hsla(120, 20.93%, 8.43%, 0.53), $invert) 100%);
         background: radial-gradient(circle at 60% 100%,
                                     invertLum(hsla(0, 33.33%, 10%, 0.73), $invert) 0%,
                                     invertLum(hsla(120, 20.93%, 8.43%, 0.53), $invert) 100%);
@@ -186,12 +183,9 @@ body .full-blurb {
                                     invertLum(hsla(0, 0.0%, 0.0%, 0), $invert) 10%,
                                     invertLum(hsla(0, 0.0%, 0.0%, 1), $invert) 40%);
     }
-    #skills.container:after {
+    #skills.container:#{$pseudo} {
         background: base-color(4,c);
         background-attachment: fixed;
-        //background: radial-gradient(circle at 60% 100%,
-        //                            invertLum(hsla(0, 11.11%, 30%, 0.53), $invert) 0%,
-        //                            invertLum(hsla(120, 10.53%, 14.9%, 0.67), $invert) 100%);
         background: radial-gradient(circle at 60% 100%,
                                     invertLum(hsla(0, 11.11%, 30%, 0.73), $invert) 0%,
                                     invertLum(hsla(120, 10.53%, 14.9%, 0.87), $invert) 100%);
@@ -200,7 +194,7 @@ body .full-blurb {
                                     invertLum(hsla(0, 0.0%, 0.0%, 0.95), $invert) 40%,
                                     invertLum(hsla(0, 0.0%, 0.0%, 0.65), $invert) 100%);
     }
-    #where.container:after {
+    #where.container:#{$pseudo} {
         background: base-color(9,b);
         background-attachment: fixed;
         background: radial-gradient(circle at 60% 100%,
@@ -210,20 +204,37 @@ body .full-blurb {
 
 }
 
-canvas {
-    filter: opacity(0.75);
-}
+@include backgrounds("after", -1);
+@include backgrounds("before", +1);
 
 :root {
-    @include backgrounds(-1);
+    .container:before,
+    .container:after {
+        transition: opacity $theme-tran-speed ease-in;
+    }
+    .container:before {
+        opacity: 0;
+    }
+    .container:after {
+        opacity: 1;
+    }
 }
 
 :root.light-theme {
-    @include backgrounds(+1);
+    .container:before {
+        opacity: 1;
+    }
+    .container:after {
+        opacity: 0;
+    }
 
     body:not(.gl-enabled):after {
         filter: invert(1);
     }
+}
+
+canvas {
+    filter: opacity(0.75);
 }
 
 // ------------------------------------------

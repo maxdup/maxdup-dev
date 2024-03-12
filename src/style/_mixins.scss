@@ -8,15 +8,6 @@ $hex-chars: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a, b, c, d, e, f;
 $shade-register: [];
 $shade-values: [];
 
-@function base-alpha($alpha: false){
-    @if not $alpha {
-        @warn "invalid value #{$alpha}. stick to multiples of 0-f";
-        @return 1;
-    }
-    $dec: index($hex-chars, $alpha) - 1;
-    @return math.div($dec+1, 16);
-}
-
 @function base-color-varname($shade, $alpha){
     @return '--base-' + $shade + $alpha;
 }
@@ -31,10 +22,17 @@ $shade-values: [];
     @return unquote("var(#{$varname})");
 }
 
+@function hsla-str($scolor) {
+    @return unquote('hsla(#{hue($color)/1deg}, #{saturation($color)}, #{lightness($color)})');
+}
+
 @function invertLum($color, $percent){
-    $degree: (50% - color.lightness($color)) * $percent;
-    $l: 50% + $degree;
-    @return color.change($color, $lightness: $l);
+    $h: hue($color);
+    $s: saturation($color);
+    $l: 50% + (50% - color.lightness($color)) * $percent;
+    $a: alpha($color);
+    @debug $h $s $l $a;
+    @return unquote('hsla(#{$h}, #{$s}, #{$l}, #{$a})');
 }
 
 @mixin aberration-text($dist) {
