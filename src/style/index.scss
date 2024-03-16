@@ -15,15 +15,6 @@
 
 @import './print';
 
-
-body {
-    background: #000;
-    transition: background $theme-tran-speed ease-in;
-}
-:root.light-theme body {
-    background: #fff;
-}
-
 body {
     margin: 0;
     overflow-x: hidden;
@@ -260,7 +251,7 @@ $bgNoise: url('../images/noise.webp');
 $bgGlow: radial-gradient(circle at 10% 30%, rgba(64,16,16,0.55) 0%, rgba(0,0,0) 50%, rgba(0,0,0) 60%, rgba(16,28,16,1.0) 90%);
 
 canvas,
-body:before, body:after {
+body:before, body:not(.gl-enabled):after {
     display: block;
     height: 100vh;
     position: fixed;

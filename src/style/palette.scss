@@ -84,3 +84,61 @@ $shade-values: sort($shade-values);
         @include generate-palette(100%);
     }
 }
+
+#color-theme-bg {
+    content: '';
+    background: radial-gradient(at center, #282028 10%, #fff8f8 20%, #131713 45%);
+    background-position-y: -10vh;
+    background-position-x: 0vw;
+    background-repeat: no-repeat;
+    position: sticky;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    width: 100vw;
+    margin: auto;
+    z-index: -20;
+
+    background-position: 42% 25%;
+    background-size: 1200% 500%;
+    box-sizing: border-box;
+}
+
+#color-theme-bg {
+    animation: toDark 0.5s linear forwards;
+    transform-origin: bottom center;
+}
+
+:root.light-theme #color-theme-bg {
+    animation: toLight 0.5s linear forwards;
+    transform-origin: bottom center;
+}
+
+@mixin color-theme-bg-animation($invert){
+    0% {
+        background-size: 600% 300%;
+        background-position-x: 30%;
+        filter: contrast(0) brightness(0) invert($invert);
+    }
+    20% {
+        filter: contrast(0.25) brightness(0.75) invert($invert);
+    }
+    60% {
+        filter: contrast(0.5) brightness(2) invert($invert);
+    }
+    100% {
+        filter: contrast(0) brightness(2) invert($invert);
+        background-size: 2000% 500%;
+        background-position-x: 55%;
+    }
+}
+
+@keyframes toDark {
+    @include color-theme-bg-animation(1);
+}
+
+@keyframes toLight {
+    @include color-theme-bg-animation(0);
+}

@@ -29,6 +29,7 @@ function Sheens(){
   this.array = [makeSheen(), makeSheen(), makeSheen()];
   this.respawn = false;
   this.active = false;
+  this.nextWave = null;
 
   this.set = (cfg) => {
     this.active = true;
@@ -50,6 +51,7 @@ function Sheens(){
         Object.assign(this.array[i], cfg.sheens[i]);
       }
     }
+    clearTimeout(this.nextWave);
   }
 
   this.update = (dt) => {
@@ -59,8 +61,10 @@ function Sheens(){
       !s.inactive && updateSheen(s, dt);
       this.active = this.active || !s.inactive;
     });
-    !this.active && this.respawn && setTimeout(
-      this.set, 2000 + Math.random() * 3000);
+    if (!this.active && this.respawn){
+      this.nextWave = setTimeout(
+        this.set, 2000 + Math.random() * 3000);
+    }
   }
 
   let updateSheen = (sheen, dt) => {
