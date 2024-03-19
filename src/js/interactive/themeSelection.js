@@ -3,10 +3,13 @@ import glInterface from '../gl-interface';
 const ICON_SUN = 'mdi-bx-sun';
 const ICON_MOON = 'mdi-bx-moon';
 
-const COLOR_TRANSITION_SPEED = 1.0;
+const INTERACTIVE_TRANSITION_SPEED = 0.3;
+const NO_TRANSITION_SPEED = 0.0;
+const THEME_TRANSITION_SPEED = 1.0;
 
 function ThemeSelection(){
   this.darkMode = true;
+  this.timeout = null;
 
   let insertThemeSwitcher = () => {
     const container = document.createElement("div");
@@ -38,11 +41,23 @@ function ThemeSelection(){
       document.firstElementChild.classList.add('light-theme');
     }
 
+    document.documentElement.style.setProperty("--themed-transition-speed", THEME_TRANSITION_SPEED + "s");
+    document.documentElement.style.setProperty("--only-themed-transition-speed", THEME_TRANSITION_SPEED + "s");
+
+    clearTimeout(this.timeout);
+    this.timeout = setTimeout(() => {
+      document.documentElement.style.setProperty("--only-themed-transition-speed", NO_TRANSITION_SPEED + "s");
+      document.documentElement.style.setProperty("--themed-transition-speed", INTERACTIVE_TRANSITION_SPEED + "s");
+      this.timeout = null;
+    }, THEME_TRANSITION_SPEED * 1000)
+
     glInterface.exec('setSheens');
   }
 
   insertThemeSwitcher();
   insertThemeBg();
+  document.documentElement.style.setProperty("--only-themed-transition-speed", NO_TRANSITION_SPEED + "s");
+  document.documentElement.style.setProperty("--themed-transition-speed", INTERACTIVE_TRANSITION_SPEED + "s");
 }
 
 let themeSelection = new ThemeSelection();

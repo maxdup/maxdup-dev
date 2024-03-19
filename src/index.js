@@ -11,7 +11,7 @@ import './sections/skills/skills';
 import './sections/where/where';
 import './sections/foss/foss';
 
-import './style/index.scss';
+import './index.scss';
 
 let sections = [{
   id: 'main',

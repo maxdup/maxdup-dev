@@ -29,15 +29,10 @@
 
 
 #trajectory {
-    $fast: 0.15s;
     @mixin graph-item() {
         background: base-color(f);
         color: base-color(f);
-        transition: background ease-in $fast,
-                    color ease-in $fast,
-                    font-size ease-in $fast,
-                    height ease-in $fast,
-                    width ease-in $fast;
+        @include theme-transition(background, color, font-size, height, width);
     }
     @mixin graph-item-state-active(){
         background: base-color(f);

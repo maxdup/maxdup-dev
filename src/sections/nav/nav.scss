@@ -63,11 +63,10 @@ body.js-enabled {
 
     >a#home {
         color: base-color(4);
-        transition: color 0.3s;
+        @include theme-transition(color);
     }
     >a#home:after {
         opacity: 0;
-        transition: opacity 0.3s;
     }
     &.nav-complete {
         a#home {
@@ -110,6 +109,7 @@ body>a#home:after {
     @include frosted;
     box-shadow: 0px 0px 30px base-color(0);
     box-sizing: border-box;
+    @include theme-transition(background, box-shadow, opacity);
 }
 
 nav {
@@ -165,7 +165,7 @@ nav {
 
 @mixin menu-container-mobile {
     text-align: center;
-    transition: height 0.3s ease;
+    @include theme-transition(border-color, height);
     overflow: hidden;
     height: 0rem;
     padding: 0;
@@ -202,6 +202,7 @@ nav {
         bottom: unset;
         opacity: 1 !important;
         pointer-events: auto !important;
+        @include theme-transition(color, background);
     }
 
     &:before {
@@ -213,14 +214,10 @@ nav {
         left: 0rem;
         right: 0rem;
         bottom: 0;
-        background: linear-gradient(
-            180deg,
-            base-color(1,f) 0px,
-            base-color(2,f) 5px,
-            base-color(2,b) 20px,
-            base-color(2,b) 100%);
+        background: base-color(2,b);
         backdrop-filter: blur(25px);
         box-shadow: 0px 5px 15px #110000;
+        @include theme-transition(background);
 
         z-index: -1;
     }
@@ -229,7 +226,9 @@ nav {
     #nav-links, #social-links {
         opacity: 0;
         transform: translateY(-175%);
-        transition: transform 0.2s ease-in, opacity 0.3s ease-in;
+        transition: border-color var(--themed-transition-speed) ease-in,
+                    transform 0.4s ease-in,
+                    opacity 0.4s ease-in;
     }
     &.open,
     &:focus,
@@ -237,7 +236,10 @@ nav {
         #nav-links, #social-links {
             opacity: 1;
             transform: translateY(0%);
-            transition: transform 0.4s ease-out, opacity 0.7s ease-out;
+            transition: border-color var(--themed-transition-speed) ease-in,
+                        transform 0.4s ease-out,
+                        opacity 0.7s ease-out;
+
         }
         &.mdi:after {
             background: base-color(0);
@@ -304,6 +306,7 @@ nav > div {
             font-size: 1.25rem;
             margin-left: 5px;
             color: base-color(a);
+            @include theme-transition(color);
             text-shadow: none;
         }
         &:not(:last-child):after {
@@ -322,8 +325,9 @@ nav > div {
         flex-grow: 1;
 
         display: inline-block;
-
-        border: 1px solid base-color(3);
+        border-width: 1px;
+        border-style: solid;
+        border-color: base-color(3);
         box-sizing: border-box;
         border-top: 0px;
         border-right: 0px;
@@ -408,7 +412,6 @@ nav:after{
         padding-left: math.div($scaledNavHeight - 2.5rem, 2);
         padding-right: math.div($scaledNavHeight - 2.5rem, 2);
     }
-
     body > a#home {
         &:after, {
             height: $scaledNavHeight;

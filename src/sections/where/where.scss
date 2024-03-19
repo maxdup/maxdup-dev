@@ -1,6 +1,7 @@
 #where {
     #location.aside-blurb {
         color: base-color(c);
+        @include theme-transition(color);
         font-size: 2rem;
         line-height: 2rem;
         text-align: center;

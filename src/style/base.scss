@@ -1,19 +1,8 @@
 @use 'sass:color';
 
-@import './constants';
-@import './mixins';
-
-@import './theming';
-@import './animations';
-
-@import '../sections/nav/nav';
-@import '../sections/main/main';
-@import '../sections/trajectory/trajectory';
-@import '../sections/skills/skills';
-@import '../sections/where/where';
-@import '../sections/foss/foss';
-
-@import './print';
+// ------------------------------------------
+// Base Style
+// ------------------------------------------
 
 body {
     margin: 0;
@@ -208,7 +197,7 @@ body .full-blurb {
 :root {
     .container:before,
     .container:after {
-        transition: opacity $theme-tran-speed ease-in;
+        @include theme-transition(opacity);
     }
     .container:before {
         opacity: 0;
@@ -246,8 +235,8 @@ body > * {
     animation-fill-mode: forwards;
 }
 
-$bgImage: url('../images/background.webp');
-$bgNoise: url('../images/noise.webp');
+$bgImage: url('./images/background.webp');
+$bgNoise: url('./images/noise.webp');
 $bgGlow: radial-gradient(circle at 10% 30%, rgba(64,16,16,0.55) 0%, rgba(0,0,0) 50%, rgba(0,0,0) 60%, rgba(16,28,16,1.0) 90%);
 
 canvas,
@@ -296,55 +285,6 @@ body:before {
     0%   { background-image: $bgGlow; }
     50%  { background-image: $bgGlow; }
     100% { background-image: $bgGlow, $bgImage; }
-}
-
-// ------------------------------------------
-// Theme Selection
-// ------------------------------------------
-
-#color-theme {
-    display: block;
-    position: fixed;
-    height: $navHeight;
-    width: 3rem;
-    bottom: 0;
-    left: 0;
-    padding: 0 0.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    button {
-        font-size: 2rem;
-        @include text-link-aberration;
-        color: base-color(f);
-        background: transparent;
-        position: relative;
-
-        &:after {
-            content: '';
-            position: absolute;
-            z-index: -1;
-            top: 0;
-            left: 0;
-            display: block;
-            height: 100%;
-            width: 100%;
-            background: radial-gradient(
-                base-color(0,5) 30%,
-                base-color(0,2) 50%,
-                base-color(0,0) 70%
-            );
-        }
-    }
-    text-shadow: 1px 1px 2px base-color(0);
-}
-
-@include media-mobile {
-    #color-theme {
-        height: 4rem;
-        padding: 0.1rem;
-    }
 }
 
 @import './palette';

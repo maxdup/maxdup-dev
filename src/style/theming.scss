@@ -4,6 +4,7 @@
 
 @mixin base-text(){
     color: base-color(e);
+    @include theme-transition(color);
 
     font-family: Tahoma, sans-serif;
     font-size: 18px;
@@ -37,8 +38,7 @@
     border-radius: 6rem;
     color: base-color(e);
     background: base-color(0);
-    background-color: base-color(0);
-    transition: background 0.3s ease-in;
+    @include theme-transition(background, color, border);
     text-decoration: none;
     vertical-align: middle;
 
@@ -71,7 +71,7 @@
 @mixin clickable-text-neutral() {
     color: base-color(e);
     display: inline-block;
-    transition: none;
+    @include theme-only-transition(background, color);
     animation-duration: 1s;
     animation-fill-mode: forwards;
 }

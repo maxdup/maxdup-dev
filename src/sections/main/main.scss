@@ -57,7 +57,7 @@
     .scramble-stage-1,
     .scramble-stage-2,
     .scramble-stage-3 {
-        transition: transform 0.5s ease, opacity 0.5s ease;
+        @include theme-transition(transform, opacity);
         transform: scale(1);
         opacity: 1;
         animation-fill-mode: forwards;

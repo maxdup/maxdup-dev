@@ -42,6 +42,22 @@ $shade-values: [];
     box-shadow: $dist * 0.10em $dist * 0.1em 0px $accent2, $dist * -0.15em 0px 0px $accent1;
 }
 
+@mixin theme-transition($properties...){
+    $Ps: ();
+    @each $p in $properties {
+        $Ps: append($Ps, $p var(--themed-transition-speed) ease-in, comma);
+    }
+    transition: $Ps;
+}
+@mixin theme-only-transition($properties...){
+    $Ps: ();
+    @each $p in $properties {
+        $Ps: append($Ps, $p var(--only-themed-transition-speed) ease-in, comma);
+    }
+    transition: $Ps;
+}
+
+
 @mixin boxy-link(){
     touch-action: manipulation;
     user-select: none;
@@ -49,7 +65,7 @@ $shade-values: [];
     cursor: pointer;
     padding: 0.5em 0.5em;
     display: block;
-    transition: color 0.3s ease-in, background 0.3s ease-in !important;
+    @include theme-transition(background, color);
 
     &:focus,
     &:hover {
@@ -78,12 +94,17 @@ $shade-values: [];
     box-shadow: none;
     padding: 0.75rem 0.75rem;
 
-    transition: color 0.2s ease-in;
+    @include theme-transition(color);
 
     &:focus,
     &:hover {
         color: base-color(f) !important;
         background: base-color(f, 0) !important;
+    }
+    &:focus {
+        animation-name: none !important;
+    }
+    &:hover {
         animation-name: aberration-nav !important;
     }
 }
