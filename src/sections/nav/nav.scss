@@ -89,7 +89,6 @@ body.js-enabled {
     }
 }
 
-
 @mixin frosted {
     background: base-color(2,b);
     backdrop-filter: blur(25px);
@@ -209,7 +208,7 @@ nav {
         content: '';
         opacity: 1;
         position: absolute;
-        z-index: 30;
+        z-index: -1;
         top: 0;
         left: 0rem;
         right: 0rem;
@@ -218,8 +217,6 @@ nav {
         backdrop-filter: blur(25px);
         box-shadow: 0px 5px 15px #110000;
         @include theme-transition(background);
-
-        z-index: -1;
     }
     pointer-events: all;
 

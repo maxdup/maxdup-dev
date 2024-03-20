@@ -106,6 +106,7 @@ function ScrollSection(sections){
       let tid = determineCurrentTId();
       return scrollTransitions[tid];
   }
+
   this._determineScrollProgress = (transition) => {
     if (!transition){ return -1 };
 

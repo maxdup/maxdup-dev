@@ -33,7 +33,6 @@ function ScrollSnapping(sections){
     const stuntedScrollY = event.deltaY * AUTO_SCROLL_INSTANT;
     let targetScrollY = window.scrollY + event.deltaY
 
-
     // leftover from previous wheel events
     if (this.active){
       if (wheelDirection == transitionDirection){
@@ -69,6 +68,7 @@ function ScrollSnapping(sections){
       transitionFromY = from;
       transitionDiffY = to - transitionFromY;
     }
+
     let proceedUserTakeOver = () => {
       // snap release to user
       snapping = false;

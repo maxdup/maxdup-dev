@@ -7,6 +7,7 @@
 body {
     margin: 0;
     overflow-x: hidden;
+    background: base-color(0);
 
     h1 {
         font-size: 2rem;
@@ -228,7 +229,7 @@ canvas {
 // Main background
 // ------------------------------------------
 
-body > * {
+body {
     animation-delay: 1s;
     animation: fadeInAnimation ease 2s;
     animation-iteration-count: 1;

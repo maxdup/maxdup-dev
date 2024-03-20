@@ -10,6 +10,7 @@ const THEME_TRANSITION_SPEED = 1.0;
 function ThemeSelection(){
   this.darkMode = true;
   this.timeout = null;
+  this.inserted = false;
 
   let insertThemeSwitcher = () => {
     const container = document.createElement("div");
@@ -17,7 +18,7 @@ function ThemeSelection(){
     document.body.appendChild(container);
 
     this.button = document.createElement("button");
-    this.button.classList.add('mdi', ICON_SUN); // or mdi-moon
+    this.button.classList.add('mdi', ICON_SUN);
     this.button.setAttribute('aria-label', "Theme selection");
     this.button.addEventListener("click", this.toggle);
     container.appendChild(this.button);
@@ -27,6 +28,7 @@ function ThemeSelection(){
     const themeBg = document.createElement("div");
     themeBg.id = "color-theme-bg";
     document.body.appendChild(themeBg);
+    this.inserted = true;
   }
 
   this.toggle = () => {
@@ -41,23 +43,29 @@ function ThemeSelection(){
       document.firstElementChild.classList.add('light-theme');
     }
 
-    document.documentElement.style.setProperty("--themed-transition-speed", THEME_TRANSITION_SPEED + "s");
-    document.documentElement.style.setProperty("--only-themed-transition-speed", THEME_TRANSITION_SPEED + "s");
+    document.documentElement.style.setProperty(
+      "--themed-transition-speed", THEME_TRANSITION_SPEED + "s");
+    document.documentElement.style.setProperty(
+      "--only-themed-transition-speed", THEME_TRANSITION_SPEED + "s");
 
     clearTimeout(this.timeout);
-    this.timeout = setTimeout(() => {
-      document.documentElement.style.setProperty("--only-themed-transition-speed", NO_TRANSITION_SPEED + "s");
-      document.documentElement.style.setProperty("--themed-transition-speed", INTERACTIVE_TRANSITION_SPEED + "s");
-      this.timeout = null;
-    }, THEME_TRANSITION_SPEED * 1000)
 
+    this.timeout = setTimeout(() => {
+      document.documentElement.style.setProperty(
+        "--only-themed-transition-speed", NO_TRANSITION_SPEED + "s");
+      document.documentElement.style.setProperty(
+        "--themed-transition-speed", INTERACTIVE_TRANSITION_SPEED + "s");
+      this.timeout = null;
+    }, THEME_TRANSITION_SPEED * 1000);
     glInterface.exec('setSheens');
   }
 
   insertThemeSwitcher();
   insertThemeBg();
-  document.documentElement.style.setProperty("--only-themed-transition-speed", NO_TRANSITION_SPEED + "s");
-  document.documentElement.style.setProperty("--themed-transition-speed", INTERACTIVE_TRANSITION_SPEED + "s");
+  document.documentElement.style.setProperty(
+    "--only-themed-transition-speed", NO_TRANSITION_SPEED + "s");
+  document.documentElement.style.setProperty(
+    "--themed-transition-speed", INTERACTIVE_TRANSITION_SPEED + "s");
 }
 
 let themeSelection = new ThemeSelection();

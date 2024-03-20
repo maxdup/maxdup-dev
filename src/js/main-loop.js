@@ -4,6 +4,7 @@ import { ENABLE_3D } from './constants';
 import ScrollSection from './interactive/scrollSection';
 import ScrollFloating from './interactive/scrollFloating';
 import ScrollSnapping from './interactive/scrollSnapping';
+import SpaceBarScroll from './interactive/spaceBarScroll';
 import MouseMoveNudge from './interactive/mouseMoveNudge';
 import MouseSelection from './interactive/mouseSelection';
 import ThemeSelection from './interactive/themeSelection';
@@ -100,12 +101,14 @@ function MainLoop(){
     this.register(new MouseSelection());
     this.register(new ScrollSnapping(this.sections));
     this.register(new ScrollFloating(this.sections));
+    this.register(new SpaceBarScroll(this.sections));
     if (this.scrollSection) {
       this.register(this.scrollSection);
     }
     window.addEventListener('wheel', this.onEvent.bind(this), {passive: false});
     window.addEventListener('scroll', this.onEvent.bind(this));
     window.addEventListener('mousemove', this.onEvent.bind(this));
+    window.addEventListener('keydown', this.onEvent.bind(this));
   }
 }
 
