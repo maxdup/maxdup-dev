@@ -1,4 +1,3 @@
-import glInterface from '../../js/gl-interface';
 import mainLoop from '../../js/main-loop';
 
 function Navigation(){
@@ -16,8 +15,6 @@ function Navigation(){
     let linkElems = document.querySelectorAll('nav ul#nav-links a');
     let mainElem = document.getElementById('main');
 
-    let scrollScene = null;
-
     let onInit = function(){
       document.body.classList.add('js-enabled');
       document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -30,7 +27,7 @@ function Navigation(){
       });
     }
 
-    let onNavOut = function(e){
+    let onNavOut = function(){
       mainLoop.scrollSection.unlockScene();
     }
     let onNavHrefHover = function(e){

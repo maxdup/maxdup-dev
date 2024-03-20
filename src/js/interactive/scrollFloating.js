@@ -10,7 +10,7 @@ function ScrollFloating(sections){
   this.active = false;
   this.hooksOn = (eventType) => { return eventType == 'scroll' }
 
-  this.onEvent = (event) => {
+  this.onEvent = () => {
     for (let i = 0; i < this.sections.length; i++){
 
       if (!this.sections[i].floater){
@@ -18,13 +18,15 @@ function ScrollFloating(sections){
       }
 
       let offset = 0;
-      let top = this.sections[i].floater.getBoundingClientRect().top - nav.clientHeight;
+      let top = this.sections[i].floater.getBoundingClientRect().top -
+          nav.clientHeight;
       let bottom = this.sections[i].floater.getBoundingClientRect().bottom;
 
       if (top > 0){
         offset = top / scrolling.innerHeight;
       } else {
-        offset = Math.min(0, (bottom - scrolling.innerHeight) / scrolling.innerHeight);
+        offset = Math.min(
+          0, (bottom - scrolling.innerHeight) / scrolling.innerHeight);
       }
 
       if (this.sections[i].floating){

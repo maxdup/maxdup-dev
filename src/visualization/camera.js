@@ -66,10 +66,14 @@ function Camera(){
   }
 
   let _onAngleChanged = () => {
-    this.mvMatrix = matrixTranslate(identityMatrix(4), [this.offsetX, this.offsetY, this.offsetZ]);
-    this.mvMatrix = matrixRotate(this.mvMatrix, this.pitch + this.pitchOffset, [1,0,0]);
-    this.mvMatrix = matrixRotate(this.mvMatrix, this.yaw + this.yawOffset, [0,1,0]);
-    this.mvMatrix = matrixRotate(this.mvMatrix, this.roll, [0,0,1])
+    this.mvMatrix = matrixTranslate(
+      identityMatrix(4), [this.offsetX, this.offsetY, this.offsetZ]);
+    this.mvMatrix = matrixRotate(
+      this.mvMatrix, this.pitch + this.pitchOffset, [1,0,0]);
+    this.mvMatrix = matrixRotate(
+      this.mvMatrix, this.yaw + this.yawOffset, [0,1,0]);
+    this.mvMatrix = matrixRotate(
+      this.mvMatrix, this.roll, [0,0,1])
   }
 
   let _onRenderSizeChanged = () => {

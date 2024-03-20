@@ -40,8 +40,10 @@ function Waves(){
           let x = (-HN + i) * L;
           let y = (-HN + j) * L;
           // initial conditions
-          let z = z0 * Math.exp(-(Math.pow(x - x0, 2) + Math.pow(y - y0, 2)) / (2 * sigma2));
-          f[0][i][j] = initial || Math.abs(z) > Math.abs(f[0][i][j]) ? z : f[0][i][j];
+          let z = z0 * Math.exp(
+            -(Math.pow(x - x0, 2) + Math.pow(y - y0, 2)) / (2 * sigma2));
+          f[0][i][j] = initial || Math.abs(z) > Math.abs(f[0][i][j]) ?
+            z : f[0][i][j];
         }
       }
     }
@@ -50,7 +52,10 @@ function Waves(){
       for (let j = 1; j < N - 1; j++) {
         f[1][i][j] = inertiaFactor *
           f[0][i][j] + V * V / 2.0 * dt * dt / (DD * DD) *
-          (f[0][i + 1][j] + f[0][i - 1][j] + f[0][i][j + 1] + f[0][i][j - 1] - 4.0 * f[0][i][j]);
+          (f[0][i + 1][j] +
+           f[0][i - 1][j] +
+           f[0][i][j + 1] +
+           f[0][i][j - 1] - 4.0 * f[0][i][j]);
       }
     }
 
@@ -59,6 +64,7 @@ function Waves(){
 
     initial = false;
     this.heights = new Array(N*N);
+
     let makeHeights = () => {
       for (let i = 0; i < N; i++){
         for (let j = 0; j < N; j++){
@@ -75,7 +81,10 @@ function Waves(){
         // initial value
         f[2][i][j] = inertiaFactor *
           (2.0 * f[1][i][j] - f[0][i][j] + V * V * dt * dt / (DD * DD) *
-           (f[1][i + 1][j] + f[1][i - 1][j] + f[1][i][j + 1] + f[1][i][j - 1] - 4.0 * f[1][i][j]));
+           (f[1][i + 1][j] +
+            f[1][i - 1][j] +
+            f[1][i][j + 1] +
+            f[1][i][j - 1] - 4.0 * f[1][i][j]));
         // symmetry
         f[2][N-i-1][N-j-1] = f[2][i][j];
         f[2][i][N-j-1] = f[2][i][j];
@@ -89,7 +98,8 @@ function Waves(){
   }
 
   let runFrame = () => {
-    // Replace the array numbers for the next calculation. Past information is lost here.
+    // Replace the array numbers for the next calculation.
+    // Past information is lost here.
     for (let i = 0; i < N; i++) {
       for (let j = 0; j < N; j++) {
         f[0][i][j] = f[1][i][j];

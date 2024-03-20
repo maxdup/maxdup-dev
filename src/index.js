@@ -44,8 +44,10 @@ let sections = [{
 }]
 
 sections.forEach((c) => {
-  c.floater = window.document.querySelector('#' + c.id + ' .floater-container');
-  c.floating = window.document.querySelector('#' + c.id + ' .floating-container');
+  c.floater = window.document.querySelector(
+    '#' + c.id + ' .floater-container');
+  c.floating = window.document.querySelector(
+    '#' + c.id + ' .floating-container');
 });
 
 nav.loadSections(sections);

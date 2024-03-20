@@ -1,5 +1,5 @@
 import glInterface from '../gl-interface';
-import { deCasteljau, smoothingFn } from '../utils';
+import { smoothingFn } from '../utils';
 
 function MouseMoveNudge(){
   this.currentX = 0;
@@ -46,8 +46,10 @@ function MouseMoveNudge(){
     let bgOffsetX = camOffsetX * PERCENT_RANGE;
     let bgOffsetY = camOffsetY * PERCENT_RANGE;
 
-    document.documentElement.style.setProperty("--bg-offset-x", bgOffsetX + "%");
-    document.documentElement.style.setProperty("--bg-offset-y", bgOffsetY + "%");
+    document.documentElement.style.setProperty(
+      "--bg-offset-x", bgOffsetX + "%");
+    document.documentElement.style.setProperty(
+      "--bg-offset-y", bgOffsetY + "%");
 
     this._checkActive();
   }

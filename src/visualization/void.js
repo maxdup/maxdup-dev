@@ -87,7 +87,8 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens){
     let line_fs = gl.createShader(gl.FRAGMENT_SHADER);
     let sprite_fs = gl.createShader(gl.FRAGMENT_SHADER);
     let debug_fs = gl.createShader(gl.FRAGMENT_SHADER);
-    main_vsScript = main_vsScript.replace(/\%lineColors\%/g, "mat3("+this.sheens.str+")");
+    main_vsScript = main_vsScript.replace(
+      /\%lineColors\%/g, "mat3("+this.sheens.str+")");
 
     gl.shaderSource(main_vs, main_vsScript);
     gl.shaderSource(debug_vs, debug_vsScript);
@@ -182,27 +183,32 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens){
     let gridHeights = mapConnected(this.grid.idTable, this.waves.heights, 1);
     let nodeHeights = mapConnected(this.nodes.idTable, this.waves.heights, 1);
     let roadHeights = mapConnected(this.roads.idTable, this.waves.heights, 1);
-    return [...this.waves.heights, ...gridHeights, ...nodeHeights, ...roadHeights];
+    return [...this.waves.heights, ...gridHeights,
+            ...nodeHeights, ...roadHeights];
   }
   let buildConnectionBuffer = () => {
     let gridConnections = new Array(this.grid.idTable.length).fill(0);
-    let nodeConnections = mapConnected(this.nodes.idTable, this.nodes.connections, 1);
+    let nodeConnections = mapConnected(this.nodes.idTable,
+                                       this.nodes.connections, 1);
     let roadConnections = new Array(this.roads.idTable.length).fill(-2);
-    return [...this.nodes.connections, ...gridConnections, ...nodeConnections, ...roadConnections];
+    return [...this.nodes.connections, ...gridConnections,
+            ...nodeConnections, ...roadConnections];
   }
   let buildTopoBuffer = async () => {
     let topoArray = await buildTopoArray();
     let gridTopo = mapConnected(this.grid.idTable, topoArray, 2);
     let nodeTopo = mapConnected(this.nodes.idTable, topoArray, 2);
     let roadTopo = mapConnected(this.roads.idTable, topoArray, 2);
-    return [...topoArray, ...gridTopo, ...nodeTopo, ...roadTopo];
+    return [...topoArray, ...gridTopo,
+            ...nodeTopo, ...roadTopo];
   }
   let buildPositionBuffer = () => {
     let positions = buildPositionsArray();
     let connectedPositions = mapConnected(this.nodes.idTable, positions, 3)
     let gridPositions = mapConnected(this.grid.idTable, positions, 3);
     let roadPositions = mapConnected(this.roads.idTable, positions, 3);
-    return [...positions, ...gridPositions, ...connectedPositions, ...roadPositions];
+    return [...positions, ...gridPositions,
+            ...connectedPositions, ...roadPositions];
   }
 
   let buildStaticBuffer = () => {
@@ -237,7 +243,8 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens){
 
       staticBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, staticBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(staticData), gl.STATIC_DRAW);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(staticData),
+                    gl.STATIC_DRAW);
 
       const vertexPosSize = 3 * Float32Array.BYTES_PER_ELEMENT;
       const vertexConSize = 1 * Float32Array.BYTES_PER_ELEMENT;
@@ -247,11 +254,13 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens){
 
       maLoc[0] = gl.getAttribLocation(dotProgram, "position");
       gl.enableVertexAttribArray(maLoc[0]);
-      gl.vertexAttribPointer(maLoc[0], 3, gl.FLOAT, false, vertexStaticSize, vertexPosOff);
+      gl.vertexAttribPointer(maLoc[0], 3, gl.FLOAT, false,
+                             vertexStaticSize, vertexPosOff);
 
       maLoc[1] = gl.getAttribLocation(dotProgram, "nconnection");
       gl.enableVertexAttribArray(maLoc[1]);
-      gl.vertexAttribPointer(maLoc[1], 1, gl.FLOAT, false, vertexStaticSize, vertexConOff);
+      gl.vertexAttribPointer(maLoc[1], 1, gl.FLOAT, false,
+                             vertexStaticSize, vertexConOff);
     }
 
     let loadBakedBuffer = async () => {
@@ -259,7 +268,8 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens){
 
       bakedBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, bakedBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(bakedData), gl.STATIC_DRAW);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(bakedData),
+                    gl.STATIC_DRAW);
 
       const vertexTopoSize = 2 * Float32Array.BYTES_PER_ELEMENT;
       const vertexTopoOff = 0;
@@ -267,7 +277,8 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens){
 
       maLoc[2] = gl.getAttribLocation(dotProgram, "topology");
       gl.enableVertexAttribArray(maLoc[2]);
-      gl.vertexAttribPointer(maLoc[2], 2, gl.FLOAT, false, vertexBakedSize, vertexTopoOff);
+      gl.vertexAttribPointer(maLoc[2], 2, gl.FLOAT, false,
+                             vertexBakedSize, vertexTopoOff);
     }
 
     let loadDynamicBuffer = () => {
@@ -275,23 +286,27 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens){
 
       dynamicBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, dynamicBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(dynData), gl.DYNAMIC_DRAW);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(dynData),
+                    gl.DYNAMIC_DRAW);
 
       maLoc[3] = gl.getAttribLocation(dotProgram, "height");
       gl.enableVertexAttribArray(maLoc[3]);
-      gl.vertexAttribPointer(maLoc[3], 1, gl.FLOAT, false, Float32Array.BYTES_PER_ELEMENT, 0);
+      gl.vertexAttribPointer(maLoc[3], 1, gl.FLOAT, false,
+                             Float32Array.BYTES_PER_ELEMENT, 0);
     }
 
     // Debug Buffer
     if (DEBUG){
       debugBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, debugBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.camera.positions), gl.STATIC_DRAW);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.camera.positions),
+                    gl.STATIC_DRAW);
 
       xaLoc[0] = gl.getAttribLocation(debugProgram, "debugPosition");
 
       gl.enableVertexAttribArray(xaLoc[0]);
-      gl.vertexAttribPointer(xaLoc[0], 3, gl.FLOAT, false, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
+      gl.vertexAttribPointer(xaLoc[0], 3, gl.FLOAT, false,
+                             3 * Float32Array.BYTES_PER_ELEMENT, 0);
     }
 
     loadStaticBuffer();
@@ -354,7 +369,8 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens){
       this.waves.update(this.ticker.fixedTimeDelta);
 
       // ingest sheens
-      let sh = Array.from(this.sheens.array, (s,i) => [...s.origin, ...s.angle]).flat();
+      let sh = Array.from(
+        this.sheens.array, (s,i) => [...s.origin, ...s.angle]).flat();
 
       let glUpdateUniforms = (uLoc) => {
         gl.uniformMatrix4fv(uLoc[0], false, this.camera.pjMatrix);
@@ -387,7 +403,8 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens){
       gl.bindBuffer(gl.ARRAY_BUFFER, dynamicBuffer);
 
       glUpdateUniforms(luLoc);
-      gl.drawArrays(gl.LINES,  this.grid.offset, this.grid.len + this.roads.len + this.nodes.len);
+      gl.drawArrays(gl.LINES,  this.grid.offset,
+                    this.grid.len + this.roads.len + this.nodes.len);
 
       if (DEBUG){
         gl.useProgram(debugProgram);
@@ -397,8 +414,10 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens){
         gl.uniformMatrix4fv(xuLoc[1], false, this.camera.mvMatrix);
         gl.uniform1f(xuLoc[2], this.camera.renderHeight);
 
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(this.camera.positions));
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.camera.positions), gl.STATIC_DRAW);
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0,
+                         new Float32Array(this.camera.positions));
+        gl.bufferData(gl.ARRAY_BUFFER,
+                      new Float32Array(this.camera.positions), gl.STATIC_DRAW);
 
         gl.drawArrays(gl.LINES, this.camera.offset, this.camera.len);
       }

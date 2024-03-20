@@ -108,7 +108,7 @@ function ScrollSection(sections){
   }
 
   this._determineScrollProgress = (transition) => {
-    if (!transition){ return -1 };
+    if (!transition){ return -1 }
 
     let fromPos = transition.fromSection.elem.getBoundingClientRect();
     let toPos = transition.toSection.elem.getBoundingClientRect();
@@ -121,9 +121,10 @@ function ScrollSection(sections){
     return Math.max(0, Math.min(1, progress));
   }
 
-  this.onEvent = (event) => {
+  this.onEvent = () => {
 
-    let activeTransition = this.clickTransition || this._determineScrollTransition();
+    let activeTransition = this.clickTransition ||
+        this._determineScrollTransition();
     this.targetProgress = this._determineScrollProgress(activeTransition);
 
     if (this.currentTransition != activeTransition){
@@ -141,7 +142,8 @@ function ScrollSection(sections){
 
   this.tick = () => {
 
-    this.currentProgress = smoothingFn(this.currentProgress, this.targetProgress, 25);
+    this.currentProgress = smoothingFn(
+      this.currentProgress, this.targetProgress, 25);
 
     if (this.currentTransition){
       let targetSceneId;
@@ -177,10 +179,12 @@ function ScrollSection(sections){
 
       let progress = easeInOut(this.currentProgress);
 
-      let camAngle = deCasteljau([from.cameraAngle, from.cameraAngleOut,
-                                  to.cameraAngleIn, to.cameraAngle], progress);
-      let camOffset = deCasteljau([from.cameraOffset, from.cameraOffsetOut,
-                                   to.cameraOffsetIn, to.cameraOffset], progress);
+      let camAngle = deCasteljau(
+        [from.cameraAngle, from.cameraAngleOut,
+         to.cameraAngleIn, to.cameraAngle], progress);
+      let camOffset = deCasteljau(
+        [from.cameraOffset, from.cameraOffsetOut,
+         to.cameraOffsetIn, to.cameraOffset], progress);
 
       glInterface.exec('setCamAngle', {
         pitch: camAngle[0],

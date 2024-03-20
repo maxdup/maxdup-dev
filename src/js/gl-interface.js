@@ -13,7 +13,8 @@ function GlInterface() {
         try {
           const offscreenCanvas3D = canvas3D.transferControlToOffscreen();
           const offscreenCanvas2D = canvas2D.transferControlToOffscreen();
-          this.glWorker = new Worker(new URL('./background-worker.js', import.meta.url));
+          this.glWorker = new Worker(
+            new URL('./background-worker.js', import.meta.url));
           this.glWorker.postMessage({msg: 'init',
                                      canvas3D: offscreenCanvas3D,
                                      canvas2D: offscreenCanvas2D,
@@ -28,7 +29,8 @@ function GlInterface() {
             reject();
           }
           if (err instanceof TypeError &&
-              err.message.includes("transferControlToOffscreen is not a function")) {
+              err.message.includes(
+                "transferControlToOffscreen is not a function")) {
             try {
               require.ensure(['./synchronous-worker.js'], (require) => {
                 let SyncWorker = require('./synchronous-worker.js').default;

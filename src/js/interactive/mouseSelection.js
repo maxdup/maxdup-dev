@@ -6,7 +6,7 @@ let accent2 = [0, 70, 78];
 function MouseSelection(){
 
   this.active = false;
-  this.hooksOn = (eventType) => { return false; }
+  this.hooksOn = () => { return false; }
   this.onEvent = () => {}
   this.tick = () => {}
 
@@ -14,7 +14,7 @@ function MouseSelection(){
   // Selection Color
   // ----------------------------
   let selectColorToggle = false;
-  let applySelectColor = (event) => {
+  let applySelectColor = () => {
     let clr = HSLStr(selectColorToggle ? accent2 : accent1);
     document.documentElement.style.setProperty('--select-background', clr);
   }
@@ -24,7 +24,7 @@ function MouseSelection(){
       document.removeEventListener('selectionchange', selectionChanged);
     }
   }
-  document.addEventListener('selectstart', (event) => {
+  document.addEventListener('selectstart', () => {
     applySelectColor();
     document.addEventListener('selectionchange', selectionChanged);
   });

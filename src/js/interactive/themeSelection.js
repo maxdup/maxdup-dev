@@ -67,7 +67,4 @@ function ThemeSelection(){
   document.documentElement.style.setProperty(
     "--themed-transition-speed", INTERACTIVE_TRANSITION_SPEED + "s");
 }
-
-let themeSelection = new ThemeSelection();
-
-export default themeSelection;
+export default ThemeSelection;

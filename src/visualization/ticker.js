@@ -65,8 +65,8 @@ function Ticker(camera){
   }
 
   this.decreaseRenderQuality = () => {
-    let frameCount = 0;
-    let frameAvg = null;
+    frameCount = 0;
+    frameAvg = null;
     if (this.targetFPS == 60){
       this.setFPS(30);
       return;
@@ -83,8 +83,8 @@ function Ticker(camera){
   }
 
   this.increaseRenderQuality = () => {
-    let frameCount = 0;
-    let frameAvg = null;
+    frameCount = 0;
+    frameAvg = null;
     if (this.camera.renderScale == 0.5){
       this.camera.updateRenderScale(0.75);
       return;

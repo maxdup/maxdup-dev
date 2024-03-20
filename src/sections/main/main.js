@@ -56,7 +56,8 @@ let sequence = () => {
     scramble2.style.transform = 'none';
     scramble2.style.animationName = 'aberration-main';
 
-    glInterface.supports3D && glInterface.exec('setPositions', initialPeakPosition);
+    glInterface.supports3D && glInterface.exec(
+      'setPositions', initialPeakPosition);
   }, DELAY);
 
   setTimeout(() => {

@@ -3,8 +3,10 @@ import { easeOut } from '../utils';
 function ScrollSnapping(sections){
   this.sections = sections;
 
-  const AUTO_SCROLL_DURATION = 350; // how long the scroll smoothing lasts (ms)
-  const AUTO_SCROLL_INSTANT = 0.25; // how much scrolling is to be applied instantly
+  // how long the scroll smoothing lasts (ms)
+  const AUTO_SCROLL_DURATION = 350;
+  // how much scrolling is to be applied instantly
+  const AUTO_SCROLL_INSTANT = 0.25;
 
   let autoScrollStartAt;
 
@@ -43,12 +45,9 @@ function ScrollSnapping(sections){
 
     let snapTargetY = false;
 
-    const what = [];
     this.sections.forEach((section) => {
 
       const targetDiff = Math.abs(targetScrollY - section.elem.offsetTop);
-      const currentDiff = Math.abs(window.scrollY - section.elem.offsetTop );
-
       const snapDirection = Math.sign(section.elem.offsetTop - window.scrollY);
 
       // small range that snaps back to current panel
