@@ -222,6 +222,7 @@ nav {
 
     #nav-links, #social-links {
         opacity: 0;
+        pointer-events: none;
         transform: translateY(-175%);
         transition: border-color var(--themed-transition-speed) ease-in,
                     transform 0.4s ease-in,
@@ -231,6 +232,7 @@ nav {
     &:focus,
     &:focus-within {
         #nav-links, #social-links {
+            pointer-events: all;
             opacity: 1;
             transform: translateY(0%);
             transition: border-color var(--themed-transition-speed) ease-in,
