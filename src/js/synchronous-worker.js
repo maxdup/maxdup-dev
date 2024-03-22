@@ -3,6 +3,9 @@ function SyncWorker(){
 
   this.init = (canvas3D, canvas2D) =>{
     this.agnosticWorker.init(canvas3D, canvas2D);
+    if (CRASH_3D){
+      throw new Error('WebGL_init_failure');
+    }
   }
   this.postMessage = (event) => {
     this.agnosticWorker.run(event.msg, event.value);

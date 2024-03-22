@@ -1,7 +1,21 @@
-import { ENABLE_3D } from './constants';
+import { ENABLE_3D, CRASH_3D } from './constants';
 
 function GlInterface() {
-  this.supports3D = false;
+  this.supports3D = undefined;
+
+  this.fallbackFn = null;
+  this.setFallback = (fallbackFn) => {
+    this.fallbackFn = fallbackFn;
+    if (this.supports3D === false){
+      this.fallbackFn && this.fallbackFn();
+    }
+  }
+
+  this.disengage = (err) => {
+    this.supports3D = false;
+    this.glWorker = null;
+    this.fallbackFn && this.fallbackFn();
+  }
 
   this.loaded = new Promise((resolve, reject) => {
     if (!ENABLE_3D){ reject() }
@@ -15,6 +29,9 @@ function GlInterface() {
           const offscreenCanvas2D = canvas2D.transferControlToOffscreen();
           this.glWorker = new Worker(
             new URL('./background-worker.js', import.meta.url));
+          this.glWorker.addEventListener('message', (event) => {
+            this.disengage(event.data);
+          });
           this.glWorker.postMessage({msg: 'init',
                                      canvas3D: offscreenCanvas3D,
                                      canvas2D: offscreenCanvas2D,
@@ -22,14 +39,13 @@ function GlInterface() {
           this.supports3D = true;
           resolve();
         }
-        catch(err) {
-          let abort = () => {
-            this.supports3D = false;
-            this.glWorker = null;
-            reject();
+        catch(workerError) {
+          let abort = (err) => {
+            this.disengage(err);
+            reject(err);
           }
-          if (err instanceof TypeError &&
-              err.message.includes(
+          if (workerError instanceof TypeError &&
+              workerError.message.includes(
                 "transferControlToOffscreen is not a function")) {
             try {
               require.ensure(['./synchronous-worker.js'], (require) => {
@@ -37,15 +53,16 @@ function GlInterface() {
                 this.supports3D = true;
                 this.glWorker = new SyncWorker();
                 this.glWorker.init(canvas3D, canvas2D);
+                if (CRASH_3D){
+                  throw new Error('WebGL_init_failure');
+                }
                 resolve();
               });
-            } catch (err) {
-              console.error("Background doesn't work because:", err);
-              abort();
+            } catch (GLError) {
+              abort(GLError);
             }
           } else {
-            console.error("Background doesn't work because:", err);
-            abort();
+            abort(workerError);
           }
         }
       }

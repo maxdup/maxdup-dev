@@ -81,11 +81,9 @@ function MainLoop(){
       });
     }
     glInterface.exec('setFPS', mobileCheck() ? 30 : 60);
-
   }
 
   this.run2D = () => {
-
     // Events
     this.bindEvents();
 
@@ -94,6 +92,7 @@ function MainLoop(){
     for (let i = 0; i < cs.length; i++){
       cs[i].parentNode.removeChild(cs[i]);
     }
+    document.body.classList.remove('gl-enabled');
 
     this.tick();
   }
@@ -101,6 +100,7 @@ function MainLoop(){
   let themeSelect = new ThemeSelection();
 
   this.bindEvents = () => {
+    if (this.bound) { return; }
     this.register(new MouseMoveNudge());
     this.register(new MouseSelection());
     this.register(new ScrollSnapping(this.sections));
@@ -117,6 +117,7 @@ function MainLoop(){
       'mousemove', this.onEvent.bind(this));
     window.addEventListener(
       'keydown', this.onEvent.bind(this));
+    this.bound = true;
   }
 }
 
@@ -128,6 +129,7 @@ let callback = () => {
 }
 
 glInterface.loaded.then(callback, callback);
+glInterface.setFallback(mainLoop.run2D);
 
 export default mainLoop;
 
