@@ -1,31 +1,22 @@
 @mixin ul-addon() {
 
-    // Base Style
+    // Base style
     li {
         position: relative;
-
-        &:after,
-        &:not(:last-child):before {
-            content: '' !important;
-            display: block;
-            position: absolute;
-        }
-        &:not(:first-child):before {
-            content: none;
-        }
     }
 
-    li:after,
-    li:before {
+
+    li::after,
+    li::before {
+        @include theme-transition(color, background, border-color, border-width, height, width);
         width: 0px;
         right: 0rem;
         transform: translateX(50%);
         box-sizing: border-box;
         border-color: base-color(f) !important;
-        @include theme-transition(color, background, border-color, border-width, height, width);
     }
-    li:after { // dots
-        height: 0px;
+
+    li::after { // dots
         top: 0;
         bottom: 0;
         margin: auto;
@@ -37,7 +28,8 @@
         border-width: 3px;
         border-color: base-color(a);
     }
-    li:before { // line
+
+    li::before { // line
         width: 0px;
         border-style: solid;
         border-width: 2px;
@@ -46,60 +38,82 @@
         bottom: -1.5rem;
     }
 
-    // Active Style
+    li::after,
+    li:not(:last-child)::before {
+        content: '' !important;
+        display: block;
+        position: absolute;
+    }
+
+    li:not(:first-child)::before {
+        content: none;
+    }
+
+    // Hover style
+    li:hover {
+        &::after,
+        &::before {
+            border-color: base-color(f) !important;
+        }
+
+        &::after {
+            width: 2rem;
+            height: 2rem;
+            background: base-color(f);
+            border-color: base-color(0, 0);
+        }
+    }
+
+    li ~ li:hover::after {
+        border-color: base-color(f) !important;
+    }
+
+    // Active style
     li.active {
         color: base-color(f);
-        &:after { // dot
-            border-color: base-color(a);
-            background: base-color(a);
-        }
-        &:after,
-        &:before {
+
+        &::after,
+        &::before {
             background: base-color(f) !important;
             border-color: base-color(f) !important;
         }
-        &:not(:last-child):before,
-        ~ li:not(:last-child):before,
-        ~ li:after{
+
+        &::after { // dot
+            border-color: base-color(a);
+            background: base-color(a);
+        }
+
+        &:not(:last-child)::before,
+        ~ li:not(:last-child)::before,
+        ~ li::after {
             border-color: base-color(8) !important;
         }
-        ~ li:after{
-            border-width: 2px;
-        }
-        &:not(:last-child):before,
-        ~ li:not(:last-child):before {
+
+        &:not(:last-child)::before,
+        ~ li:not(:last-child)::before {
             border-width: 1px;
         }
     }
 
-    // Hover Style
-    li:hover {
-        &:after {
-            width: 2rem;
-            height: 2rem;
-            background: base-color(f);
-            border-color: base-color(0,0);
-        }
-        &:after,
-        &:before {
-            border-color: base-color(f) !important;
-        }
-    }
-    li ~ li:hover:after {
-        border-color: base-color(f) !important;
+    li.active ~ li::after {
+        border-width: 2px;
     }
 
-    @include media-mobile(){
+
+    @include media-mobile() {
         padding-right: 3.5rem;
-        li:after,
-        li:before {
+
+        li::after,
+        li::before {
             right: -3.5rem;
         }
     }
-    @include media-mobile-small(){
+
+    @include media-mobile-small() {
         padding-right: 2.5rem;
-        li:after,
-        li:before {
+
+        li::after,
+        li::before {
             right: -2.5rem;
         }
     }

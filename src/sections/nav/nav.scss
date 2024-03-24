@@ -1,27 +1,30 @@
-@use "sass:math";
+@use 'sass:math';
 @import './ul-addon';
 
-$navHeight: 5.5rem;
+$nav-height: 5.5rem;
 
-@mixin naved-container($scale){
+@mixin naved-container($scale) {
 
-    $scaledNavHeight: $navHeight * $scale;
+    $scaled-nav-height: $nav-height * $scale;
 
-    padding-top: $scaledNavHeight !important;
-    margin-top: -$scaledNavHeight !important;
+    padding-top: $scaled-nav-height !important;
+    margin-top: -$scaled-nav-height !important;
 
-    &:before, &:after {
-        top: $scaledNavHeight !important;
+    &::before,
+    &::after {
+        top: $scaled-nav-height !important;
     }
 }
 
 // Overrides for nav to work
 #main {
-    height: calc(100vh - $navHeight) !important;
+    height: calc(100vh - $nav-height) !important;
 }
+
 .container {
     @include naved-container(1);
 }
+
 a#home {
     @include text-link-header();
 }
@@ -32,138 +35,148 @@ a#home {
 body {
     position: relative;
 }
+
 body>a#home {
     position: fixed;
     top: 0;
     left: 0;
     margin: 0;
     padding: 0;
-    padding-top: math.div($navHeight - 4rem, 2);
-    padding-left: math.div($navHeight - 4rem, 2);
+    padding-top: math.div($nav-height - 4rem, 2);
+    padding-left: math.div($nav-height - 4rem, 2);
     box-sizing: border-box;
     z-index: 11;
     pointer-events: all;
+    @include theme-transition(color);
 
-    *, &:after {
-        pointer-events: none;
-    }
     h1 {
         display: inline-block;
     }
+
+    *,
+    &::after {
+        pointer-events: none;
+    }
+
+    &::after {
+        content: '';
+        display: block;
+        position: fixed;
+        z-index: -1;
+        top: 0;
+        width: 100vw;
+        left: -100vw;
+        right: -100vw;
+        margin: auto;
+        height: $nav-height;
+        @include frosted;
+        box-shadow: 0px 0px 30px base-color(0);
+        box-sizing: border-box;
+        @include theme-transition(background, box-shadow, opacity);
+    }
 }
 
-a#home, nav a {
+body>a#home,
+nav a {
     &:focus,
     &:hover {
         color: base-color(f) !important;
     }
 }
 
-body.js-enabled {
 
-    >a#home {
-        color: base-color(4);
-        @include theme-transition(color);
-    }
-    >a#home:after {
+@mixin ghost-home() {
+    color: base-color(4);
+    &::after {
         opacity: 0;
     }
-    &.nav-complete {
-        a#home {
-            color: base-color(c);
-            &:after {
-                opacity: 1;
-            }
-        }
+}
+
+@mixin solid-home() {
+    color: base-color(c);
+    &::after {
+        opacity: 1;
     }
-    @include media-mobile(){
+}
+
+body:not(.js-enabled){
+    >a#home {
+        @include solid-home();
+    }
+}
+
+body.js-enabled {
+    >a#home {
+        @include ghost-home();
+    }
+    &.nav-complete>a#home {
+        @include solid-home();
+    }
+}
+
+@include media-mobile() {
+    body.js-enabled {
         nav.open,
         nav:focus-within {
-            &+a#home {
-                color: base-color(c);
-                &:after {
-                    opacity: 1;
-                }
+            +a#home {
+                @include solid-home();
             }
         }
     }
-}
-
-@mixin frosted {
-    background: base-color(2,b);
-    backdrop-filter: blur(25px);
-}
-
-body>a#home:after {
-    content: '';
-    display: block;
-    position: fixed;
-    z-index: -1;
-    top: 0;
-    width: 100vw;
-    left: -100vw;
-    right: -100vw;
-    margin: auto;
-    height: $navHeight;
-    @include frosted;
-    box-shadow: 0px 0px 30px base-color(0);
-    box-sizing: border-box;
-    @include theme-transition(background, box-shadow, opacity);
 }
 
 nav {
     max-width: 1400px;
     margin: auto;
-
     position: sticky;
     overflow: visible;
     right: 0;
     top: 0;
-
     padding: 1.35rem 1.25rem;
     z-index: 12;
-
     text-align: right;
     font-weight: 800;
     display: table;
     margin-right: 0;
     pointer-events: all;
 
-    &:before, &.mdi:after{
+    &::before,
+    &.mdi::after {
         display: none;
     }
 
     > div {
+        display: flex;
+        flex-direction: row-reverse;
         position: relative;
         overflow: visible;
     }
+
     ul {
         list-style-type: none;
     }
+
     li {
         display: inline-block;
     }
 }
 
-
-
 @mixin menu-container-mobile-small {
-    top: $navHeight * 0.75;
-
+    top: $nav-height * 0.75;
     height: 0rem;
-    max-height: calc(100vh - $navHeight * 0.75);
+    max-height: calc(100vh - $nav-height * 0.75);
 
     &.open,
     &:focus-within {
         height: 40rem;
     }
-    > div{
+
+    > div {
         padding: 5rem 2.5rem;
     }
 }
 
 @mixin menu-container-mobile {
-    text-align: center;
     @include theme-transition(border-color, height);
     overflow: hidden;
     height: 0rem;
@@ -180,14 +193,13 @@ nav {
 
     display: block;
     position: fixed;
-    top: $navHeight;
+    top: $nav-height;
     right: 0;
     left: 0;
     bottom: unset;
     text-align: right;
 
-
-    &.mdi:after {
+    &.mdi::after {
         width: 7rem;
         text-align: center;
         padding: 0.75rem 1.5rem 0rem;
@@ -204,7 +216,7 @@ nav {
         @include theme-transition(color, background);
     }
 
-    &:before {
+    &::before {
         content: '';
         opacity: 1;
         position: absolute;
@@ -213,14 +225,16 @@ nav {
         left: 0rem;
         right: 0rem;
         bottom: 0;
-        background: base-color(2,b);
+        background: base-color(2, b);
         backdrop-filter: blur(25px);
-        box-shadow: 0px 5px 15px #110000;
+        box-shadow: 0px 5px 15px #100;
         @include theme-transition(background);
     }
+
     pointer-events: all;
 
-    #nav-links, #social-links {
+    #nav-links,
+    #social-links {
         opacity: 0;
         pointer-events: none;
         transform: translateY(-175%);
@@ -228,10 +242,12 @@ nav {
                     transform 0.4s ease-in,
                     opacity 0.4s ease-in;
     }
+
     &.open,
     &:focus,
     &:focus-within {
-        #nav-links, #social-links {
+        #nav-links,
+        #social-links {
             pointer-events: all;
             opacity: 1;
             transform: translateY(0%);
@@ -240,16 +256,12 @@ nav {
                         opacity 0.7s ease-out;
 
         }
-        &.mdi:after {
+
+        &.mdi::after {
             background: base-color(0);
             filter: invert(1);
         }
     }
-}
-
-nav > div {
-    display: flex;
-    flex-direction: row-reverse;
 }
 
 #social-links {
@@ -271,10 +283,12 @@ nav > div {
         display: flex;
         flex-direction: row;
     }
+
     li {
         text-align: center;
         flex-grow: 1;
     }
+
     a {
         padding-left: 0;
         padding-right: 0;
@@ -283,38 +297,39 @@ nav > div {
         flex-grow: 1;
         width: 100%;
     }
-
 }
 
 #nav-links {
     flex-grow: 1;
 
-    @include media-mobile-small(){
+    @include media-mobile-small() {
         max-width: 16rem;
         width: 100%;
     }
 
     a { @include text-link-aberration(); }
 
-    li:first-child { display: none; }
-
     li {
         max-width: 100%;
         display: inline-block;
-        &:after {
+
+        &::after {
             font-size: 1.25rem;
             margin-left: 5px;
             color: base-color(a);
             @include theme-transition(color);
             text-shadow: none;
         }
-        &:not(:last-child):after {
+
+        &:not(:last-child)::after {
             display: inline-block;
             content: '|';
         }
+
+        &:first-child { display: none; }
     }
 
-    @include media-mobile(){
+    @include media-mobile() {
         @include ul-addon();
         min-width: 12rem;
         max-width: 16rem;
@@ -336,17 +351,22 @@ nav > div {
             @include boxy-link();
             font-size: 1.5rem;
         }
-        li, li:first-child {
+
+        li,
+        li:first-child {
             display: block;
         }
+
         li.active a {
             color: base-color(f);
         }
-        li:not(:last-child):after {
+
+        li:not(:last-child)::after {
             content: none;
         }
     }
-    @include media-mobile-small(){
+
+    @include media-mobile-small() {
         max-width: none;
         width: 100%;
 
@@ -357,38 +377,41 @@ nav > div {
 }
 
 
-@include media-mobile(){
+@include media-mobile() {
     #main {
         height: 100vh !important;
     }
-    body > a#home{
+
+    body > a#home {
         padding-left: 1.5rem;
     }
+
     nav {
         @include menu-container-mobile;
     }
 }
+
 @media only screen and (max-width: $transition-small) {
     nav {
         @include menu-container-mobile-small;
     }
 }
 
-
-body>a#home:before,
-nav:after{
+body>a#home::before,
+nav::after {
     font-size: 4rem;
 }
 
-@include media-mobile(){
+@include media-mobile() {
     body > a#home,
-    nav.mdi:after {
-        height: $navHeight;
+    nav.mdi::after {
+        height: $nav-height;
         text-align: center;
-        padding-top: math.div($navHeight - 4rem, 2);
-        padding-left: math.div($navHeight - 4rem, 2);
-        padding-right: math.div($navHeight - 4rem, 2);
+        padding-top: math.div($nav-height - 4rem, 2);
+        padding-left: math.div($nav-height - 4rem, 2);
+        padding-right: math.div($nav-height - 4rem, 2);
     }
+
     #social-links {
         display: flex;
     }
@@ -397,34 +420,40 @@ nav:after{
 @include media-mobile-small() {
 
     $scale: 0.75;
-    $scaledNavHeight: $navHeight * $scale;
+    $scaled-nav-height: $nav-height * $scale;
 
-    body > a#home:before,
-    nav.mdi:after {
+    body > a#home::before,
+    nav.mdi::after {
         font-size: 3rem;
     }
+
     body > a#home,
-    nav.mdi:after {
+    nav.mdi::after {
         width: 5rem;
-        height: $scaledNavHeight;
-        padding-top: math.div($scaledNavHeight - 3rem, 2);
-        padding-left: math.div($scaledNavHeight - 2.5rem, 2);
-        padding-right: math.div($scaledNavHeight - 2.5rem, 2);
+        height: $scaled-nav-height;
+        padding-top: math.div($scaled-nav-height - 3rem, 2);
+        padding-left: math.div($scaled-nav-height - 2.5rem, 2);
+        padding-right: math.div($scaled-nav-height - 2.5rem, 2);
     }
+
     body > a#home {
-        &:after, {
-            height: $scaledNavHeight;
+        &::after, {
+            height: $scaled-nav-height;
         }
+
         h1 {
             display: none;
         }
     }
+
     .container {
         @include naved-container(0.75);
     }
+
     nav > div {
         display: block;
     }
+
     #nav-links {
         margin-bottom: 7rem;
     }

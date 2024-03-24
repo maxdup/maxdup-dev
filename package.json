@@ -8,7 +8,8 @@
     "start:prod": "webpack-dev-server --open --config webpack.prod.js",
     "start:debug": "webpack-dev-server --open --config webpack.debug.js",
     "build": "webpack --config webpack.prod.js",
-    "build:debug": "webpack --config webpack.debug.js"
+    "build:debug": "webpack --config webpack.debug.js",
+    "lint": "npx stylelint \"**/*.scss\""
   },
   "author": "",
   "license": "ISC",
@@ -29,6 +30,9 @@
     "simple-icons": "^10.4.0",
     "spectorjs": "^0.9.29",
     "style-loader": "^3.3.1",
+    "stylelint": "^16.3.0",
+    "stylelint-config-recommended-scss": "^14.0.0",
+    "stylelint-scss": "^6.2.1",
     "ts-shader-loader": "^2.0.1",
     "webfonts-loader": "^8.0.1",
     "webpack": "^5.74.0",

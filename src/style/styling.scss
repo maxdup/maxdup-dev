@@ -2,7 +2,7 @@
 @import './scaffold/defaults';
 @import './constants';
 
-@mixin base-text(){
+@mixin base-text() {
     color: base-color(e);
     @include theme-transition(color);
 
@@ -20,10 +20,10 @@
 
 @mixin base-text-selected() {
     background: var(--select-background);
-    color: var(--highlight-color);
+    color: var(--select-color);
 }
 
-@mixin heading-text(){
+@mixin heading-text() {
     display: block;
     font-weight: bold;
 }
@@ -45,13 +45,19 @@
     animation-duration: 1s;
     animation-fill-mode: forwards;
 
-    i, &:before, &:after {
+    i,
+    &::before,
+    &::after {
         font-size: 1.5rem;
     }
-    i:first-child, &:before {
+
+    i:first-child,
+    &::before {
         margin-right: 0.5rem;
     }
-    i:last-child, &:after {
+
+    i:last-child,
+    &::after {
         margin-right: 0.5rem;
     }
 }
@@ -59,12 +65,13 @@
 @mixin clickable-button-hover() {
     outline: none;
     animation-name: aberration-link;
-    background: base-color(0,c);
+    background: base-color(0, c);
 }
+
 @mixin clickable-button-focus() {
     outline: none;
     animation-name: aberration-link;
-    background: base-color(0,c);
+    background: base-color(0, c);
 }
 
 // Links Style
@@ -91,7 +98,6 @@
     color: base-color(f);
     display: block;
     width: 100%;
-    background: transparent;
     line-height: 1.25rem;
     font-size: 1rem;
 
@@ -104,12 +110,14 @@
     box-shadow: 0 0 0 1000px base-color(0) inset;
     transition: background-color 99999s ease-in-out;
 
-    &[autocomplete=off]{
+    &[autocomplete=off] {
         box-shadow: 0 0 0 0 base-color(0) inset;
     }
+
     &:focus {
         outline: none;
     }
+
     ::placeholder {
         color: base-color(6);
     }
@@ -117,7 +125,7 @@
 
 @mixin input-neutral() {
     height: 2rem;
-    border: none;
+    border-style: none;
     border-bottom: 1px solid base-color(f);
 }
 
@@ -133,7 +141,8 @@
     margin: auto;
     position: relative;
 
-    &:after, &:before {
+    &::after,
+    &::before {
         content: '';
         position: absolute;
         z-index: -1;
@@ -150,16 +159,18 @@
     $shadowcolor: #200a04;
     position: relative;
     overflow: hidden;
-    background: radial-gradient(circle at 60% 100%,#303331 0%, #1a1010 100%);
+    background: radial-gradient(circle at 60% 100%, #303331 0%, #1a1010 100%);
     border-radius: 12px;
     box-shadow: inset -1px -1px -0px #422;
 
-    &:before, &:after {
-        content: "";
+    &::before,
+    &::after {
+        content: '';
         position: absolute;
         opacity: 0.7;
     }
-    &:before {
+
+    &::before {
         height: 3rem;
         width: 100%;
         left: 0;
@@ -168,7 +179,8 @@
         transform-origin: bottom right;
         box-shadow: 0 -2rem 20px $shadowcolor;
     }
-    &:after {
+
+    &::after {
         height: 100%;
         width: 3rem;
         top: 0;
@@ -183,8 +195,6 @@
 @mixin form-neutral() {
 }
 
-@mixin form-item-spacing(){
+@mixin form-item-spacing() {
     margin-bottom: 1.5rem;
 }
-
-@import './scaffold/framework';

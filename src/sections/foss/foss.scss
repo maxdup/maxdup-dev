@@ -1,8 +1,7 @@
 #foss {
-    display: block;
+    @include theme-transition(background, color);
     color: base-color(0);
     background: base-color(f);
-    @include theme-transition(background, color);
     text-align: center;
     min-height: 5.5rem;
     display: flex;
@@ -13,35 +12,33 @@
         text-align: left;
         padding: 2.5rem 4rem 2rem;
         box-sizing: border-box;
-
         width: 100%;
         max-width: 1200px;
 
         @include media-desktop() {
             max-width: 800px;
         }
-
-        p {
-            margin-top: 0.5rem;
-            font-size: 1rem;
-            line-height: 1.25rem;
-        }
-
-
     }
+
     .foss-text {
         display: flex;
         flex-direction: row;
         align-items: flex-start;
         gap: 0 30px;
+
         p {
             flex-grow: 1;
+            margin-top: 0.5rem;
+            font-size: 1rem;
+            line-height: 1.25rem;
         }
+
         a {
             flex-grow: 0;
             flex-shrink: 0;
         }
     }
+
     .source-link {
         vertical-align: top;
         margin-top: 0.5rem;
@@ -49,10 +46,11 @@
     }
 }
 
-@include media-mobile-small(){
+@include media-mobile-small() {
     #foss .foss-text {
         flex-flow: column wrap;
         justify-content: flex-end;
+
         a {
             margin-left: auto;
         }

@@ -1,0 +1,147 @@
+@import './palette';
+
+// ------------------------------------------
+// Theme Selection
+// ------------------------------------------
+
+#color-theme {
+    display: contents;
+
+    button {
+        position: fixed;
+        bottom: 1.5rem;
+        left: 0.5rem;
+        font-size: 3rem;
+        @include text-link-aberration;
+        color: base-color(f);
+        background: transparent;
+        text-shadow: 1px 1px 2px base-color(0);
+        @include theme-transition(color, text-shadow);
+
+        &::after {
+            content: '';
+            position: absolute;
+            z-index: -1;
+            top: -1rem;
+            left: -1rem;
+            bottom: -1rem;
+            right: -1rem;
+            margin: auto;
+            display: block;
+            height: 150%;
+            width: 150%;
+            background: radial-gradient(
+                base-color(0, 1) 30%,
+                base-color(0, 0) 50%
+            );
+            @include theme-transition(background);
+        }
+    }
+
+    &::before {
+        content: '';
+        width: 20rem;
+        height: 16rem;
+        pointer-events: none;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        background: radial-gradient(
+            circle at top right,
+            #0000 20%,
+            #000f 100%
+        );
+        mask-image: linear-gradient(
+            225deg,
+            #fff0 50%,
+            #fff6 100%
+        );
+    }
+    &:after {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        top: 0;
+        right: 0;
+        z-index: -100;
+        margin: auto;
+        content: '';
+        height: 100vh;
+        width: 100vw;
+        background: radial-gradient(
+            at center,
+            #282028 10%,
+            #fff8f8 20%,
+            #131713 45%
+        );
+        background-position-y: -10vh;
+        background-position-x: 0vw;
+        background-repeat: no-repeat;
+        background-position: 42% 25%;
+        background-size: 1200% 500%;
+    }
+}
+
+@include media-mobile {
+    #color-theme {
+        height: 4rem;
+        padding: 0.1rem;
+    }
+}
+
+@mixin color-theme-bg-animation($invert) {
+    0% {
+        background-size: 600% 300%;
+        background-position-x: 30%;
+        filter: contrast(0) brightness(0) invert($invert);
+    }
+
+    20% { filter: contrast(0.25) brightness(0.75) invert($invert); }
+    60% { filter: contrast(0.5) brightness(2) invert($invert); }
+
+    100% {
+        filter: contrast(0) brightness(2) invert($invert);
+        background-size: 2000% 500%;
+        background-position-x: 55%;
+    }
+}
+
+@keyframes toDark {
+    @include color-theme-bg-animation(1);
+}
+
+@keyframes toLight {
+    @include color-theme-bg-animation(0);
+}
+
+:root {
+    --themed-transition-speed: 0.3s;
+    --only-themed-transition-speed: 0.0s;
+
+    @include generate-palette();
+    #color-theme:after {
+        animation: toDark var(--only-themed-transition-speed) linear forwards;
+        transform-origin: bottom center;
+    }
+
+    #color-theme::before,
+    body:not(.gl-enabled)::after {
+        filter: invert(0);
+        @include theme-transition(filter);
+    }
+}
+
+:root.light-theme {
+    @include generate-palette(100%);
+    #color-theme:after {
+        animation: toLight var(--only-themed-transition-speed) linear forwards;
+        transform-origin: bottom center;
+    }
+
+    #color-theme::before
+    body:not(.gl-enabled)::after {
+        filter: invert(1);
+    }
+
+}
+

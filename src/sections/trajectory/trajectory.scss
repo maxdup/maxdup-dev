@@ -1,9 +1,15 @@
 @use "sass:math";
 
+$g-width: 20vw;
+$g-height: 30vh;
+$nudge: 5; // percent
+$n-node: 5;
+
 #trajectory {
     .main-blurb {
         float: right;
     }
+
     .trajectory-graph {
         position: absolute;
         top: 0;
@@ -25,40 +31,29 @@
     #path.aside-blurb {
         height: 30rem;
     }
-}
 
-
-#trajectory {
     @mixin graph-item() {
         background: base-color(f);
         color: base-color(f);
         @include theme-transition(background, color, font-size, height, width);
     }
-    @mixin graph-item-state-active(){
+
+    @mixin graph-item-state-active() {
         background: base-color(f);
         color: base-color(f);
         font-size: 3rem;
     }
-    @mixin graph-item-state-inactive(){
+
+    @mixin graph-item-state-inactive() {
         background: base-color(8);
         color: base-color(8);
         font-size: 2rem;
-    }
-    #trajectory-graph {
-        padding: 0;
-        display: block;
-        position: absolute;
-        right: 7vw;
-        top: 7rem;
-        margin: auto;
-        pointer-events: none;
     }
 
     .graph-node {
         height: 0px;
         width: 0px;
         position: absolute;
-        list-decoration: none;
         display: flex;
         justify-content: center;
 
@@ -73,22 +68,12 @@
             @include graph-item-state-inactive();
         }
 
-        &:hover {
-            &:after {
-                width: 2rem;
-                height: 2rem;
-                @include graph-item-state-active();
-            }
-
-            .graph-node-text {
-                @include graph-item-state-active();
-            }
-        }
-        &:after {
+        &::after {
             content: '';
             border-radius: 50%;
-            height: 1rem;
+            //height: math.div($g-height, 4);
             width: 1rem;
+            height: 1rem;
             @include graph-item();
             @include graph-item-state-inactive();
 
@@ -101,6 +86,17 @@
             margin: auto;
             z-index: 2;
         }
+
+        &:hover::after {
+            width: 2rem;
+            height: 2rem;
+            @include graph-item-state-active();
+        }
+
+        &:hover.graph-node-text {
+            @include graph-item-state-active();
+        }
+
         .graph-node-line {
             content: '';
             display: block;
@@ -108,27 +104,27 @@
             bottom: 0;
             left: 0;
             overflow: hidden;
-            z-index: -1;
-
             width: 0;
             height: 0;
             z-index: 1;
-            &:before {
-                content: '';
-                display: block;
-                width: 2px;
-                height: 100vh;
-                background: base-color(8);
-                position: absolute;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                top: 0;
-                margin: auto;
-                transform: var(--line-angle);
-                transform-origin: 50% 50%;
-            }
         }
+
+        .graph-node-line::before {
+            content: '';
+            display: block;
+            width: 2px;
+            height: 100vh;
+            background: base-color(8);
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: 0;
+            margin: auto;
+            transform: var(--line-angle);
+            transform-origin: 50% 50%;
+        }
+
         &:first-child .graph-node-line {
             content: none;
         }
@@ -136,43 +132,43 @@
     }
 }
 
-$gWidth: 20vw;
-$gHeight: 30vh;
-$nudge: 5; // percent
-$nNode: 5;
-
 #trajectory-graph {
-    height: $gHeight;
-    width: $gWidth;
+    padding: 0;
+    display: block;
+    position: absolute;
+    right: 7vw;
+    top: 7rem;
+    margin: auto;
+    pointer-events: none;
+    height: $g-height;
+    width: $g-width;
 }
 
-@function offsetFor($n){
+@function offset-for($n) {
     $offset: 0;
-    @if $n > 1 and $n < $nNode{
+
+    @if $n > 1 and $n < $n-node {
         @if $n % 2 == 0 {
             $offset: $nudge;
         } @else {
             $offset: $nudge * -1;
         }
     }
+
     @return $offset;
 }
 
-.graph-node:before,
-.graph-node:after {
-    height: math.div($gHeight, 4);
-}
-
-@for $i from 1 through $nNode {
+@for $i from 1 through $n-node {
     #trajectory .graph-node {
-        $offset: offsetFor($i);
+        $offset: offset-for($i);
 
-        &:nth-child(#{$i}){
-            top: ($i - 1) * math.div(100%, $nNode - 1);
-            left: 100% - ($i - 1) * math.div(100%, $nNode - 1) + $offset;
+        &:nth-child(#{$i}) {
+            top: ($i - 1) * math.div(100%, $n-node - 1);
+            left: 100% - ($i - 1) * math.div(100%, $n-node - 1) + $offset;
+
             .graph-node-line {
-                height: math.div($gHeight, 100) * 25;
-                width: math.div($gWidth, 100) * (25 - offsetFor($i) + offsetFor($i - 1));
+                height: math.div($g-height, 100) * 25;
+                width: math.div($g-width, 100) * (25 - offset-for($i) + offset-for($i - 1));
             }
         }
     }

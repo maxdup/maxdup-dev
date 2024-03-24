@@ -1,48 +1,74 @@
 @media print {
-    canvas, nav, a#home:after, #color-theme {
+
+    * {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    canvas,
+    nav,
+    a#home::after {
         display: none !important;
     }
-    #trajectory.container:after {
-        background-image: none;
-        background: white !important;
+
+    body {
+        opacity: 1 !important;
+        background-image: none !important;
     }
-    #skills.container:after {
-        background-image: none;
-        background: white !important;
+
+    body::before,
+    body::after,
+    #trajectory.container::before,
+    #trajectory.container::after,
+    #skills.container::before,
+    #skills.container::after,
+    #where.container::before,
+    #where.container::after {
+        content: none !important;
     }
-    #where.container:after {
-        background-image: none;
-        background: white !important;
-    }
+
     .floating-container {
         opacity: 1 !important;
         top: unset !important;
     }
+
     .aside-blurb {
         display: none !important;
     }
+
     .main-blurb {
         width: 100% !important;
     }
+
     h2 {
         font-size: 2.5rem !important;
     }
+
     h3 {
         font-size: 1.75rem !important;
     }
+
     #skills h3 {
         font-size: 1.25rem !important;
     }
-    html, body, input, textarea, button {
+
+    html,
+    body,
+    input,
+    textarea,
+    button {
         font-size: 12px !important;
     }
+
     #foss {
-        display: none !important
+        display: none !important;
     }
+
     #where {
         a {
             text-decoration: none !important;
         }
+
         #external-links a::after {
             content: attr(href);
             text-decoration: underline;
@@ -50,17 +76,53 @@
             margin-left: 1.25rem;
         }
     }
-    #main, .container, .floater-container {
-        height: 50vh !important;
-        min-height: 50vh !important;
-    }
+
     #main {
         padding-top: 25vh;
-        .reserved-space:not(.stand-in){
+
+        .reserved-space:not(.stand-in) {
             opacity: 1 !important;
         }
+
         .stand-in {
             display: none;
         }
+    }
+
+    #color-theme,
+    #color-theme-bg {
+        display: none !important;
+    }
+
+    @page {
+        // force portrait
+        //size: portrait;
+    }
+}
+
+@media print and (orientation: landscape) {
+    #main,
+    .container,
+    .floater-container {
+        height: 100vh !important;
+        min-height: 100vh !important;
+        width: 49vw;
+        display: inline-block;
+    }
+}
+
+@media print and (orientation: portrait) {
+    #main,
+    .container,
+    .floater-container {
+        height: 50vh !important;
+        min-height: 50vh !important;
+    }
+}
+
+@media print {
+    :root,
+    :root.light-theme {
+        @include generate-palette(100%);
     }
 }

@@ -1,7 +1,9 @@
 import { HSLStr } from '../utils.js';
 
-let accent1 = [146, 50, 72];
-let accent2 = [0, 70, 78];
+import {
+  ACCENT1,
+  ACCENT2,
+} from '../constants';
 
 function MouseSelection(){
 
@@ -15,7 +17,7 @@ function MouseSelection(){
   // ----------------------------
   let selectColorToggle = false;
   let applySelectColor = () => {
-    let clr = HSLStr(selectColorToggle ? accent2 : accent1);
+    let clr = HSLStr(selectColorToggle ? ACCENT2 : ACCENT1);
     document.documentElement.style.setProperty('--select-background', clr);
   }
   let selectionChanged = () => {
@@ -30,7 +32,7 @@ function MouseSelection(){
   });
   applySelectColor();
 
-  document.documentElement.style.setProperty('--highlight-color', 'black');
+  document.documentElement.style.setProperty('--select-color', 'black');
 }
 
 export default MouseSelection;

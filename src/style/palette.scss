@@ -4,63 +4,62 @@
 
 $hex-chars: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a, b, c, d, e, f;
 
-@function hexToDec($N) {
-    @return (index($hex-chars, $N) - 1);
+@function hex-to-dec($n) {
+    @return (index($hex-chars, $n) - 1);
 }
 
-@function hexToRGB($S) {
-    $N: hexToDec($S);
-    $N: $N * 16 + $N;
-    @return $N;
+@function hex-to-rgb($s) {
+    $n: hex-to-dec($s);
+    $n: $n * 16 + $n;
+    @return $n;
 }
 
-@function hexToFrac($S) {
-    $N: hexToDec($S);
-    $N: math.div($N, 15);
-    @return $N;
+@function hex-to-frac($s) {
+    $n: hex-to-dec($s);
+    $n: math.div($n, 15);
+    @return $n;
 }
 
+@function color-compose($s, $a) {
 
-@function colorCompose($S, $A) {
-
-    $SS: nth($hex-chars, $S + 1);
-    $AA: nth($hex-chars, $A + 1);
-    @return ##{$SS}#{$SS}#{$SS}#{$SS}#{$SS}#{$SS}#{$AA}#{$AA};
+    $ss: list.nth($hex-chars, $s + 1);
+    $aa: list.nth($hex-chars, $a + 1);
+    @return ##{$ss}#{$ss}#{$ss}#{$ss}#{$ss}#{$ss}#{$aa}#{$aa};
 }
 
-@mixin generate-palette($invert: 0%){
+@mixin generate-palette($invert: 0%) {
     @each $shade in $shade-values {
-        $Si: nth($shade, 1);
-        $Ai: nth($shade, 2);
-        $S: hexToDec($Si);
-        $A: hexToDec($Ai);
-        $varname: base-color-varname($Si, $Ai);
-        @if ($invert == 100%){
-            $S: 15 - $S;
+        $si: list.nth($shade, 1);
+        $ai: list.nth($shade, 2);
+        $s: hex-to-dec($si);
+        $a: hex-to-dec($ai);
+        $varname: base-color-varname($si, $ai);
+        @if ($invert == 100%) {
+            $s: 15 - $s;
         }
-        #{$varname}: colorCompose($S, $A);
+        #{$varname}: color-compose($s, $a);
     }
 }
 
 @function sort($list) {
     // Sort by shade or alpha
-    $len: length($list);
+    $len: list.length($list);
     $sorted: false;
 
     @while not $sorted {
         $sorted: true;
         @for $i from 1 to ($len - 1) {
             $j: $i + 1;
-            $vali: hexToDec(nth(nth($list, $i),1));
-            $valj: hexToDec(nth(nth($list, $j),1));
+            $vali: hex-to-dec(list.nth(list.nth($list, $i), 1));
+            $valj: hex-to-dec(list.nth(list.nth($list, $j), 1));
             @if $vali == $valj {
-                $vali: hexToDec(nth(nth($list, $i),2));
-                $valj: hexToDec(nth(nth($list, $j),2));
+                $vali: hex-to-dec(list.nth(list.nth($list, $i), 2));
+                $valj: hex-to-dec(list.nth(list.nth($list, $j), 2));
             }
             @if $vali > $valj {
-                $temp: nth($list, $i);
-                $list: set-nth($list, $i, nth($list, $j));
-                $list: set-nth($list, $j, $temp);
+                $temp: list.nth($list, $i);
+                $list: list.set-nth($list, $i, list.nth($list, $j));
+                $list: list.set-nth($list, $j, $temp);
                 $sorted: false;
             }
         }
@@ -70,216 +69,3 @@ $hex-chars: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a, b, c, d, e, f;
 }
 
 $shade-values: sort($shade-values);
-
-:root {
-    @include generate-palette();
-}
-
-:root.light-theme {
-    @include generate-palette(100%);
-}
-
-@media print {
-    :root, :root.light-theme {
-        @include generate-palette(100%);
-    }
-}
-
-// ------------------------------------------
-// Theme Selection
-// ------------------------------------------
-
-#color-theme {
-    display: block;
-    position: fixed;
-    height: $navHeight;
-    width: 3rem;
-    bottom: 0;
-    left: 0;
-    padding: 0 0.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    button {
-        font-size: 2rem;
-        @include text-link-aberration;
-        color: base-color(f);
-        background: transparent;
-        position: relative;
-        @include theme-transition(color);
-
-        &:after {
-            content: '';
-            position: absolute;
-            z-index: -1;
-            top: 0;
-            left: 0;
-            display: block;
-            height: 100%;
-            width: 100%;
-            background: radial-gradient(
-                base-color(0,5) 30%,
-                base-color(0,2) 50%,
-                base-color(0,0) 70%
-            );
-            @include theme-transition(background);
-        }
-    }
-    text-shadow: 1px 1px 2px base-color(0);
-    @include theme-transition(text-shadow);
-}
-
-@include media-mobile {
-    #color-theme {
-        height: 4rem;
-        padding: 0.1rem;
-    }
-}
-// ------------------------------------------
-// Theme Selection
-// ------------------------------------------
-
-#color-theme {
-    display: block;
-    position: fixed;
-    height: $navHeight;
-    width: 3rem;
-    bottom: 0;
-    left: 0;
-    padding: 0 0.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    button {
-        font-size: 3rem;
-        @include text-link-aberration;
-        color: base-color(f);
-        background: transparent;
-        position: relative;
-        @include theme-transition(color);
-
-        &:after {
-            content: '';
-            position: absolute;
-            z-index: -1;
-            top: -1rem;
-            left: -1rem;
-            bottom: -1rem;
-            right: -1rem;
-            margin: auto;
-            display: block;
-            height: 150%;
-            width: 150%;
-            background: radial-gradient(
-                base-color(0,1) 30%,
-                base-color(0,0) 50%
-            );
-            @include theme-transition(background);
-        }
-    }
-    text-shadow: 1px 1px 2px base-color(0);
-    @include theme-transition(text-shadow);
-
-    &:before {
-        content: '';
-        width: 20rem;
-        height: 16rem;
-        pointer-events: none;
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        background: radial-gradient(
-            circle at top right,
-            #0000 20%,
-            #000f 100%
-        );
-        mask-image: linear-gradient(
-            225deg,
-            #fff0 50%,
-            #fff6 100%
-        );
-        filter: invert(0);
-        @include theme-transition(filter);
-    }
-}
-:root.light-theme #color-theme:before {
-    filter: invert(1);
-}
-
-@include media-mobile {
-    #color-theme {
-        height: 4rem;
-        padding: 0.1rem;
-    }
-}
-
-#color-theme-bg {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: -20;
-    width: 100vw;
-    box-sizing: border-box;
-
-    &:after {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        height: 100vh;
-        margin: auto;
-        content: '';
-        height: 100vh;
-        width: 100vw;
-        background: radial-gradient(
-            at center,
-            #282028 10%,
-            #fff8f8 20%,
-            #131713 45%
-        );
-        background-position-y: -10vh;
-        background-position-x: 0vw;
-        background-repeat: no-repeat;
-        background-position: 42% 25%;
-        background-size: 1200% 500%;
-    }
-}
-
-@mixin color-theme-bg-animation($invert){
-    0% {
-        background-size: 600% 300%;
-        background-position-x: 30%;
-        filter: contrast(0) brightness(0) invert($invert);
-    }
-    20% {
-        filter: contrast(0.25) brightness(0.75) invert($invert);
-    }
-    60% {
-        filter: contrast(0.5) brightness(2) invert($invert);
-    }
-    100% {
-        filter: contrast(0) brightness(2) invert($invert);
-        background-size: 2000% 500%;
-        background-position-x: 55%;
-    }
-}
-
-@keyframes toDark {
-    @include color-theme-bg-animation(1);
-}
-
-@keyframes toLight {
-    @include color-theme-bg-animation(0);
-}
-
-#color-theme-bg:after {
-    animation: toDark var(--themed-transition-speed) linear forwards;
-    transform-origin: bottom center;
-}
-
-:root.light-theme #color-theme-bg:after {
-    animation: toLight var(--themed-transition-speed) linear forwards;
-    transform-origin: bottom center;
-}

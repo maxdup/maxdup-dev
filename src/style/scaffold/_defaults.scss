@@ -1,13 +1,13 @@
 // Links mixins
-@mixin base-text(){}
-@mixin base-text-selected(){}
-@mixin heading-text(){}
+@mixin base-text() {}
+@mixin base-text-selected() {}
+@mixin heading-text() {}
 
 @mixin clickable-text-neutral() {}
 @mixin clickable-text-hover() {}
 @mixin clickable-text-focus() {}
 
-@mixin clickable-text(){
+@mixin clickable-text() {
     @include clickable-text-neutral();
     &:hover { @include clickable-text-hover(); }
     &:focus { @include clickable-text-focus(); }
@@ -18,7 +18,7 @@
 @mixin clickable-button-hover() {}
 @mixin clickable-button-focus() {}
 
-@mixin clickable-button(){
+@mixin clickable-button() {
     @include clickable-button-neutral();
     &:hover { @include clickable-button-hover(); }
     &:focus { @include clickable-button-focus(); }
@@ -27,10 +27,10 @@
 @mixin input-textarea-common() {}
 
 // Input mixins
-@mixin input-neutral(){}
-@mixin input-hover(){}
-@mixin input-focus(){}
-@mixin input(){
+@mixin input-neutral() {}
+@mixin input-hover() {}
+@mixin input-focus() {}
+@mixin input() {
     @include input-textarea-common();
     @include input-neutral();
     &:hover { @include input-hover(); }
@@ -38,11 +38,11 @@
 }
 
 // Textarea mixins
-@mixin textarea-neutral(){}
-@mixin textarea-hover(){}
-@mixin textarea-focus(){}
+@mixin textarea-neutral() {}
+@mixin textarea-hover() {}
+@mixin textarea-focus() {}
 
-@mixin textarea(){
+@mixin textarea() {
     @include input-textarea-common();
     @include textarea-neutral();
     &:hover { @include textarea-hover(); }
@@ -50,5 +50,5 @@
 }
 
 // Content
-@mixin content-container (){}
-@mixin sub-content-container (){}
+@mixin content-container() {}
+@mixin sub-content-container() {}

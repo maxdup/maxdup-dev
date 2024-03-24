@@ -1,4 +1,11 @@
-const ENABLE_3D = true;
-const CRASH_3D = true;
+export const ENABLE_3D = true;
+export const CRASH_3D = false;
 
-export { ENABLE_3D, CRASH_3D }
+export const ACCENT1 = [146, 50, 72];
+export const ACCENT2 = [0, 70, 78];
+
+export const NO_TRANSITION_SPEED = 0.0;
+export const THEME_TRANSITION_SPEED = 1.0;
+export const INTERACTIVE_TRANSITION_SPEED = 0.3;
+
+

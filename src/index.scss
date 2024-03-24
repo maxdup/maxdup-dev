@@ -3,7 +3,8 @@
 @import './style/constants';
 @import './style/mixins';
 
-@import './style/theming';
+@import './style/styling';
+@import './style/scaffold/framework';
 @import './style/animations';
 
 @import './sections/nav/nav';
@@ -15,5 +16,5 @@
 
 @import './style/base';
 
+@import './style/theme';
 @import './style/print';
-@import './style/palette';

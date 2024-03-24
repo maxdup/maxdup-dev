@@ -2,6 +2,7 @@
     .floating-container {
         display: block;
     }
+
     .main-blurb {
         float: none;
     }
@@ -28,16 +29,21 @@
             padding-left: 1rem;
             font-size: 1.25rem;
         }
+
         li {
             display: inline-block;
-            &:not(:last-child):after { content: ", "; }
         }
+
+        li:not(:last-child)::after {
+            content: ', ';
+        }
+
         h3 {
             font-size: 1.25rem;
         }
 
         >*:not(a) {
-	        display: block;
+            display: block;
         }
     }
 }

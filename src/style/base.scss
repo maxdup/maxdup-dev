@@ -9,38 +9,52 @@ body {
     overflow-x: hidden;
     background: base-color(0);
 
+    opacity: 0;
+    animation: fadeInAnimation ease 2s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+    animation-delay: 0.5s;
+
     h1 {
         font-size: 2rem;
     }
+
     h2 {
         font-size: 4rem;
         line-height: 1;
         margin: 0 0 2.5rem;
     }
+
     h3 {
         font-size: 2rem;
         line-height: 1;
         margin: 0 0 1rem;
     }
+
     p {
         margin: 1rem 0;
         font-size: 1.25rem;
         line-height: 1.75rem;
     }
+
     b {
         font-weight: 800;
     }
+
     form {
         margin: 1rem 0rem 3rem;
-        padding: 3rem 3rem;
+        padding: 3rem;
 
-        >button, >input, >textarea {
+        >button,
+        >input,
+        >textarea {
             display: block;
             margin-bottom: 1.5rem;
         }
     }
+
     img {
-        &[role=presentation]{
+        &[role=presentation] {
             user-select: none;
         }
     }
@@ -78,12 +92,24 @@ body {
         max-width: 1300px;
         padding: 8rem 3rem;
     }
+
     @media only screen and (max-width: $transition-small) {
         padding: 8rem 2rem;
     }
 }
 
-body .aside-blurb {
+.main-blurb {
+    width: 60%;
+
+    h2 { margin-top: 0; }
+}
+
+.full-blurb {
+    display: block;
+    width: 100%;
+}
+
+.aside-blurb {
     position: relative;
     display: block;
     width: 20%;
@@ -94,6 +120,7 @@ body .aside-blurb {
         height: 4rem;
         width: auto;
     }
+
     .floating-aside-blurb {
         position: absolute;
         height: 100%;
@@ -102,20 +129,12 @@ body .aside-blurb {
         left: calc(var(--bg-offset-x) / 3);
     }
 }
-body .main-blurb {
-    width: 60%;
-    h2 { margin-top: 0; }
-}
-body .full-blurb {
-    display: block;
-    width: 100%;
-}
-
 
 @media only screen and (max-width: $transition-medium) {
     body .main-blurb {
         width: 100%;
     }
+
     body .aside-blurb {
         display: none !important;
     }
@@ -125,6 +144,7 @@ body .full-blurb {
     margin-top: 4.5rem;
     margin-bottom: 1rem;
 }
+
 .float-column {
     display: inline-block;
     margin-right: 4rem;
@@ -141,107 +161,38 @@ body .full-blurb {
     >*:not(a) {
         display: block;
     }
+
     a {
         margin-top: 0.25rem;
         padding: 0.1rem 0.2rem;
         vertical-align: middle;
+
         i:first-child {
             vertical-align: middle;
             margin-right: 0.25rem;
         }
     }
+
     h3 {
         margin-bottom: 1rem;
     }
-}
-
-
-// ------------------------------------------
-// Container backgrounds
-// ------------------------------------------
-
-@mixin backgrounds($pseudo, $invert){
-    #trajectory.container:#{$pseudo} {
-        background: base-color(1,b);
-        background-attachment: fixed;
-        background: radial-gradient(circle at 60% 100%,
-                                    invertLum(hsla(0, 33.33%, 10%, 0.73), $invert) 0%,
-                                    invertLum(hsla(120, 20.93%, 8.43%, 0.53), $invert) 100%);
-        mask-image: linear-gradient(155deg,
-                                    invertLum(hsla(0, 0.0%, 0.0%, 0), $invert) 10%,
-                                    invertLum(hsla(0, 0.0%, 0.0%, 1), $invert) 40%);
-    }
-    #skills.container:#{$pseudo} {
-        background: base-color(4,c);
-        background-attachment: fixed;
-        background: radial-gradient(circle at 60% 100%,
-                                    invertLum(hsla(0, 11.11%, 30%, 0.73), $invert) 0%,
-                                    invertLum(hsla(120, 10.53%, 14.9%, 0.87), $invert) 100%);
-        mask-image: radial-gradient(circle at bottom left,
-                                    invertLum(hsla(0, 0.0%, 0.0%, 1), $invert),
-                                    invertLum(hsla(0, 0.0%, 0.0%, 0.95), $invert) 40%,
-                                    invertLum(hsla(0, 0.0%, 0.0%, 0.65), $invert) 100%);
-    }
-    #where.container:#{$pseudo} {
-        background: base-color(9,b);
-        background-attachment: fixed;
-        background: radial-gradient(circle at 60% 100%,
-                                    invertLum(hsla(0, 9.09%, 33.33%, 0.73), $invert) 0%,
-                                    invertLum(hsla(120, 9.09%, 33.33%, 0.73), $invert) 100%);
-    }
-
-}
-
-@include backgrounds("after", -1);
-@include backgrounds("before", +1);
-
-:root {
-    .container:before,
-    .container:after {
-        @include theme-transition(opacity);
-    }
-    .container:before {
-        opacity: 0;
-    }
-    .container:after {
-        opacity: 1;
-    }
-}
-
-:root.light-theme {
-    .container:before {
-        opacity: 1;
-    }
-    .container:after {
-        opacity: 0;
-    }
-
-    body:not(.gl-enabled):after {
-        filter: invert(1);
-    }
-}
-
-canvas {
-    filter: opacity(0.75);
 }
 
 // ------------------------------------------
 // Main background
 // ------------------------------------------
 
-body {
-    animation-delay: 1s;
-    animation: fadeInAnimation ease 2s;
-    animation-iteration-count: 1;
-    animation-fill-mode: forwards;
-}
-
-$bgImage: url('./images/background.webp');
-$bgNoise: url('./images/noise.webp');
-$bgGlow: radial-gradient(circle at 10% 30%, rgba(64,16,16,0.55) 0%, rgba(0,0,0) 50%, rgba(0,0,0) 60%, rgba(16,28,16,1.0) 90%);
+$bg-image: url('./images/background.webp');
+$bg-noise: url('./images/noise.webp');
+$bg-glow: radial-gradient(circle at 10% 30%,
+                         rgba(64, 16, 16, 0.55) 0%,
+                         rgba(0, 0, 0) 50%,
+                         rgba(0, 0, 0) 60%,
+                         rgba(16, 28, 16, 1.0) 90%);
 
 canvas,
-body:before, body:not(.gl-enabled):after {
+body::before,
+body:not(.gl-enabled)::after {
     display: block;
     height: 100vh;
     position: fixed;
@@ -251,12 +202,14 @@ body:before, body:not(.gl-enabled):after {
 }
 
 canvas {
+    filter: opacity(0.75);
     z-index: -11;
 }
-body:not(.gl-enabled):after {
+
+body:not(.gl-enabled)::after {
     content: '';
     z-index: -11;
-    background-image: $bgImage;
+    background-image: $bg-image;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -266,26 +219,95 @@ body:not(.gl-enabled):after {
     animation-timing-function: ease-in;
     animation-duration: 1s;
 }
-body:before {
+
+body::before {
     content: '';
     z-index: -10;
 
-    background-image: $bgGlow;
+    background-image: $bg-glow;
     animation-name: none;
     mix-blend-mode: screen;
 
-    mask-image: $bgNoise;
-    -webkit-mask-image: $bgNoise;
+    mask-image: $bg-noise;
     mask-repeat: repeat;
-    -webkit-mask-repeat: repeat;
     mask-position: 0% 0%;
-    -webkit-mask-position: 0% 0%;
 }
 
 @keyframes delayBackground {
-    0%   { background-image: $bgGlow; }
-    50%  { background-image: $bgGlow; }
-    100% { background-image: $bgGlow, $bgImage; }
+    0% { background-image: $bg-glow; }
+    50% { background-image: $bg-glow; }
+    100% { background-image: $bg-glow, $bg-image; }
 }
 
-@import './palette';
+
+// ------------------------------------------
+// Container backgrounds
+// ------------------------------------------
+
+@mixin backgrounds($pseudo, $invert) {
+    #trajectory.container:#{$pseudo} {
+        background: radial-gradient(circle at 60% 100%,
+                                    invert-lum(hsla(0, 33.33%, 10%, 0.73), $invert) 0%,
+                                    invert-lum(hsla(120, 20.93%, 8.43%, 0.53), $invert) 100%);
+        background-attachment: fixed;
+        mask-image: linear-gradient(155deg,
+                                    invert-lum(hsla(0, 0.0%, 0.0%, 0), $invert) 10%,
+                                    invert-lum(hsla(0, 0.0%, 0.0%, 1), $invert) 40%);
+    }
+
+    #skills.container:#{$pseudo} {
+        background: radial-gradient(circle at 60% 100%,
+                                    invert-lum(hsla(0, 11.11%, 30%, 0.73), $invert) 0%,
+                                    invert-lum(hsla(120, 10.53%, 14.9%, 0.87), $invert) 100%);
+        background-attachment: fixed;
+        mask-image: radial-gradient(circle at bottom left,
+                                    invert-lum(hsla(0, 0.0%, 0.0%, 1), $invert),
+                                    invert-lum(hsla(0, 0.0%, 0.0%, 0.95), $invert) 40%,
+                                    invert-lum(hsla(0, 0.0%, 0.0%, 0.65), $invert) 100%);
+    }
+
+    #where.container:#{$pseudo} {
+        background: radial-gradient(circle at 60% 100%,
+                                    invert-lum(hsla(0, 9.09%, 33.33%, 0.73), $invert) 0%,
+                                    invert-lum(hsla(120, 9.09%, 33.33%, 0.73), $invert) 100%);
+        background-attachment: fixed;
+    }
+}
+
+@include backgrounds("after", -1);
+@include backgrounds("before", +1);
+
+:root {
+    .container::before,
+    .container::after {
+        @include theme-transition(opacity);
+    }
+
+    .container::before {
+        opacity: 0;
+    }
+
+    .container::after {
+        opacity: 1;
+    }
+
+    --select-background: white;
+    --select-color: black;
+}
+
+:root.light-theme {
+    .container::before {
+        opacity: 1;
+    }
+
+    .container::after {
+        opacity: 0;
+    }
+
+    body:not(.gl-enabled)::after {
+        filter: invert(1);
+    }
+
+    --select-background: black;
+    --select-color: white;
+}

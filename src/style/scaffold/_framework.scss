@@ -1,4 +1,8 @@
-html, body, input, textarea, button {
+html,
+body,
+input,
+textarea,
+button {
     @include base-text();
 }
 
@@ -6,17 +10,17 @@ html, body, input, textarea, button {
     @include base-text-selected();
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     @include heading-text();
 }
 
 .button {
     @include clickable-button();
-}
-
-div button:not(.button),
-div a:not(.button) {
-    @include clickable-text();
 }
 
 input {
@@ -29,9 +33,17 @@ textarea {
 
 form {
     @include sub-content-container();
-    >button, >input, >textarea {
+
+    >button,
+    >input,
+    >textarea {
         @include form-item-spacing();
     }
+}
+
+div button:not(.button),
+div a:not(.button) {
+    @include clickable-text();
 }
 
 .container {
