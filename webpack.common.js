@@ -26,9 +26,6 @@ module.exports = {
   },
   module: {
     rules: [{
-      test: /\.html$/,
-      loader: 'html-loader'
-    }, {
       test: /\.(glsl|vs|fs|vert|frag)$/,
       loader: 'ts-shader-loader'
     }, {
@@ -53,7 +50,7 @@ module.exports = {
       filename: '[name].[contenthash].css'
     }),
     new HtmlWebpackPlugin({
-      template: path.join(dirSrc, 'index.ejs'),
+      template: path.join(dirSrc, 'index.html'),
       filename: 'index.html',
       chunks: ['index'],
       baseUrl: 'https://maxdup.dev',

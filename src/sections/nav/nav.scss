@@ -225,6 +225,7 @@ nav {
         left: 0rem;
         right: 0rem;
         bottom: 0;
+        width: auto !important;
         background: base-color(2, b);
         backdrop-filter: blur(25px);
         box-shadow: 0px 5px 15px #100;
