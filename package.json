@@ -23,6 +23,7 @@
     "favicons-webpack-plugin": "^6.0.0-alpha.1",
     "html-loader": "^4.1.0",
     "html-webpack-plugin": "^5.5.0",
+    "jsdom": "^24.0.0",
     "mini-css-extract-plugin": "^2.6.1",
     "postcss-loader": "^7.0.1",
     "sass": "^1.54.6",
