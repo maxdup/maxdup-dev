@@ -21,7 +21,7 @@ devConfig = {
     loggingDebug: ["sass-loader"],
   },
   plugins:[
-    new ExtractLocStrings()
+    new ExtractLocStrings({locales:['en-US', 'fr-CA', 'lo-IP']})
   ],
   module: {
     rules: [{

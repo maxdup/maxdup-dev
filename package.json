@@ -8,6 +8,7 @@
     "start:prod": "webpack-dev-server --open --config webpack.prod.js",
     "start:debug": "webpack-dev-server --open --config webpack.debug.js",
     "build": "webpack --config webpack.prod.js",
+    "build:dev": "webpack --config webpack.dev.js",
     "build:debug": "webpack --config webpack.debug.js",
     "lint": "npx stylelint \"**/*.scss\""
   },
