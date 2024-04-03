@@ -28,13 +28,13 @@ function Navigation(){
     }
 
     let onNavOut = function(){
-      mainLoop.scrollSection.unlockScene();
+      mainLoop.scrollSections.unlockScene();
     }
     let onNavHrefHover = function(e){
-      mainLoop.scrollSection.lockScene(e.target.attributes.scene.value);
+      mainLoop.scrollSections.lockScene(e.target.attributes.scene.value);
     }
     let onNavHrefClick = function(e){
-      mainLoop.scrollSection.targetScene(e.target.attributes.scene.value);
+      mainLoop.scrollSections.targetScene(e.target.attributes.scene.value);
       e.target.blur();
     }
 

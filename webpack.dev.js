@@ -5,8 +5,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const path = require('path');
 
-const ExtractLocStrings = require('./localization/extract-strings');
-
 devConfig = {
   mode: 'development',
   output: {
@@ -20,9 +18,6 @@ devConfig = {
   stats: {
     loggingDebug: ["sass-loader"],
   },
-  plugins:[
-    new ExtractLocStrings({locales:['en-US', 'fr-CA', 'lo-IP']})
-  ],
   module: {
     rules: [{
       test: /\.scss$/,

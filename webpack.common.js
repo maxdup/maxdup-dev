@@ -8,6 +8,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractLocStrings = require('./localization/extract-strings');
 
 
 module.exports = {
@@ -46,6 +47,7 @@ module.exports = {
     }]
   },
   plugins: [
+    new ExtractLocStrings({locales:['en-US', 'fr-CA', 'lo-IP']}),
     new MiniCssExtractPlugin({
       filename: '[name].[contenthash].css'
     }),

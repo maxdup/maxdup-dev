@@ -7,7 +7,7 @@ const SCROLL_TRANSITION_SPEED = 0.75; // scene transitions
 const navLinks = window.document.querySelectorAll('nav #nav-links a');
 
 
-function ScrollSection(sections){
+function ScrollSections(sections){
   this.sections = sections;
 
   this.currentSceneId = null;
@@ -201,4 +201,5 @@ function ScrollSection(sections){
   this.onEvent();
   this.currentProgress = this.targetProgress;
 }
-export default ScrollSection;
+
+export default ScrollSections;

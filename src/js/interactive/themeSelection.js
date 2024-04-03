@@ -13,7 +13,6 @@ const ICON_MOON = 'mdi-bx-moon';
 function ThemeSelection(){
   this.darkMode = true;
   this.timeout = null;
-  this.inserted = false;
 
   let insertThemeSwitcher = () => {
     const container = document.createElement('div');
@@ -38,7 +37,7 @@ function ThemeSelection(){
       this.button.classList.add(ICON_MOON);
       document.firstElementChild.classList.add('light-theme');
     }
-    console.log('set var', THEME_TRANSITION_SPEED);
+
     document.documentElement.style.setProperty(
       '--themed-transition-speed', THEME_TRANSITION_SPEED + 's');
     document.documentElement.style.setProperty(
@@ -58,4 +57,5 @@ function ThemeSelection(){
 
   insertThemeSwitcher();
 }
+
 export default ThemeSelection;
