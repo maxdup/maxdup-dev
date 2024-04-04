@@ -33,15 +33,33 @@ const LOCALIZED_TARGETS = ${localesJSON};`;
   return content
 }
 
+const attributeMap = {
+  "data-localize-text": "innerHTML",
+  "data-localize-content": "content",
+  "data-localize-aria": "aria-label",
+}
+
+function extractNodeString(node, attribute){
+  const targetAttributeName = attributeMap[attribute];
+  return targetAttributeName == "innerHTML" ?
+    node.innerHTML.trim() : node.getAttribute(targetAttributeName).trim();
+}
+
 function extractSourceStrings(dom){
   const sourceStrings = {};
 
-  const nodes = dom.window.document.querySelectorAll('[data-localize-text]');
+  function extractAttribute(attribute, innerHtml){
+    // data-localize-text
+    dom.window.document.querySelectorAll(`[${attribute}]`).forEach((node) => {
+      const locStr = extractNodeString(node, attribute);
+      sourceStrings[hashString(locStr)] = locStr;
+    });
+  }
+  // data-localize-text
+  extractAttribute("data-localize-text", true);
+  extractAttribute("data-localize-content", false);
+  extractAttribute("data-localize-aria", false);
 
-  nodes.forEach((node) => {
-    const locStr = node.innerHTML.trim();
-    sourceStrings[hashString(locStr)] = locStr;
-  });
   return sourceStrings;
 }
 
@@ -65,11 +83,15 @@ function hashString(str){
 }
 
 function hashDom(dom){
-  dom.window.document.querySelectorAll('[data-localize-text]').forEach(
-    (node) => {
-      const locStr = node.innerHTML.trim();
-      node.setAttribute('data-localize-text', hashString(locStr));
+  function hashAttribute(attribute, innerHtml){
+    dom.window.document.querySelectorAll(`[${attribute}]`).forEach((node) => {
+      const locStr = extractNodeString(node, attribute);
+      node.setAttribute(attribute, hashString(locStr));
     });
+  }
+  hashAttribute('data-localize-text');
+  hashAttribute('data-localize-content');
+  hashAttribute('data-localize-aria');
 }
 
 function createDom(domString){

@@ -11,8 +11,9 @@ function LocaleScramble(){
     console.log('localScramble', LOCALIZED_STRINGS, LOCALIZED_TARGETS);
     this.targetId = 0;
     this.targetLocale = LOCALIZED_TARGETS[0];
-    this.LocalizedElements = window.document.querySelectorAll("[data-localize-text]");
-    console.log(this.LocalizedElements);
+    this.LocalizedElementsText = window.document.querySelectorAll("[data-localize-text]");
+    this.LocalizedElementsAria = window.document.querySelectorAll("[data-localize-aria]");
+    this.LocalizedElementsContent = window.document.querySelectorAll("[data-localize-content]");
   }, 2000);
 
 
@@ -31,9 +32,17 @@ function LocaleScramble(){
   this.toggle = () => {
     this.targetId++;
     this.targetLocale = LOCALIZED_TARGETS[this.targetId % LOCALIZED_TARGETS.length]
-    this.LocalizedElements.forEach((e) => {
+    this.LocalizedElementsText.forEach((e) => {
       const hash = e.getAttribute("data-localize-text");
-      e.innerHTML = LOCALIZED_STRINGS[`${hash}:${this.targetLocale}`]
+      e.innerHTML = LOCALIZED_STRINGS[`${hash}:${this.targetLocale}`];
+    });
+    this.LocalizedElementsAria.forEach((e) => {
+      const hash = e.getAttribute("data-localize-aria");
+      e.setAttribute("aria-label", LOCALIZED_STRINGS[`${hash}:${this.targetLocale}`]);
+    });
+    this.LocalizedElementsContent.forEach((e) => {
+      const hash = e.getAttribute("data-localize-content");
+      e.setAttribute("content", LOCALIZED_STRINGS[`${hash}:${this.targetLocale}`]);
     });
   }
 
