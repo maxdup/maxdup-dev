@@ -33,14 +33,23 @@ function MainLoop(){
         interactible.onEvent(event);
       }
     });
-    this.active() && setTimeout(this.tick.bind(this), 50);
+    this.updateTicking();
   }
 
   this.tick = () => {
     this.interactibles.forEach((interactible) => {
       interactible.active && interactible.tick();
     });
-    this.active() && setTimeout(this.tick.bind(this), 50);
+    this.updateTicking();
+  }
+
+  this.updateTicking = () => {
+    const active = this.active();
+    if (active && !this.timeout){
+      this.timeout = setInterval(this.tick.bind(this), 50);
+    } else if (!active && this.timeout){
+      clearInterval(this.timeout);
+    }
   }
 
   this.loadSections = (sections) => {
@@ -99,8 +108,6 @@ function MainLoop(){
     this.tick();
   }
 
-  let themeSelect = new ThemeSelection();
-
   this.bindEvents = () => {
     if (this.bound) { return; }
     this.register(new MouseMoveNudge());
@@ -108,6 +115,7 @@ function MainLoop(){
     this.register(new ScrollSnapping(this.sections));
     this.register(new ScrollFloating(this.sections));
     this.register(new SpaceBarScroll(this.sections));
+    this.register(new LocaleScramble());
     if (this.scrollSections) {
       this.register(this.scrollSections);
     }

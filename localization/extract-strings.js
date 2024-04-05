@@ -49,13 +49,11 @@ function extractSourceStrings(dom){
   const sourceStrings = {};
 
   function extractAttribute(attribute, innerHtml){
-    // data-localize-text
     dom.window.document.querySelectorAll(`[${attribute}]`).forEach((node) => {
       const locStr = extractNodeString(node, attribute);
       sourceStrings[hashString(locStr)] = locStr;
     });
   }
-  // data-localize-text
   extractAttribute("data-localize-text", true);
   extractAttribute("data-localize-content", false);
   extractAttribute("data-localize-aria", false);
@@ -121,7 +119,7 @@ class ExtractLocStrings {
         'ModifyHtmlPlugin',
         async (data, callback) => {
           // extract strings, write json base.
-          const htmlContent = await readHTML(compiler);
+          const htmlContent = readHTML(compiler);
           const htmlDom = createDom(htmlContent);
           const jsonStrings = readJSON();
           const sourceStrings = extractSourceStrings(htmlDom);
@@ -160,9 +158,9 @@ class ExtractLocStrings {
         'ExtractLocString',
         (data, callback) => {
           // inject html tags with hashes
-          const dom = createDom(data.html);
-          hashDom(dom);
-          data.html = dom.serialize();
+          const htmlDom = createDom(data.html);
+          hashDom(htmlDom);
+          data.html = htmlDom.serialize();
           callback(null, data);
         },
       );
