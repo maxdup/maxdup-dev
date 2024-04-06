@@ -291,9 +291,9 @@ nav {
     }
 
     a {
+        @include text-link-aberration();
         padding-left: 0;
         padding-right: 0;
-        @include text-link-aberration();
         font-size: 1.5rem;
         flex-grow: 1;
         width: 100%;
@@ -308,7 +308,12 @@ nav {
         width: 100%;
     }
 
-    a { @include text-link-aberration(); }
+    a {
+        @include text-link-aberration();
+        line-height: 2;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
 
     li {
         max-width: 100%;
@@ -351,6 +356,7 @@ nav {
         a {
             @include boxy-link();
             font-size: 1.5rem;
+            line-height: 1;
         }
 
         li,

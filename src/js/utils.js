@@ -1,17 +1,21 @@
 export function clamp(x, min, max){
   return Math.min(max, Math.max(x, min));
 }
+
 export function linear(x){
   return clamp(x, 0, 1);
 }
+
 export function easeOutRound(x){
   x = clamp(x, 0, 1);
   return Math.sqrt(1 - (x - 1) * (x - 1));
 }
+
 export function easeInRound(x){
   x = clamp(x, 0, 1);
   return Math.sqrt(1- x * x) * -1 + 1;
 }
+
 export function easeInOutRound(x){
   if (x < 0.5){
     return easeInRound(x*2) * 0.5;
@@ -19,6 +23,7 @@ export function easeInOutRound(x){
     return easeOutRound((x-0.5) * 2) * 0.5 + 0.5;
   }
 }
+
 export function easeOutInRound(x){
   if (x < 0.5){
     return easeOutRound(x * 2) * 0.5;
@@ -26,15 +31,27 @@ export function easeOutInRound(x){
     return easeInRound((x - 0.5) * 2) * 0.5 + 0.5;
   }
 }
+
 export function easeOut(x, steepness) {
   x = clamp(x, 0, 1);
   let p = steepness || 3;
-  return 1 - Math.pow(1 - x, p);}
+  return 1 - Math.pow(1 - x, p);
+}
+
+export function easeOutExpo(x) {
+  return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
+}
+
+export function easeInExpo(x) {
+  return x === 0 ? 0 : Math.pow(2, 10 * x - 10);
+}
+
 export function easeIn(x, steepness) {
   x = clamp(x, 0, 1);
   let p = steepness || 3;
   return Math.pow(x, 3, p);
 }
+
 export function easeInOut(x, steepness){
   let p = steepness || 3;
   if (x < 0.5){
@@ -43,6 +60,7 @@ export function easeInOut(x, steepness){
     return easeOut((x-0.5) * 2, p) * 0.5 + 0.5;
   }
 }
+
 export function easeOutIn(x, steepness){
   let p = steepness || 3;
   if (x < 0.5){
@@ -51,15 +69,19 @@ export function easeOutIn(x, steepness){
     return easeIn((x - 0.5) * 2, p) * 0.5 + 0.5
   }
 }
+
 export function haste(x, amount){
   return Math.min(x, amount) * 1 / amount;
 }
+
 export function delay(x, amount){
   return  (Math.max(x, amount) - amount) /amount;
 }
+
 export function HSLStr(hlsArray){
   return `hsl(${hlsArray[0]}deg ${hlsArray[1]}% ${hlsArray[2]}%)`
 }
+
 export function HSLAStr(hlsArray){
   return `hsla(${hlsArray[0]}deg, ${hlsArray[1]}%, ${hlsArray[2]}%, ${hlsArray[3]})`
 }
@@ -103,6 +125,37 @@ export function sphericalToCartesian(pitch, yaw, roll, distance) {
   const z = distance * Math.sin(yawRad) * Math.cos(pitchRad);
 
   return { x, y, z };
+}
+
+export function sfc32(a, b, c, d) {
+  return function() {
+    a |= 0; b |= 0; c |= 0; d |= 0;
+    let t = (a + b | 0) + d | 0;
+    d = d + 1 | 0;
+    a = b ^ b >>> 9;
+    b = c + (c << 3) | 0;
+    c = (c << 21 | c >>> 11);
+    c = c + t | 0;
+    return (t >>> 0) / 4294967296;
+  }
+}
+
+export function cyrb128(str) {
+    let h1 = 1779033703, h2 = 3144134277,
+        h3 = 1013904242, h4 = 2773480762;
+    for (let i = 0, k; i < str.length; i++) {
+        k = str.charCodeAt(i);
+        h1 = h2 ^ Math.imul(h1 ^ k, 597399067);
+        h2 = h3 ^ Math.imul(h2 ^ k, 2869860233);
+        h3 = h4 ^ Math.imul(h3 ^ k, 951274213);
+        h4 = h1 ^ Math.imul(h4 ^ k, 2716044179);
+    }
+    h1 = Math.imul(h3 ^ (h1 >>> 18), 597399067);
+    h2 = Math.imul(h4 ^ (h2 >>> 22), 2869860233);
+    h3 = Math.imul(h1 ^ (h3 >>> 17), 951274213);
+    h4 = Math.imul(h2 ^ (h4 >>> 19), 2716044179);
+    h1 ^= (h2 ^ h3 ^ h4), h2 ^= h1, h3 ^= h1, h4 ^= h1;
+    return [h1>>>0, h2>>>0, h3>>>0, h4>>>0];
 }
 
 export function mobileCheck() {

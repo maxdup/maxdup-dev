@@ -1,5 +1,5 @@
 import glInterface from './gl-interface';
-import { ENABLE_3D } from './constants';
+import { ENABLE_3D, MAIN_LOOP_MS } from './constants';
 import { mobileCheck } from './utils';
 
 import ScrollSections from './interactive/scrollSections';
@@ -46,7 +46,7 @@ function MainLoop(){
   this.updateTicking = () => {
     const active = this.active();
     if (active && !this.timeout){
-      this.timeout = setInterval(this.tick.bind(this), 50);
+      this.timeout = setInterval(this.tick.bind(this), MAIN_LOOP_MS);
     } else if (!active && this.timeout){
       clearInterval(this.timeout);
     }

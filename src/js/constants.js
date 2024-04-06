@@ -8,4 +8,4 @@ export const NO_TRANSITION_SPEED = 0.0;
 export const THEME_TRANSITION_SPEED = 1.0;
 export const INTERACTIVE_TRANSITION_SPEED = 0.3;
 
-
+export const MAIN_LOOP_MS = 50;

@@ -40,9 +40,15 @@
     }
 
     .source-link {
-        vertical-align: top;
+        vertical-align: middle;
         margin-top: 0.5rem;
         margin-bottom: 1rem;
+        line-height: 2;
+        padding-top: 0rem;
+        padding-bottom: 0rem;
+        &:before {
+            vertical-align: middle;
+        };
     }
 }
 
