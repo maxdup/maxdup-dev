@@ -39,6 +39,7 @@ function AgnosticWorker(){
   this.init = (canvas3D, canvas2D) => {
     v.initWebGL(canvas3D);
     v.initTextures(canvas2D);
+    v.initShaders();
   }
   this.run = (eventName, value) => {
     switch(WORKER_MSGS[eventName]){

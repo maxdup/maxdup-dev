@@ -429,7 +429,6 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens){
 
 
   this.start = () => {
-    this.initShaders()
     this.initBuffers();
     this.render();
   }

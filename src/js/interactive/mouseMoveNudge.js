@@ -1,5 +1,9 @@
 import glInterface from '../gl-interface';
 import { smoothingFn } from '../utils';
+import { MAIN_LOOP_MS } from '../constants';
+
+const SMOOTHING_FACTOR = 250 / MAIN_LOOP_MS;
+
 
 function MouseMoveNudge(){
   this.currentX = 0;
@@ -31,8 +35,8 @@ function MouseMoveNudge(){
   }
 
   this.tick = () => {
-    this.currentX = smoothingFn(this.currentX, this._targetX, 100);
-    this.currentY = smoothingFn(this.currentY, this._targetY, 100);
+    this.currentX = smoothingFn(this.currentX, this._targetX, SMOOTHING_FACTOR);
+    this.currentY = smoothingFn(this.currentY, this._targetY, SMOOTHING_FACTOR);
 
     // camOffset
     let camOffsetX = this.currentX / window.innerHeight * 2 -1;

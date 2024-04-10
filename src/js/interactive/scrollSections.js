@@ -1,6 +1,8 @@
 import glInterface from '../gl-interface';
 import { deCasteljau, smoothingFn, easeInOut } from '../utils';
+import { MAIN_LOOP_MS } from '../constants';
 
+const SMOOTHING_FACTOR = 150 / MAIN_LOOP_MS;
 const PEEK_TRANSITION_SPEED = 0.3; // scene transitions
 const SCROLL_TRANSITION_SPEED = 0.75; // scene transitions
 
@@ -25,7 +27,9 @@ function ScrollSections(sections){
   this.progressTo = null;
 
   this.active = false;
-  this.hooksOn = (eventType) => { return eventType == 'scroll' }
+  this.hooksOn = (eventType) => {
+    return eventType == 'scroll' || eventType == 'wheel'
+  }
 
   let scrollTransitions = [];
   for (let i = 0; i < this.sections.length-1; i++){
@@ -62,6 +66,7 @@ function ScrollSections(sections){
     clearTimeout(this.scrollTimeout);
     this.scrollTimeout = null;
     this.clickTransition = null;
+    this.currentTransition = null;
   }
 
   this.targetScene = (sceneName) => {
@@ -81,6 +86,9 @@ function ScrollSections(sections){
       toId: ids[1],
       toSection: this.sections[ids[1]],
     }
+
+    clearTimeout(this.scrollTimeout);
+    this.scrollTimeout = setTimeout(this.endClickTransition, 1000);
   }
 
   this.setScene = (sceneName, speed) => {
@@ -94,7 +102,7 @@ function ScrollSections(sections){
     this.active = this.currentProgress != this.targetProgress;
   }
 
-  this._determineScrollTransition = () => {
+  this._useScrollTransition = () => {
     let determineCurrentTId = () => {
         for (let i = 0; i < this.sections.length; i++){
           if (this.sections[i].elem.getBoundingClientRect().top > 0){
@@ -121,42 +129,48 @@ function ScrollSections(sections){
     return Math.max(0, Math.min(1, progress));
   }
 
-  this.onEvent = () => {
+  this.onEvent = (e) => {
+    switch (e?.type){
+    case "wheel":
+      this.clickTransition && this.endClickTransition();
+      break;
+    case "scroll":
+    default:
+      let activeTransition = this.clickTransition ||
+        this._useScrollTransition();
+      this.targetProgress = this._determineScrollProgress(activeTransition);
 
-    let activeTransition = this.clickTransition ||
-        this._determineScrollTransition();
-    this.targetProgress = this._determineScrollProgress(activeTransition);
-
-    if (this.currentTransition != activeTransition){
-      if (this.currentTransition!== null){
-        this.currentProgress = this.targetProgress;
+      if (this.currentTransition != activeTransition){
+        if (this.currentTransition!== null){
+          this.currentProgress = this.targetProgress;
+        }
+        this.currentTransition = activeTransition;
       }
-      this.currentTransition = activeTransition;
+      break;
     }
-
-    clearTimeout(this.scrollTimeout);
-    this.scrollTimeout = setTimeout(this.endClickTransition, 100);
-
     this._checkActive();
   }
 
   this.tick = () => {
 
     this.currentProgress = smoothingFn(
-      this.currentProgress, this.targetProgress, 25);
+      this.currentProgress, this.targetProgress, SMOOTHING_FACTOR);
 
     if (this.currentTransition){
+
+      // determine target scene
       let targetSceneId;
-      if (this.currentTransition.sceneName){
-        targetSceneId = this.sceneIdByName(this.currentTransition.sceneName);
-      } else {
+      if (this.currentTransition.isScrollBased){
         if (this.currentProgress <= 0.5){
           targetSceneId = this.currentTransition.fromId;
         } else {
           targetSceneId = this.currentTransition.toId;
         }
+      } else {
+        targetSceneId = this.sceneIdByName(this.currentTransition.sceneName);
       }
 
+      // set target scene
       if (this.currentSceneId != targetSceneId){
         this.currentSceneId = targetSceneId;
         const currentSceneName = this.sections[this.currentSceneId].scene;
@@ -167,18 +181,21 @@ function ScrollSections(sections){
             navLink.parentElement.classList.remove('active');
           }
         });
-        if (!this.lockedSceneName){
+        if (!this.lockeSceneName){
           this.setScene(currentSceneName, SCROLL_TRANSITION_SPEED)
         }
       }
-
 
       // Set Cam Angle
       let from = this.currentTransition.fromSection;
       let to = this.currentTransition.toSection;
 
-      let progress = easeInOut(this.currentProgress);
-
+      let progress;
+      if (this.currentTransition.isScrollBased){
+        progress = easeInOut(this.currentProgress);
+      } else {
+        progress = this._determineScrollProgress(this.currentTransition);
+      }
       let camAngle = deCasteljau(
         [from.cameraAngle, from.cameraAngleOut,
          to.cameraAngleIn, to.cameraAngle], progress);

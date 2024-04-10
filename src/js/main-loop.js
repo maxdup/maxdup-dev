@@ -45,10 +45,11 @@ function MainLoop(){
 
   this.updateTicking = () => {
     const active = this.active();
-    if (active && !this.timeout){
-      this.timeout = setInterval(this.tick.bind(this), MAIN_LOOP_MS);
-    } else if (!active && this.timeout){
-      clearInterval(this.timeout);
+    if (active && !this.interval){
+      this.interval = setInterval(this.tick.bind(this), MAIN_LOOP_MS);
+    } else if (!active && this.interval){
+      clearInterval(this.interval);
+      this.interval = null;
     }
   }
 
