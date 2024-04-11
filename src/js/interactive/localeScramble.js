@@ -1,4 +1,4 @@
-import { sfc32, easeOutRound, easeInRound, easeIn, easeOut, easeOutExpo, easeInExpo, delay } from "../utils";
+import { sfc32,  easeInExpo } from "../utils";
 import { MAIN_LOOP_MS } from "../constants";
 import mainLoop from "../main-loop";
 
@@ -14,7 +14,8 @@ const DELAYED_ITERATIONS = 8;
 const TRANSITION_ITERATIONS = SHUFFLE_ITERATIONS - DELAYED_ITERATIONS;
 const TRANSITION_TIME = MAIN_LOOP_MS * SHUFFLE_ITERATIONS / 1000 + 's';
 
-const baseChars = "abcdefghijklmnopqrstuvwxyz1234567890-*[](){}/\\\"'?^%#@&!       ";
+const baseChars =
+      "abcdefghijklmnopqrstuvwxyz1234567890-*[](){}/\\\"'?^%#@&!       ";
 const baseCharsLength = baseChars.length;
 
 function randomLetter(){
@@ -25,11 +26,15 @@ function shuffleString(str, hash, iteration, baseCharCount, targetCharCount) {
   const seed = Number("0x"+hash);
   const rand = sfc32(seed[0], seed[1], seed[2], seed[3]);
   const shuffleProgress = (iteration / SHUFFLE_ITERATIONS);
-  const transitionProgress = (Math.max(0, iteration - DELAYED_ITERATIONS) / TRANSITION_ITERATIONS);
-  const currentCharCount = baseCharCount + Math.ceil(transitionProgress * (targetCharCount - baseCharCount));
-  const currentCurrentCharCount = Math.ceil(currentCharCount * (0.85 + (0.15 * transitionProgress)));
+  const transitionProgress = Math.max(
+    0, iteration - DELAYED_ITERATIONS) / TRANSITION_ITERATIONS;
+  const currentCharCount = baseCharCount + Math.ceil(
+    transitionProgress * (targetCharCount - baseCharCount));
+  const MaskedCharCount = Math.ceil(
+    currentCharCount * (0.85 + (0.15 * transitionProgress)));
+
   str = str || "";
-  str = str.padEnd(currentCurrentCharCount).substring(0, currentCurrentCharCount);
+  str = str.padEnd(MaskedCharCount).substring(0, MaskedCharCount);
 
   return Array.from(str.split(""), (letter, i) => {
     const earlyness = i / str.length;
@@ -43,9 +48,12 @@ function LocaleScramble(){
   this.targetId = 0;
   this.targetLocale = LOCALIZED_TARGETS[0];
 
-  this.localizedElementsText = window.document.querySelectorAll("[data-localize-text]");
-  this.localizedElementsAria = window.document.querySelectorAll("[data-localize-aria]");
-  this.localizedElementsContent = window.document.querySelectorAll("[data-localize-content]");
+  this.localizedElementsText =
+    window.document.querySelectorAll("[data-localize-text]");
+  this.localizedElementsAria =
+    window.document.querySelectorAll("[data-localize-aria]");
+  this.localizedElementsContent =
+    window.document.querySelectorAll("[data-localize-content]");
 
   this.baseHeights = [];
   this.targetHeights = [];
@@ -62,18 +70,21 @@ function LocaleScramble(){
 
   this.shuffleElemText = (e, i) => {
     const hash = e.getAttribute("data-localize-text");
-    e.innerHTML = shuffleString(LOCALIZED_STRINGS[`${hash}:${this.targetLocale}`], hash,
-                                this.iteration, this.baseCharCounts[i], this.targetCharCounts[i] );
+    e.innerHTML = shuffleString(
+      LOCALIZED_STRINGS[`${hash}:${this.targetLocale}`], hash, this.iteration,
+      this.baseCharCounts[i], this.targetCharCounts[i] );
   }
 
   this.setElemAria = (e) => {
     const hash = e.getAttribute("data-localize-aria");
-    e.setAttribute("aria-label", LOCALIZED_STRINGS[`${hash}:${this.targetLocale}`]);
+    e.setAttribute("aria-label",
+                   LOCALIZED_STRINGS[`${hash}:${this.targetLocale}`]);
   }
 
   this.setElemContent = (e) => {
     const hash = e.getAttribute("data-localize-content");
-    e.setAttribute("content", LOCALIZED_STRINGS[`${hash}:${this.targetLocale}`]);
+    e.setAttribute("content",
+                   LOCALIZED_STRINGS[`${hash}:${this.targetLocale}`]);
   }
 
   this.loadHeights = () => {
@@ -85,9 +96,9 @@ function LocaleScramble(){
   }
 
   this.loadLineHeights = () => {
-    return Array.from(this.localizedElementsText).map((e) => {
-      return parseFloat(window.getComputedStyle(e).lineHeight.replace('px', ''));
-    });
+    return Array.from(this.localizedElementsText).map((e) =>
+      parseFloat(window.getComputedStyle(e).lineHeight.replace('px', ''))
+    );
   }
 
   this.loadLineCounts = () => {
@@ -111,7 +122,8 @@ function LocaleScramble(){
   }
 
   this.thawElem = (elem, index) => {
-    elem.style.transition = `height ${TRANSITION_TIME} ease-out, width ${TRANSITION_TIME} ease-out`;
+    elem.style.transition =
+      `height ${TRANSITION_TIME} ease-out, width ${TRANSITION_TIME} ease-out`;
     elem.style.height = `${this.targetHeights[index]}px`;
     elem.style.width = `${this.targetWidths[index]}px`;
   }
@@ -140,9 +152,9 @@ function LocaleScramble(){
     this.iteration = 0;
     this.delayedIteration = 0;
 
-    this.baseLocale = LOCALIZED_TARGETS[this.targetId % LOCALIZED_TARGETS.length];
-    this.targetId++;
-    this.targetLocale = LOCALIZED_TARGETS[this.targetId % LOCALIZED_TARGETS.length];
+    this.baseLocale = LOCALIZED_TARGETS[this.targetId];
+    this.targetId = (targetId + 1) % LOCALIZED_TARGETS.length;
+    this.targetLocale = LOCALIZED_TARGETS[this.targetId];
 
     // cleanup
     this.localizedElementsText.forEach(this.unfreezeElem);
@@ -178,7 +190,8 @@ function LocaleScramble(){
     this.iteration++;
     if (this.iteration <= SHUFFLE_ITERATIONS){
       if (this.iteration % 3 == 0) {
-        this.delayedIteration = Math.max(0, this.iteration - DELAYED_ITERATIONS);
+        this.delayedIteration = Math.max(
+          0, this.iteration - DELAYED_ITERATIONS);
         this.localizedElementsText.forEach(this.shuffleElemText);
       }
     } else {

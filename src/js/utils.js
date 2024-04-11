@@ -83,7 +83,8 @@ export function HSLStr(hlsArray){
 }
 
 export function HSLAStr(hlsArray){
-  return `hsla(${hlsArray[0]}deg, ${hlsArray[1]}%, ${hlsArray[2]}%, ${hlsArray[3]})`
+  return `hsla(${hlsArray[0]}deg, ${hlsArray[1]}%, ` +
+    `${hlsArray[2]}%, ${hlsArray[3]})`
 }
 
 export function smoothingFn(current, target, smoothingFactor){
