@@ -36,6 +36,10 @@ function MainLoop(){
     this.updateTicking();
   }
 
+  this.kick = () => {
+    this.updateTicking();
+  };
+
   this.tick = () => {
     this.interactibles.forEach((interactible) => {
       interactible.active && interactible.tick();

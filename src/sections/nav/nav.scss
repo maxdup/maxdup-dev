@@ -132,9 +132,9 @@ nav {
     overflow: visible;
     right: 0;
     top: 0;
-    padding: 1.35rem 1.25rem;
+    padding: 1.3rem 1.25rem;
     z-index: 12;
-    text-align: right;
+    text-align: left;
     font-weight: 800;
     display: table;
     margin-right: 0;
@@ -310,7 +310,7 @@ nav {
 
     a {
         @include text-link-aberration();
-        line-height: 2;
+        line-height: 3rem;
         padding-top: 0;
         padding-bottom: 0;
     }
