@@ -143,18 +143,27 @@ function LocaleScramble(){
     let button = document.createElement('button');
     button.classList.add('mdi', ICON_SUN);
     button.setAttribute('aria-label', 'Theme selection');
-    button.addEventListener('click', this.toggle);
+    button.addEventListener('click', this.toggleLocale);
     container.appendChild(button);
   }
 
-  this.toggle = () => {
+  this.targetLocale = (locale) => {
+    this.baseLocale = LOCALIZED_TARGETS[this.targetId];
+    this.targetId = (this.targetId + 1) % LOCALIZED_TARGETS.length;
+    this.targetLocale = LOCALIZED_TARGETS[this.targetId];
+    this.applyLocale();
+
+  }
+  this.toggleLocale = () => {
+    this.baseLocale = LOCALIZED_TARGETS[this.targetId];
+    this.targetId = (this.targetId + 1) % LOCALIZED_TARGETS.length;
+    this.targetLocale = LOCALIZED_TARGETS[this.targetId];
+    this.applyLocale();
+  }
+  this.applyLocale = () => {
     this.active = true;
     this.iteration = 0;
     this.delayedIteration = 0;
-
-    this.baseLocale = LOCALIZED_TARGETS[this.targetId];
-    this.targetId = (targetId + 1) % LOCALIZED_TARGETS.length;
-    this.targetLocale = LOCALIZED_TARGETS[this.targetId];
 
     // cleanup
     this.localizedElementsText.forEach(this.unfreezeElem);

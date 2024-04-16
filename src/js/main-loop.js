@@ -120,7 +120,8 @@ function MainLoop(){
     this.register(new ScrollSnapping(this.sections));
     this.register(new ScrollFloating(this.sections));
     this.register(new SpaceBarScroll(this.sections));
-    this.register(new LocaleScramble());
+    this.register(new ThemeSelection());
+    //this.register(new LocaleScramble());
     if (this.scrollSections) {
       this.register(this.scrollSections);
     }
