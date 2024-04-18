@@ -13,9 +13,9 @@ function readJSON(){
 }
 
 function readHTML(compiler){
-    const { outputPath } = compiler;
-    const indexHtmlPath = outputPath + '/index.html';
-    return fs.readFileSync(indexHtmlPath, 'utf8');
+  const { outputPath } = compiler;
+  const indexHtmlPath = outputPath + '/index.html';
+  return fs.readFileSync(indexHtmlPath, 'utf8');
 }
 
 function writeJSON(registry){
@@ -114,18 +114,19 @@ class ExtractLocStrings {
     const { RawSource } = webpack.sources;
 
     compiler.hooks.compilation.tap('ExtractLocStrings', (compilation) => {
-
       compilation.hooks.optimizeAssets.tapAsync(
         'ModifyHtmlPlugin',
         async (data, callback) => {
           // extract strings, write json base.
-          const htmlContent = readHTML(compiler);
-          const htmlDom = createDom(htmlContent);
-          const jsonStrings = readJSON();
-          const sourceStrings = extractSourceStrings(htmlDom);
-          const registry = mergeSourceStrings(
-            sourceStrings, jsonStrings, this.locales, this.baseLocale);
-          writeJSON(registry);
+          try{
+            const htmlContent = readHTML(compiler);
+            const htmlDom = createDom(htmlContent);
+            const jsonStrings = readJSON();
+            const sourceStrings = extractSourceStrings(htmlDom);
+            const registry = mergeSourceStrings(
+              sourceStrings, jsonStrings, this.locales, this.baseLocale);
+            writeJSON(registry);
+          } catch {}
           callback(null, data);
         }
       );
