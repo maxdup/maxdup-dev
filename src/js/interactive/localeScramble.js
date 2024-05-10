@@ -136,30 +136,41 @@ function LocaleScramble(){
   }
 
   let insertLocaleSwitcher = () => {
-    const container = document.createElement('div');
-    container.id = 'color-theme';
+    const container = document.createElement('ul');
+    container.id = 'locale-switch';
     document.body.appendChild(container);
 
-    let button = document.createElement('button');
-    button.classList.add('mdi', ICON_SUN);
-    button.setAttribute('aria-label', 'Theme selection');
-    button.addEventListener('click', this.toggleLocale);
-    container.appendChild(button);
+    const frBtn = document.createElement('a');
+    frBtn.innerHTML = 'Fr';
+    frBtn.setAttribute('aria-label', 'Locale selection');
+    frBtn.addEventListener('click', () => this.setTargetLocale('fr-CA'));
+    const frLi = document.createElement('li');
+    frLi.appendChild(frBtn);
+    container.appendChild(frLi);
+
+    const enBtn = document.createElement('a');
+    enBtn.innerHTML = 'En';
+    enBtn.setAttribute('aria-label', 'Locale selection');
+    enBtn.addEventListener('click', () => this.setTargetLocale('en-US'));
+    const enLi = document.createElement('li');
+    enLi.appendChild(enBtn);
+    container.appendChild(enLi);
   }
 
-  this.targetLocale = (locale) => {
-    this.baseLocale = LOCALIZED_TARGETS[this.targetId];
-    this.targetId = (this.targetId + 1) % LOCALIZED_TARGETS.length;
-    this.targetLocale = LOCALIZED_TARGETS[this.targetId];
+  this.setTargetLocale = (locale) => {
+    this.baseLocale = this.targetLocale;
+    this.targetLocale = locale;
     this.applyLocale();
 
   }
+
   this.toggleLocale = () => {
     this.baseLocale = LOCALIZED_TARGETS[this.targetId];
     this.targetId = (this.targetId + 1) % LOCALIZED_TARGETS.length;
     this.targetLocale = LOCALIZED_TARGETS[this.targetId];
     this.applyLocale();
   }
+
   this.applyLocale = () => {
     this.active = true;
     this.iteration = 0;

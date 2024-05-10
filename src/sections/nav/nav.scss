@@ -151,14 +151,6 @@ nav {
         position: relative;
         overflow: visible;
     }
-
-    ul {
-        list-style-type: none;
-    }
-
-    li {
-        display: inline-block;
-    }
 }
 
 @mixin menu-container-mobile-small {
@@ -281,8 +273,6 @@ nav {
 
     ul {
         max-width: 14rem;
-        display: flex;
-        flex-direction: row;
     }
 
     li {
@@ -303,6 +293,8 @@ nav {
 #nav-links {
     flex-grow: 1;
 
+    @include pipe-separated-ul();
+
     @include media-mobile-small() {
         max-width: 16rem;
         width: 100%;
@@ -317,21 +309,6 @@ nav {
 
     li {
         max-width: 100%;
-        display: inline-block;
-
-        &::after {
-            font-size: 1.25rem;
-            margin-left: 5px;
-            color: base-color(a);
-            @include theme-transition(color);
-            text-shadow: none;
-        }
-
-        &:not(:last-child)::after {
-            display: inline-block;
-            content: '|';
-        }
-
         &:first-child { display: none; }
     }
 

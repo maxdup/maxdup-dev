@@ -134,6 +134,31 @@ $shade-values: [];
     }
 }
 
+@mixin pipe-separated-ul {
+
+    display: flex;
+	flex-direction: row;
+    list-style-type: none;
+
+    li {
+        display: inline-block;
+
+        &::after {
+            font-size: 1.25em;
+            line-height: 1em;
+            margin-left: 0.1rem;
+            color: base-color(a);
+            @include theme-transition(color);
+            text-shadow: none;
+        }
+
+        &:not(:last-child)::after {
+            display: inline-block;
+            content: '|';
+        }
+    }
+}
+
 @mixin frosted {
     background: base-color(2, b);
     backdrop-filter: blur(25px);
