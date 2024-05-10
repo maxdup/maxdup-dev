@@ -41,6 +41,7 @@
     @include theme-transition(background, color, border);
     text-decoration: none;
     vertical-align: middle;
+    cursor: pointer;
 
     animation-duration: 1s;
     animation-fill-mode: forwards;
@@ -78,6 +79,7 @@
 @mixin clickable-text-neutral() {
     color: base-color(e);
     display: inline-block;
+    cursor: pointer;
     @include theme-only-transition(background, color);
     animation-duration: 1s;
     animation-fill-mode: forwards;

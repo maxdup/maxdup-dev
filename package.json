@@ -1,6 +1,6 @@
 {
   "name": "maxdup-dev",
-  "version": "1.4.0",
+  "version": "1.5.1",
   "description": "",
   "main": "webpack.prod.js",
   "scripts": {

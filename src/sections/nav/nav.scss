@@ -272,10 +272,12 @@ nav {
     }
 
     ul {
+        display: flex;
         max-width: 14rem;
     }
 
     li {
+        display: inline-block;
         text-align: center;
         flex-grow: 1;
     }

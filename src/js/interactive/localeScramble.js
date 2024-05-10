@@ -140,7 +140,7 @@ function LocaleScramble(){
     container.id = 'locale-switch';
     document.body.appendChild(container);
 
-    const frBtn = document.createElement('a');
+    const frBtn = document.createElement('button');
     frBtn.innerHTML = 'Fr';
     frBtn.setAttribute('aria-label', 'Locale selection');
     frBtn.addEventListener('click', () => this.setTargetLocale('fr-CA'));
@@ -148,7 +148,7 @@ function LocaleScramble(){
     frLi.appendChild(frBtn);
     container.appendChild(frLi);
 
-    const enBtn = document.createElement('a');
+    const enBtn = document.createElement('button');
     enBtn.innerHTML = 'En';
     enBtn.setAttribute('aria-label', 'Locale selection');
     enBtn.addEventListener('click', () => this.setTargetLocale('en-US'));
