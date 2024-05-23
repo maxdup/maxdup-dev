@@ -1,4 +1,4 @@
-import mainLoop from '../../js/main-loop';
+import mainLoop from '../../js/main-loop.js';
 
 function Navigation(){
 

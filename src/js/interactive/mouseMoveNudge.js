@@ -1,6 +1,6 @@
-import glInterface from '../gl-interface';
-import { smoothingFn } from '../utils';
-import { MAIN_LOOP_MS } from '../constants';
+import glInterface from '../gl-interface.js';
+import { smoothingFn } from '../utils.js';
+import { MAIN_LOOP_MS } from '../constants.js';
 
 const SMOOTHING_FACTOR = 250 / MAIN_LOOP_MS;
 

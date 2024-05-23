@@ -1,6 +1,6 @@
-import glInterface from '../gl-interface';
-import { deCasteljau, smoothingFn, easeInOut } from '../utils';
-import { MAIN_LOOP_MS } from '../constants';
+import glInterface from '../gl-interface.js';
+import { deCasteljau, smoothingFn, easeInOut } from '../utils.js';
+import { MAIN_LOOP_MS } from '../constants.js';
 
 const SMOOTHING_FACTOR = 150 / MAIN_LOOP_MS;
 const PEEK_TRANSITION_SPEED = 0.3; // scene transitions

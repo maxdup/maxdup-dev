@@ -1,4 +1,4 @@
-import { easeOut } from '../utils';
+import { easeOut } from '../utils.js';
 
 function ScrollSnapping(sections){
   this.sections = sections;

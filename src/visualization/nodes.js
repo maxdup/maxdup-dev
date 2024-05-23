@@ -1,4 +1,4 @@
-import {N} from './config';
+import {N} from './config.js';
 
 function Nodes(){
   // randomly determines nodes to be connected together

@@ -1,4 +1,4 @@
-import {N, L} from './config';
+import {N, L} from './config.js';
 
 const Tn = 3;
 const DD = 1; // spacing

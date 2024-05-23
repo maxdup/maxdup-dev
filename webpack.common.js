@@ -8,10 +8,9 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractLocStrings = require('./localization/extract-strings');
+const ExtractLocStrings = require('./localization/extract-strings.js');
 
-
-module.exports = {
+const commonConfig = {
   context: path.join(__dirname, 'src'),
   entry: {
     index: './index.js',
@@ -29,6 +28,15 @@ module.exports = {
     rules: [{
       test: /\.(glsl|vs|fs|vert|frag)$/,
       loader: 'ts-shader-loader'
+    }, {
+        test: /\.m?js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ['@babel/preset-env']
+          }
+        }
     }, {
       test: /\.font\.js/,
       use: [
@@ -52,7 +60,7 @@ module.exports = {
       filename: '[name].[contenthash].css'
     }),
     new HtmlWebpackPlugin({
-      template: path.join(dirSrc, 'index.html'),
+      template: path.join(dirSrc, 'index.ejs'),
       filename: 'index.html',
       chunks: ['index'],
       baseUrl: 'https://maxdup.dev',
@@ -71,3 +79,5 @@ module.exports = {
 
   ]
 }
+
+module.exports = commonConfig;

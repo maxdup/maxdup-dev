@@ -2,9 +2,9 @@ import {
   NO_TRANSITION_SPEED,
   THEME_TRANSITION_SPEED,
   INTERACTIVE_TRANSITION_SPEED,
-} from '../constants';
+} from '../constants.js';
 
-import glInterface from '../gl-interface';
+import glInterface from '../gl-interface.js';
 
 
 const ICON_SUN = 'mdi-bx-sun';

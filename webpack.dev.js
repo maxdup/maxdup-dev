@@ -5,15 +5,14 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const path = require('path');
 
-devConfig = {
+const devConfig = {
   mode: 'development',
   output: {
     publicPath: '/',
   },
   devtool: 'source-map',
   watchOptions: {
-    ignored: ['**/node_modules/**/*', '**/\.\#*',
-              '**/soulzone-web-shared/static/**/*'],
+    ignored: ['**/node_modules/**/*', '**/\.\#*'],
   },
   stats: {
     loggingDebug: ["sass-loader"],
@@ -39,5 +38,7 @@ devConfig = {
   }
 }
 
-module.exports = merge(common, devConfig)
+const config = merge(common, devConfig);
+
+module.exports = config;
 

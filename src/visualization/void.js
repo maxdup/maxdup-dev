@@ -6,7 +6,7 @@ import sprite_fsScript from "../shaders/sprite.frag";
 
 import quickNoise from 'quick-perlin-noise-js';
 
-import {N, L} from './config';
+import {N, L} from './config.js';
 const HN = Math.floor(N/2);
 
 let dt = 0;
@@ -152,7 +152,7 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens){
   }
 
   let buildTopoArray = async () => {
-    const mtlres = await fetch(require('../images/mtl.webp'), {mode: 'cors'});
+    const mtlres = await fetch((await import('../images/mtl.webp')).default, {mode: 'cors'});
     const mtlblob = await mtlres.blob();
     const mtlBitmap = await createImageBitmap(mtlblob, {
       premultiplyAlpha: 'none',

@@ -1,15 +1,15 @@
-require('./fonts/maxdup-icons.font');
+import('./fonts/maxdup-icons.font.js');
 
-import nav from './sections/nav/nav';
+import nav from './sections/nav/nav.js';
 
-import glInterface from './js/gl-interface';
-import mainLoop from './js/main-loop';
+import glInterface from './js/gl-interface.js';
+import mainLoop from './js/main-loop.js';
 
-import './sections/main/main';
-import './sections/trajectory/trajectory';
-import './sections/skills/skills';
-import './sections/where/where';
-import './sections/foss/foss';
+import './sections/main/main.js';
+import './sections/trajectory/trajectory.js';
+import './sections/skills/skills.js';
+import './sections/where/where.js';
+import './sections/foss/foss.js';
 
 import './index.scss';
 

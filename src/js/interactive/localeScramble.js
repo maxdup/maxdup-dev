@@ -1,6 +1,6 @@
-import { sfc32,  easeInExpo } from "../utils";
-import { MAIN_LOOP_MS } from "../constants";
-import mainLoop from "../main-loop";
+import { sfc32,  easeInExpo } from "../utils.js";
+import { MAIN_LOOP_MS } from "../constants.js";
+import mainLoop from "../main-loop.js";
 
 /*
 Instant: [data-localize-content, data-localiza-aria, data-localize-phone]

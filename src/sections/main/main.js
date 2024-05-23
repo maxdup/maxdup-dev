@@ -1,4 +1,4 @@
-import glInterface from '../../js/gl-interface';
+import glInterface from '../../js/gl-interface.js';
 
 import Scrambler from 'scrambling-letters';
 

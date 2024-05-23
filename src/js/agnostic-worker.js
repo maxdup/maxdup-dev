@@ -1,12 +1,12 @@
-import Scene from '../visualization/scene';
-import Camera from '../visualization/camera';
-import Ticker from '../visualization/ticker';
-import Void from '../visualization/void';
-import Waves from '../visualization/waves';
-import Grid from '../visualization/grid';
-import Nodes from '../visualization/nodes';
-import Roads from '../visualization/roads';
-import Sheens from '../visualization/sheens';
+import Scene from '../visualization/scene.js';
+import Camera from '../visualization/camera.js';
+import Ticker from '../visualization/ticker.js';
+import Void from '../visualization/void.js';
+import Waves from '../visualization/waves.js';
+import Grid from '../visualization/grid.js';
+import Nodes from '../visualization/nodes.js';
+import Roads from '../visualization/roads.js';
+import Sheens from '../visualization/sheens.js';
 
 const WORKER_MSGS = {
   initialize: 0,
@@ -84,6 +84,4 @@ function AgnosticWorker(){
   return this;
 }
 
-let agnosticWorker = new AgnosticWorker();
-
-export default agnosticWorker;
+export const agnosticWorker = new AgnosticWorker();

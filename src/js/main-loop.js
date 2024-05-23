@@ -1,15 +1,15 @@
-import glInterface from './gl-interface';
-import { ENABLE_3D, MAIN_LOOP_MS } from './constants';
-import { mobileCheck } from './utils';
+import glInterface from './gl-interface.js';
+import { ENABLE_3D, MAIN_LOOP_MS } from './constants.js';
+import { mobileCheck } from './utils.js';
 
-import ScrollSections from './interactive/scrollSections';
-import ScrollFloating from './interactive/scrollFloating';
-import ScrollSnapping from './interactive/scrollSnapping';
-import SpaceBarScroll from './interactive/spaceBarScroll';
-import MouseMoveNudge from './interactive/mouseMoveNudge';
-import MouseSelection from './interactive/mouseSelection';
-import ThemeSelection from './interactive/themeSelection';
-import LocaleScramble from './interactive/localeScramble';
+import ScrollSections from './interactive/scrollSections.js';
+import ScrollFloating from './interactive/scrollFloating.js';
+import ScrollSnapping from './interactive/scrollSnapping.js';
+import SpaceBarScroll from './interactive/spaceBarScroll.js';
+import MouseMoveNudge from './interactive/mouseMoveNudge.js';
+import MouseSelection from './interactive/mouseSelection.js';
+import ThemeSelection from './interactive/themeSelection.js';
+import LocaleScramble from './interactive/localeScramble.js';
 
 function MainLoop(){
 

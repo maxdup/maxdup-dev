@@ -1,17 +1,19 @@
+import { CRASH_3D } from './constants.js';
+import { agnosticWorker } from './agnostic-worker.js';
+
 function SyncWorker(){
-  this.agnosticWorker = require('./agnostic-worker').default
 
   this.init = (canvas3D, canvas2D) =>{
-    this.agnosticWorker.init(canvas3D, canvas2D);
+    agnosticWorker.init(canvas3D, canvas2D);
     if (CRASH_3D){
       throw new Error('WebGL_init_failure');
     }
   }
   this.postMessage = (event) => {
-    this.agnosticWorker.run(event.msg, event.value);
+    agnosticWorker.run(event.msg, event.value);
   }
   this.exec = (eventName, value) => {
-    this.agnosticWorker.run(eventName, value);
+    agnosticWorker.run(eventName, value);
   }
   return this
 }

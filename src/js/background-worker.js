@@ -1,12 +1,11 @@
-const CRASH_3D = require('./constants').CRASH_3D;
-
-this.agnosticWorker = require('./agnostic-worker').default
+import { CRASH_3D } from './constants.js';
+import { agnosticWorker } from './agnostic-worker.js';
 
 self.onmessage = (event) => {
   if (event.data.msg == 'init'){
     try {
-      this.agnosticWorker.init(event.data.canvas3D,
-                               event.data.canvas2D);
+      agnosticWorker.init(event.data.canvas3D,
+                          event.data.canvas2D);
       if (CRASH_3D){
         throw new Error('WebGL_init_failure');
       }
@@ -14,7 +13,7 @@ self.onmessage = (event) => {
       self.postMessage(GLError);
     }
   } else {
-    this.agnosticWorker.run(event.data.msg,
-                            event.data.value);
+    agnosticWorker.run(event.data.msg,
+                       event.data.value);
   }
 }

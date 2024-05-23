@@ -3,7 +3,7 @@ import { HSLStr } from '../utils.js';
 import {
   ACCENT1,
   ACCENT2,
-} from '../constants';
+} from '../constants.js';
 
 function MouseSelection(){
 
