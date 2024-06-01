@@ -1,4 +1,5 @@
 const fs = require('fs');
+const DEBUG = false;
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const crypto = require('crypto')
@@ -118,7 +119,7 @@ class ExtractLocStrings {
         'ModifyHtmlPlugin',
         async (data, callback) => {
           // extract strings, write json base.
-          try{
+          try {
             const htmlContent = readHTML(compiler);
             const htmlDom = createDom(htmlContent);
             const jsonStrings = readJSON();
@@ -126,8 +127,12 @@ class ExtractLocStrings {
             const registry = mergeSourceStrings(
               sourceStrings, jsonStrings, this.locales, this.baseLocale);
             writeJSON(registry);
-          } catch {}
-          callback(null, data);
+            DEBUG && console.log("---Extract strings---");
+            DEBUG && console.log(" - ", Object.keys(registry).length + " entries extracted");
+          } catch (error) {
+              console.error('Could not load js', error);
+          }
+            callback(null, data);
         }
       );
 

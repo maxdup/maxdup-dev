@@ -65,26 +65,24 @@ function LocaleScramble(){
 
   this.setElemText = (e) => {
     const hash = e.getAttribute("data-localize-text");
-    e.innerHTML = LOCALIZED_STRINGS[`${hash}:${this.targetLocale}`];
+    e.innerHTML =  this.getLocString(hash, this.targetLocale);
   }
 
   this.shuffleElemText = (e, i) => {
     const hash = e.getAttribute("data-localize-text");
     e.innerHTML = shuffleString(
-      LOCALIZED_STRINGS[`${hash}:${this.targetLocale}`], hash, this.iteration,
-      this.baseCharCounts[i], this.targetCharCounts[i] );
+      this.getLocString(hash, this.targetLocale), hash, this.iteration,
+      this.baseCharCounts[i], this.targetCharCounts[i]);
   }
 
   this.setElemAria = (e) => {
     const hash = e.getAttribute("data-localize-aria");
-    e.setAttribute("aria-label",
-                   LOCALIZED_STRINGS[`${hash}:${this.targetLocale}`]);
+    e.setAttribute("aria-label", this.getLocString(hash, this.targetLocale));
   }
 
   this.setElemContent = (e) => {
     const hash = e.getAttribute("data-localize-content");
-    e.setAttribute("content",
-                   LOCALIZED_STRINGS[`${hash}:${this.targetLocale}`]);
+    e.setAttribute("content", this.getLocString(hash, this.targetLocale));
   }
 
   this.loadHeights = () => {
@@ -108,8 +106,12 @@ function LocaleScramble(){
   this.loadCharCounts = (locale) => {
     return Array.from(this.localizedElementsText).map((e) => {
       const hash = e.getAttribute("data-localize-text");
-      return LOCALIZED_STRINGS[`${hash}:${locale}`].length;
+      return this.getLocString(hash, locale).length;
     });
+  }
+
+  this.getLocString = (hash, locale) => {
+    return LOCALIZED_STRINGS[`${hash}:${locale}`] || "";
   }
 
   this.freezeElem = (elem, index) => {

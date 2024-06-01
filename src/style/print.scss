@@ -67,13 +67,17 @@
     #where {
         a {
             text-decoration: none !important;
+            display: block;
         }
 
         #external-links a::after {
             content: attr(href);
             text-decoration: underline;
             display: block;
-            margin-left: 1.25rem;
+            margin-left: 1.5rem;
+        }
+        li {
+            display: block;
         }
     }
 
@@ -91,6 +95,10 @@
 
     #color-theme,
     #color-theme-bg {
+        display: none !important;
+    }
+
+    #locale-switch {
         display: none !important;
     }
 
