@@ -3,21 +3,17 @@
 #locale-switch {
     position: fixed;
     bottom: 1.5rem;
+
     left: 3.5rem;
     font-weight: 800;
 
     @include pipe-separated-ul();
 
     a, button {
-        @include text-link-aberration;
-        color: base-color(f);
-        background: transparent;
-        text-shadow: 1px 1px 2px base-color(0);
-        @include theme-transition(color, text-shadow);
+        @include addon-button();
         cursor: pointer;
 
         font-size: 1rem;
         line-height: 1.35rem;
-
     }
 }

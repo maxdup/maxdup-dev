@@ -8,15 +8,12 @@
     display: contents;
 
     button {
+        @include addon-button();
         position: fixed;
         bottom: 1.5rem;
+
         left: 0.5rem;
-        font-size: 3rem;
-        @include text-link-aberration;
-        color: base-color(f);
-        background: transparent;
-        text-shadow: 1px 1px 2px base-color(0);
-        @include theme-transition(color, text-shadow);
+        font-size: 1.25rem;
 
         &::after {
             content: '';
@@ -144,4 +141,3 @@
     }
 
 }
-

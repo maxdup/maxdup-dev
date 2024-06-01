@@ -21,6 +21,7 @@ function ScrollSnapping(sections){
 
   // Event listener for mouse wheel scrolling
   this.onEvent = (event) => {
+    if (event.ctrlKey || event.shiftKey){ return }
 
     event.preventDefault();
 

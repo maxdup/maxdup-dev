@@ -65,7 +65,7 @@ function LocaleScramble(){
 
   this.setElemText = (e) => {
     const hash = e.getAttribute("data-localize-text");
-    e.innerHTML =  this.getLocString(hash, this.targetLocale);
+    e.innerHTML = this.getLocString(hash, this.targetLocale);
   }
 
   this.shuffleElemText = (e, i) => {

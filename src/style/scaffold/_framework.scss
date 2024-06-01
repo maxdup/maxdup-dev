@@ -41,8 +41,8 @@ form {
     }
 }
 
-div button:not(.button),
-div a:not(.button) {
+button:not(.button),
+a:not(.button) {
     @include clickable-text();
 }
 

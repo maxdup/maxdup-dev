@@ -65,13 +65,13 @@
 
 @mixin clickable-button-hover() {
     outline: none;
-    animation-name: aberration-link;
+    animation-name: aberration-box-anim;
     background: base-color(0, c);
 }
 
 @mixin clickable-button-focus() {
     outline: none;
-    animation-name: aberration-link;
+    animation-name: aberration-box-anim;
     background: base-color(0, c);
 }
 
@@ -86,7 +86,7 @@
 }
 
 @mixin clickable-text-hover() {
-    animation-name: aberration-link;
+    animation-name: aberration-box-anim;
     background: base-color(f);
     color: base-color(0);
 }

@@ -1,5 +1,4 @@
-
-@keyframes aberration-main {
+@keyframes aberration-text-large-anim {
     0% { @include aberration-text(0); }
     10% { @include aberration-text(4); }
     40% { @include aberration-text(1); }
@@ -8,7 +7,7 @@
     100% { @include aberration-text(0); }
 }
 
-@keyframes aberration-nav {
+@keyframes aberration-text-small-anim {
     0% { @include aberration-text(0); }
     10% { @include aberration-text(3); }
     40% { @include aberration-text(1); }
@@ -16,7 +15,7 @@
     100% { @include aberration-text(1); }
 }
 
-@keyframes aberration-link {
+@keyframes aberration-box-anim {
     0% { @include aberration-box(0); }
     10% { @include aberration-box(2.5); }
     40% { @include aberration-box(1.5); }

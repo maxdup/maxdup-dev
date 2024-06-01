@@ -111,7 +111,7 @@ $shade-values: [];
     }
 
     &:hover {
-        animation-name: aberration-nav !important;
+        animation-name: aberration-text-small-anim !important;
     }
 }
 
@@ -132,6 +132,23 @@ $shade-values: [];
         text-shadow: 0px 0px 5px base-color(5) !important;
 
     }
+}
+
+@mixin addon-button {
+    height: 3rem;
+    max-width: 3rem;
+    width: auto;
+    overflow: hidden;
+    text-align: center;
+    @include text-link-aberration;
+
+    color: base-color(f);
+    background: transparent;
+    text-shadow: 1px 1px 2px base-color(0);
+
+    @include theme-transition(color, text-shadow);
+
+    cursor: pointer;
 }
 
 @mixin pipe-separated-ul {
