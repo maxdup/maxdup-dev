@@ -1,6 +1,6 @@
 {
   "name": "maxdup-dev",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "",
   "main": "webpack.prod.js",
   "scripts": {
@@ -33,7 +33,6 @@
     "sass": "^1.77.4",
     "sass-loader": "^14.2.1",
     "simple-icons": "^12.0.0",
-    "spectorjs": "^0.9.30",
     "style-loader": "^4.0.0",
     "stylelint": "^16.6.1",
     "stylelint-config-recommended-scss": "^14.0.0",
@@ -48,7 +47,6 @@
     "webpack-merge": "^5.10.0"
   },
   "dependencies": {
-    "quick-perlin-noise-js": "^1.0.3",
-    "scrambling-letters": "^1.6.5"
+    "quick-perlin-noise-js": "^1.0.3"
   }
 }

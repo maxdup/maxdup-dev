@@ -10,6 +10,7 @@ import MouseMoveNudge from './interactive/mouseMoveNudge.js';
 import MouseSelection from './interactive/mouseSelection.js';
 import ThemeSelection from './interactive/themeSelection.js';
 import LocaleScramble from './interactive/localeScramble.js';
+import SingleScramble from './interactive/singleScramble.js';
 
 function MainLoop(){
 
@@ -115,16 +116,28 @@ function MainLoop(){
 
   this.bindEvents = () => {
     if (this.bound) { return; }
-    this.register(new MouseMoveNudge());
-    this.register(new MouseSelection());
-    this.register(new ScrollSnapping(this.sections));
-    this.register(new ScrollFloating(this.sections));
-    this.register(new SpaceBarScroll(this.sections));
-    this.register(new ThemeSelection());
-    this.register(new LocaleScramble());
+
+    this.mouseMoveNudge = new MouseMoveNudge();
+    this.mouseSelection = new MouseSelection();
+    this.scrollSnapping = new ScrollSnapping(this.sections);
+    this.scrollFloating = new ScrollFloating(this.sections);
+    this.spaceBarScroll = new SpaceBarScroll(this.sections);
+    this.themeSelection = new ThemeSelection();
+    this.localeScramble = new LocaleScramble();
+    this.singleScramble = new SingleScramble();
+
+    this.register(this.mouseMoveNudge);
+    this.register(this.mouseSelection);
+    this.register(this.scrollSnapping);
+    this.register(this.scrollFloating);
+    this.register(this.spaceBarScroll);
+    this.register(this.themeSelection);
+    this.register(this.localeScramble);
+    this.register(this.singleScramble);
     if (this.scrollSections) {
       this.register(this.scrollSections);
     }
+
     window.addEventListener(
       'wheel', this.onEvent.bind(this), {passive: false});
     window.addEventListener(

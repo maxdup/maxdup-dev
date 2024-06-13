@@ -47,20 +47,21 @@ function Navigation(){
     }
 
     window.addEventListener('load', function() {
+
       window.addEventListener('scroll', () => {
         requestAnimationFrame(afterScroll);
       });
-      afterScroll()
+
+      afterScroll();
       onInit();
-    });
 
+      navElem.addEventListener('mouseout', onNavOut);
+      homeElem.addEventListener('mouseout', onNavOut);
 
-    navElem.addEventListener('mouseout', onNavOut);
-    homeElem.addEventListener('mouseout', onNavOut);
-
-    [...linkElems, homeElem].forEach((elem) => {
-      elem.addEventListener('mouseover', onNavHrefHover);
-      elem.addEventListener('click', onNavHrefClick);
+      [...linkElems, homeElem].forEach((elem) => {
+        elem.addEventListener('mouseover', onNavHrefHover);
+        elem.addEventListener('click', onNavHrefClick);
+      });
     });
   }
 }
