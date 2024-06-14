@@ -1,8 +1,8 @@
-const fs = require('fs');
+import fs from 'fs';
 const DEBUG = false;
 
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const crypto = require('crypto')
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import crypto from 'crypto';
 
 function readJSON(){
   try {
@@ -81,8 +81,10 @@ function hashString(str){
   return crypto.createHash('sha256').update(str).digest('hex').slice(0, 8);
 }
 
-function hashDom(dom){
+function hashDom(dom, logger){
+
   function hashAttribute(attribute, innerHtml){
+
     dom.window.document.querySelectorAll(`[${attribute}]`).forEach((node) => {
       const locStr = extractNodeString(node, attribute);
       node.setAttribute(attribute, hashString(locStr));
@@ -93,8 +95,8 @@ function hashDom(dom){
   hashAttribute('data-localize-aria');
 }
 
-function createDom(domString){
-  const jsdom = require('jsdom');
+async function createDom(domString){
+  const jsdom = await import('jsdom');
   const dom = new jsdom.JSDOM(domString);
   return dom;
 }
@@ -111,6 +113,9 @@ class ExtractLocStrings {
 
   apply(compiler) {
 
+    const logger = compiler.getInfrastructureLogger("ExtractLocStrings");
+    logger.log('log from compiler');
+
     const { webpack } = compiler;
     const { RawSource } = webpack.sources;
 
@@ -121,18 +126,19 @@ class ExtractLocStrings {
           // extract strings, write json base.
           try {
             const htmlContent = readHTML(compiler);
-            const htmlDom = createDom(htmlContent);
-            const jsonStrings = readJSON();
-            const sourceStrings = extractSourceStrings(htmlDom);
-            const registry = mergeSourceStrings(
-              sourceStrings, jsonStrings, this.locales, this.baseLocale);
-            writeJSON(registry);
-            DEBUG && console.log("---Extract strings---");
-            DEBUG && console.log(" - ", Object.keys(registry).length + " entries extracted");
+            createDom(htmlContent).then((htmlDom) => {
+              const jsonStrings = readJSON();
+              const sourceStrings = extractSourceStrings(htmlDom);
+              const registry = mergeSourceStrings(
+                sourceStrings, jsonStrings, this.locales, this.baseLocale);
+              writeJSON(registry);
+              DEBUG && console.log("---Extract strings---");
+              DEBUG && console.log(" - ", Object.keys(registry).length + " entries extracted");
+              callback(null, data);
+            });
           } catch (error) {
               console.error('Could not load js', error);
           }
-            callback(null, data);
         }
       );
 
@@ -164,10 +170,11 @@ class ExtractLocStrings {
         'ExtractLocString',
         (data, callback) => {
           // inject html tags with hashes
-          const htmlDom = createDom(data.html);
-          hashDom(htmlDom);
-          data.html = htmlDom.serialize();
-          callback(null, data);
+          createDom(data.html).then((htmlDom) => {
+            hashDom(htmlDom);
+            data.html = htmlDom.serialize();
+            callback(null, data);
+          });
         },
       );
 
@@ -175,4 +182,4 @@ class ExtractLocStrings {
   }
 }
 
-module.exports = ExtractLocStrings;
+export default ExtractLocStrings;

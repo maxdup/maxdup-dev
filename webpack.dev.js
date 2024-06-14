@@ -1,9 +1,11 @@
-const { merge } = require('webpack-merge');
-const common = require('./webpack.common.js');
+import { merge } from 'webpack-merge';
+import { commonConfig } from './webpack.common.js';
 
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
-const path = require('path');
+import path from 'path';
+
+process.traceDeprecation = true;
 
 const devConfig = {
   mode: 'development',
@@ -38,7 +40,7 @@ const devConfig = {
   }
 }
 
-const config = merge(common, devConfig);
+const config = merge(commonConfig, devConfig);
 
-module.exports = config;
+export default config
 

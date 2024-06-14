@@ -3,8 +3,9 @@
   "version": "1.5.2",
   "description": "",
   "main": "webpack.prod.js",
+  "type": "module",
   "scripts": {
-    "start": "webpack-dev-server --open --config webpack.dev.js",
+    "start": "webpack-dev-server --open --config webpack.dev.cjs",
     "start:prod": "webpack-dev-server --open --config webpack.prod.js",
     "start:debug": "webpack-dev-server --open --config webpack.debug.js",
     "build": "webpack --config webpack.prod.js",

@@ -1,16 +1,16 @@
-const webpack = require('webpack');
+import CopyWebpackPlugin from 'copy-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import FaviconsWebpackPlugin from 'favicons-webpack-plugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import ExtractLocStrings from './localization/extract-strings.js';
 
-const path = require('path');
+import path from 'path';
+
+const __dirname = import.meta.dirname;
 const dirSrc = path.join(__dirname, 'src');
 const dirBuild = path.join(__dirname, 'build');
 
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractLocStrings = require('./localization/extract-strings.js');
-
-const commonConfig = {
+export const commonConfig = {
   context: path.join(__dirname, 'src'),
   entry: {
     index: './index.js',
@@ -19,6 +19,10 @@ const commonConfig = {
     path: dirBuild,
     filename: '[name].[contenthash].bundle.js',
     chunkFilename: '[name].[contenthash].bundle.js'
+  },
+  resolve: {
+    enforceExtension: false,
+    extensions: [".js", ".jsx", ".tsx", ".ts"],
   },
   devServer: {
     port: 8000,
@@ -29,14 +33,14 @@ const commonConfig = {
       test: /\.(glsl|vs|fs|vert|frag)$/,
       loader: 'ts-shader-loader'
     }, {
-        test: /\.m?js$/,
-        exclude: /node_modules/,
-        use: {
-          loader: "babel-loader",
-          options: {
-            presets: ['@babel/preset-env']
-          }
+      test: /\.m?js$/,
+      exclude: /node_modules/,
+      use: {
+        loader: "babel-loader",
+        options: {
+          presets: ['@babel/preset-env']
         }
+      }
     }, {
       test: /\.font\.js/,
       use: [
@@ -55,7 +59,7 @@ const commonConfig = {
     }]
   },
   plugins: [
-    new ExtractLocStrings({locales:['en-US', 'fr-CA', 'lo-IP']}),
+    new ExtractLocStrings({ locales: ['en-US', 'fr-CA', 'lo-IP'] }),
     new MiniCssExtractPlugin({
       filename: '[name].[contenthash].css'
     }),
@@ -74,10 +78,7 @@ const commonConfig = {
       }
     }),
     new CopyWebpackPlugin({
-      patterns: [{from: 'static', to: 'static'}]
+      patterns: [{ from: 'static', to: 'static' }]
     }),
-
   ]
 }
-
-module.exports = commonConfig;
