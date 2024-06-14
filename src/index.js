@@ -2,7 +2,7 @@ import('./fonts/maxdup-icons.font.js');
 
 import nav from './sections/nav/nav.js';
 
-import glInterface from './js/gl-interface.js';
+import './js/gl-interface.js';
 import mainLoop from './js/main-loop.js';
 
 import './sections/main/main.js';

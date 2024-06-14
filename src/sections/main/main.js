@@ -1,5 +1,5 @@
 import glInterface from '../../js/gl-interface.js';
-import mainLoop from '../../js/main-loop';
+import mainLoop from '../../js/main-loop.js';
 
 const initialPosition = {
   x: 0, y: 0, z: 0, sigma2: 100 };
