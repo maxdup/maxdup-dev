@@ -2,120 +2,81 @@ import { MAIN_LOOP_MS } from "../constants.js";
 import mainLoop from "../main-loop.js";
 import { Scrambler } from "./scrambleUtility.js";
 
-const DELAYED_ITERATIONS = 8;
-
 function SingleScramble(){
-
-  this.baseHeights = [];
-  this.targetHeights = [];
-  this.baseWidths = [];
-  this.targetWidths = [];
-  this.targetLineCounts = [];
-  this.baseCharCounts = [];
-  this.targetCharCounts = [];
 
   this.sequences = [];
 
-  this.loadHeight = (sequence) => {
-    return sequence.element.clientHeight;
+  const setTargetText = (s/*equence*/, i) => {
+    s.elements[i].innerHTML = s.targetStrings[i];
   }
 
-  this.loadWidth = (sequence) => {
-    return sequence.element.clientWidth;
-  }
-
-  this.loadLineHeight = (sequence) => {
-    return parseFloat(window.getComputedStyle(sequence.element).lineHeight.replace('px', ''))
-  }
-
-  this.loadLineCount = (sequence) => {
-    return sequence.targetHeight / sequence.lineHeight;
-  }
-
-  this.loadCharCount = (textString) => {
-    return textString.length;
-  }
-
-  this.getLocString = (sequence) => {
-    return sequence.baseString;
-  }
-
-  this.setElemText = (sequence) => {
-    sequence.element.innerHTML = sequence.targetString;
-  }
-
-  this.shuffleElemText = (sequence) => {
+  const setShuffleText = (s/*equence*/, i) => {
     Scrambler.shuffleElem(
-      sequence.element, sequence.baseString, sequence.hash, sequence.currIteration,
-      sequence.baseString.length, sequence.targetString.length,
-      sequence.delayedIterations, sequence.transitionIterations);
+      s.elements[i], s.targetStrings[i], s.hashes[i], s.meta.currIteration,
+      s.baseStrings[i].length, s.targetStrings[i].length,
+      s.meta.delayedIterations, s.meta.transitionIterations);
   }
 
-  this.freezeParams = (sequence) => {
-    return [sequence.baseHeight,
-            sequence.baseWidth,
-            sequence.targetLineCount]
+  const freezeElem = (s/*equence*/, i) => {
+    Scrambler.freezeElem(
+      s.elements[i], s.baseHeights[i], s.baseWidths[i], s.targetLineCounts[i]);
   }
 
-  this.thawParams = (sequence) => {
-    return [sequence.targetHeight, sequence.targetWidth, sequence.transitionTime];
+  const thawElem = (s/*equence*/, i) => {
+    Scrambler.thawElem(
+      s.elements[i], s.targetHeights[i], s.targetWidths[i], s.meta.transitionTime);
   }
 
-  this.freezeElem = (sequence) => {
-    Scrambler.freezeElem(sequence.element, ...this.freezeParams(sequence));
+  const unfreezeElem = (s/*equence*/, i) => {
+    Scrambler.unfreezeElem(s.elements[i]);
   }
 
-  this.thawElem = (sequence) => {
-    Scrambler.thawElem(sequence.element, ...this.thawParams(this.sequence));
-  }
-
-  this.unfreezeElem = (sequence) => {
-    Scrambler.unfreezeElem(sequence.element);
-  }
-
-  this.sequence = (element, delay, duration, targetString) => {
-
-    const hash = element.getAttribute("data-localize-text");
-    //const delayedIterations = delay / MAIN_LOOP_MS;
-    const totalIterations = duration / MAIN_LOOP_MS;
-    const delayedIterations = totalIterations / 2;
+  let makeSequence = (elements, minDuration, maxDuration, baseStringFN, targetStringFN) => {
+    baseStringFN = baseStringFN || ((e, _i) => e.innerHTML.trim());
+    targetStringFN = targetStringFN || ((e, _i) => e.innerHTML.trim());
+    const totalIterations = maxDuration / MAIN_LOOP_MS;
+    const delayedIterations = minDuration / MAIN_LOOP_MS;
     const transitionIterations = totalIterations - delayedIterations;
     const transitionTime = MAIN_LOOP_MS * totalIterations / 1000 + 's';
 
-    const sequence = {
-      element,
-      duration,
-      baseString: element.innerHTML.trim(),
-      targetString: targetString || element.innerHTML.trim(),
-      currIteration: 0,
-      totalIterations,
-      hash,
-      transitionTime,
-      delayedIterations,
-      transitionIterations,
+    return {
+      length: elements.length,
+      elements: elements,
+      meta: { currIteration: 0, totalIterations, delayedIterations,
+              transitionIterations, transitionTime },
+      baseStrings: elements.map(baseStringFN),
+      targetStrings: elements.map(targetStringFN),
+      hashes: elements.map(e => e.getAttribute("data-localize-text")),
     }
+  }
 
+  const loadSequenceBase = (s/*equence*/) => {
+    s.baseHeights = s.elements.map((e) => e.clientHeight);
+    s.baseWidths = s.elements.map((e) => e.clientWidth);
+    s.lineHeights = s.elements.map((e) =>
+      parseFloat(window.getComputedStyle(e).lineHeight.replace('px', '')));
+  }
+
+  const loadSequenceTarget = (s/*equence*/) => {
+    s.targetHeights = s.elements.map((e) => e.clientHeight);
+    s.targetWidths = s.elements.map((e) => e.clientWidth);
+    s.targetLineCounts = s.elements.map((_e, i) => s.targetHeights[i] / s.lineHeights[i]);
+  }
+
+  this.sequence = (elements, minDuration, maxDuration, baseStringFN, targetStringFN) => {
+
+    const sequence = makeSequence(
+      elements, minDuration, maxDuration, baseStringFN, targetStringFN);
     this.sequences.push(sequence);
-
-    this.unfreezeElem(sequence);
-
+    sequence.elements.forEach((_e, i) => unfreezeElem(sequence, i));
     requestAnimationFrame(() => {
-      sequence.lineHeight = this.loadLineHeight(sequence);
-      sequence.baseHeight = this.loadHeight(sequence);
-      sequence.baseWidth = this.loadWidth(sequence);
-      sequence.baseCharCount = this.loadCharCount(sequence.baseString);
-
-      this.setElemText(sequence);
-
-      sequence.targetHeight = this.loadHeight(sequence);
-      sequence.targetWidth = this.loadWidth(sequence);
-      sequence.targetCharCount = this.loadCharCount(sequence.targetString);
-      sequence.targetLineCount = this.loadLineCount(sequence);
-
-      this.freezeElem(sequence);
+      loadSequenceBase(sequence);
+      sequence.elements.forEach((_e, i) => setTargetText(sequence, i));
+      loadSequenceTarget(sequence);
+      sequence.elements.forEach((_e, i) => freezeElem(sequence, i));
 
       requestAnimationFrame(() => {
-        this.thawElem(sequence);
+        sequence.elements.forEach((_e, i) => thawElem(sequence, i));
 
         if (!this.active) {
           this.active = true;
@@ -127,14 +88,14 @@ function SingleScramble(){
 
   this.tick = () => {
     this.sequences.forEach((sequence) => {
-      if (sequence.currIteration <= sequence.totalIterations) {
-        sequence.currIteration++;
-        if (sequence.currIteration % 3 == 0) {
-          this.shuffleElemText(sequence);
+      if (sequence.meta.currIteration <= sequence.meta.totalIterations) {
+        sequence.meta.currIteration++;
+        if (sequence.meta.currIteration % 3 == 0) {
+          sequence.elements.forEach((_e, i) => setShuffleText(sequence, i));
         }
       } else {
-        this.setElemText(sequence);
-        this.unfreezeElem(sequence);
+        sequence.elements.forEach((_e, i) => setTargetText(sequence, i));
+        sequence.elements.forEach((_e, i) => unfreezeElem(sequence, i));
         delete this.sequences[this.sequences.indexOf(sequence)];
 
         if (this.sequences.length == 0) {

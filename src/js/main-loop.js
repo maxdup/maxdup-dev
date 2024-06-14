@@ -132,7 +132,6 @@ function MainLoop(){
     this.register(this.scrollFloating);
     this.register(this.spaceBarScroll);
     this.register(this.themeSelection);
-    this.register(this.localeScramble);
     this.register(this.singleScramble);
     if (this.scrollSections) {
       this.register(this.scrollSections);

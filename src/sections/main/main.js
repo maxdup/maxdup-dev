@@ -29,9 +29,9 @@ let sequence = () => {
     });
   }, DELAY / 2);
 
-  mainLoop.singleScramble.sequence(scramble1, 0,(DELAY+1500));
-  mainLoop.singleScramble.sequence(scramble2, 0,(DELAY+2000));
-  mainLoop.singleScramble.sequence(scramble3, 0,(DELAY+5000));
+  mainLoop.singleScramble.sequence([scramble1], (DELAY+1500)*0.75, (DELAY+1500));
+  mainLoop.singleScramble.sequence([scramble2], (DELAY+2000)*0.75, (DELAY+2000));
+  mainLoop.singleScramble.sequence([scramble3], (DELAY+5000)*0.75, (DELAY+5000));
 
   setTimeout(() => {
     scramble1.style.opacity = 1;

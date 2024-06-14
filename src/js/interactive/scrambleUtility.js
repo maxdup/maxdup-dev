@@ -55,7 +55,9 @@ export class Scrambler {
   }
 
   static shuffleElem = (elem, targetText, hash, iteration,
-                        baseCharCount, targetCharCount, delayedIterations, transitionIterations) => {
+                        baseCharCount, targetCharCount,
+                        delayedIterations, transitionIterations) => {
+
       elem.innerHTML = this.shuffleString(targetText, hash, iteration,
                                           baseCharCount, targetCharCount,
                                           delayedIterations, transitionIterations);
