@@ -17,13 +17,17 @@ function ThemeSelection(){
   let insertThemeSwitcher = () => {
     const container = document.createElement('div');
     container.id = 'color-theme';
-    document.body.appendChild(container);
+    document.querySelector('.addons-container').appendChild(container);
 
     this.button = document.createElement('button');
     this.button.classList.add('mdi', ICON_SUN);
     this.button.setAttribute('aria-label', 'Theme selection');
     this.button.addEventListener('click', this.toggle);
     container.appendChild(this.button);
+
+    this.backdrop = document.createElement('div');
+    this.backdrop.id = "earths-curvature";
+    document.body.append(this.backdrop);
   }
 
   this.toggle = () => {

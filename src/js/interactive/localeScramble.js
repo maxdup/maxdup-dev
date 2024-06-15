@@ -17,7 +17,7 @@ function LocaleScramble(){
   let insertLocaleSwitcher = () => {
     const container = document.createElement('ul');
     container.id = 'locale-switch';
-    document.body.appendChild(container);
+    document.querySelector('.addons-container').appendChild(container);
 
     const frBtn = document.createElement('button');
     frBtn.innerHTML = 'Fr';

@@ -1,0 +1,95 @@
+@import './palette';
+
+#addons {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    max-height: 100px;
+    height: 0px;
+
+    .addons-container {
+        position: relative;
+        height: 100%;
+        width: 100%;
+    }
+
+    &::before {
+        content: '';
+        width: 20rem;
+        height: 12rem;
+        pointer-events: none;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        background: radial-gradient(
+            circle at top right,
+            #0000 70%,
+            #000f 100%
+        );
+        mask-image: linear-gradient(
+            200deg,
+            #fff0 65%,
+            #fff6 100%
+        );
+    }
+}
+
+@mixin addons-positioned {
+    position: absolute;
+    bottom: 1.5rem;
+}
+
+#locale-switch {
+    @include addons-positioned();
+    left: 3.5rem;
+    font-weight: 800;
+
+    @include pipe-separated-ul();
+
+    a, button {
+        @include addon-button();
+        cursor: pointer;
+
+        font-size: 1rem;
+        line-height: 1.35rem;
+    }
+}
+
+
+#color-theme {
+    position: absolute;
+    display: contents;
+
+    button {
+        @include addon-button();
+        @include addons-positioned();
+        left: 0.5rem;
+        font-size: 1.25rem;
+
+        &::after {
+            content: '';
+            position: absolute;
+            z-index: -1;
+            top: -1rem;
+            left: -1rem;
+            bottom: -1rem;
+            right: -1rem;
+            margin: auto;
+            display: block;
+            height: 150%;
+            width: 150%;
+            background: radial-gradient(
+                base-color(0, 1) 30%,
+                base-color(0, 0) 50%
+            );
+            @include theme-transition(background);
+        }
+    }
+}
+
+@include media-mobile {
+    #color-theme {
+        height: 4rem;
+        padding: 0.1rem;
+    }
+}
