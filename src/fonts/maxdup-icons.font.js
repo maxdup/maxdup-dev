@@ -24,6 +24,6 @@ module.exports = {
   'htmlTemplate': './maxdup-icons.html.hbs',
 
   // file output
-  'dest': './static',
+  'dest': 'static',
   'writeFiles': true
 };

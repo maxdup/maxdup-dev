@@ -10,7 +10,8 @@
     "build": "webpack --config webpack.prod.js",
     "build:dev": "webpack --config webpack.dev.js",
     "build:debug": "webpack --config webpack.debug.js",
-    "lint": "npx stylelint \"**/*.scss\""
+    "lint": "npx stylelint \"**/*.scss\"",
+    "deploy": "npm run build && gh-pages -d build"
   },
   "author": "",
   "license": "ISC",
@@ -25,6 +26,7 @@
     "css-minimizer-webpack-plugin": "^7.0.0",
     "favicons": "^7.2.0",
     "favicons-webpack-plugin": "^6.0.1",
+    "gh-pages": "^6.1.1",
     "html-loader": "^5.0.0",
     "html-webpack-plugin": "^5.6.0",
     "jsdom": "^24.1.0",

@@ -10,7 +10,7 @@ const cssMinimizerPlugin = new CssMinimizerPlugin();
 prodConfig = {
   mode: 'production',
   output: {
-    publicPath: '/',
+    publicPath: '',
     clean: true,
   },
   module: {
