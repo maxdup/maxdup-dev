@@ -74,10 +74,10 @@ function LocaleScramble(){
   }
 
   this.applyLocale = () => {
-
+    mainLoop.singleScramble.clearSequences();
     mainLoop.singleScramble.sequence(
       [...this.localizedElementsText], MIN_DURATION, MAX_DURATION,
-      baseStringFN, targetStringFN);
+      baseStringFN, targetStringFN, true);
 
   }
   insertLocaleSwitcher();

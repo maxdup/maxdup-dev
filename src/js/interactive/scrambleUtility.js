@@ -40,9 +40,13 @@ export class Scrambler {
     }
   }
 
-  static thawElem = (elem, targetHeight, targetWidth, transition_time) => {
-    elem.style.transition =
-      `height ${transition_time} ease-out, width ${transition_time} ease-out`;
+  static thawElem = (elem, targetHeight, targetWidth, transitionTime, useTransition) => {
+
+    if (useTransition){
+      elem.style.transition =
+        `height ${transitionTime} ease-out, width ${transitionTime} ease-out`;
+    }
+
     elem.style.height = targetHeight + 'px';
     elem.style.width = targetWidth + 'px';
   }

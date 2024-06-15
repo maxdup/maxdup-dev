@@ -23,15 +23,16 @@ function SingleScramble(){
   }
 
   const thawElem = (s/*equence*/, i) => {
-    Scrambler.thawElem(
-      s.elements[i], s.targetHeights[i], s.targetWidths[i], s.meta.transitionTime);
+    Scrambler.thawElem(s.elements[i], s.targetHeights[i], s.targetWidths[i],
+                       s.meta.transitionTime, s.meta.useTransition);
   }
 
   const unfreezeElem = (s/*equence*/, i) => {
     Scrambler.unfreezeElem(s.elements[i]);
   }
 
-  let makeSequence = (elements, minDuration, maxDuration, baseStringFN, targetStringFN) => {
+  let makeSequence = (elements, minDuration, maxDuration,
+                      baseStringFN, targetStringFN, useTransition) => {
     baseStringFN = baseStringFN || ((e, _i) => e.innerHTML.trim());
     targetStringFN = targetStringFN || ((e, _i) => e.innerHTML.trim());
     const totalIterations = maxDuration / MAIN_LOOP_MS;
@@ -43,7 +44,7 @@ function SingleScramble(){
       length: elements.length,
       elements: elements,
       meta: { currIteration: 0, totalIterations, delayedIterations,
-              transitionIterations, transitionTime },
+              transitionIterations, transitionTime, useTransition },
       baseStrings: elements.map(baseStringFN),
       targetStrings: elements.map(targetStringFN),
       hashes: elements.map(e => e.getAttribute("data-localize-text")),
@@ -60,13 +61,16 @@ function SingleScramble(){
   const loadSequenceTarget = (s/*equence*/) => {
     s.targetHeights = s.elements.map((e) => e.clientHeight);
     s.targetWidths = s.elements.map((e) => e.clientWidth);
-    s.targetLineCounts = s.elements.map((_e, i) => s.targetHeights[i] / s.lineHeights[i]);
+    s.targetLineCounts = s.elements.map((_e, i) =>
+      s.targetHeights[i] / s.lineHeights[i]);
   }
 
-  this.sequence = (elements, minDuration, maxDuration, baseStringFN, targetStringFN) => {
+  this.sequence = (elements, minDuration, maxDuration,
+                   baseStringFN, targetStringFN, useTransition
+  ) => {
 
-    const sequence = makeSequence(
-      elements, minDuration, maxDuration, baseStringFN, targetStringFN);
+    const sequence = makeSequence(elements, minDuration, maxDuration,
+                                  baseStringFN, targetStringFN, useTransition);
     this.sequences.push(sequence);
     sequence.elements.forEach((_e, i) => unfreezeElem(sequence, i));
     requestAnimationFrame(() => {
@@ -86,21 +90,33 @@ function SingleScramble(){
     });
   }
 
+  this.clearSequences = () => {
+    this.sequences.forEach((s) => this.finalIteration(s));
+    this.sequences.length = 0;
+  }
+
+  this.iteration = (sequence) => {
+    sequence.meta.currIteration++;
+    if (sequence.meta.currIteration % 3 == 0) {
+      sequence.elements.forEach((_e, i) => setShuffleText(sequence, i));
+    }
+  }
+
+  this.finalIteration = (sequence) => {
+    sequence.elements.forEach((_e, i) => setTargetText(sequence, i));
+    sequence.elements.forEach((_e, i) => unfreezeElem(sequence, i));
+    delete this.sequences[this.sequences.indexOf(sequence)];
+    if (this.sequences.length == 0) {
+      this.active = false;
+    }
+  }
+
   this.tick = () => {
     this.sequences.forEach((sequence) => {
       if (sequence.meta.currIteration <= sequence.meta.totalIterations) {
-        sequence.meta.currIteration++;
-        if (sequence.meta.currIteration % 3 == 0) {
-          sequence.elements.forEach((_e, i) => setShuffleText(sequence, i));
-        }
+        this.iteration(sequence);
       } else {
-        sequence.elements.forEach((_e, i) => setTargetText(sequence, i));
-        sequence.elements.forEach((_e, i) => unfreezeElem(sequence, i));
-        delete this.sequences[this.sequences.indexOf(sequence)];
-
-        if (this.sequences.length == 0) {
-          this.active = false;
-        }
+        this.finalIteration(sequence);
       }
     });
   }
