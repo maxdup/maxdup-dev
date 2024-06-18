@@ -1,11 +1,20 @@
 import mainLoop from "../main-loop.js";
+import store from "../store";
 
 const MIN_DURATION = 200;
 const MAX_DURATION = 1250;
 
 function LocaleScramble(){
-  this.targetLocaleId = 0;
-  this.targetLocale = LOCALIZED_TARGETS[this.targetLocaleId];
+
+  let init = () => {
+    insertLocaleSwitcher();
+
+    this.targetLocaleId = LOCALIZED_TARGETS.indexOf(store.preferences.locale);
+    this.targetLocaleId = Math.max(0, this.targetLocaleId);
+    this.baseLocale = LOCALIZED_TARGETS[this.targetLocaleId];
+    this.targetLocale = LOCALIZED_TARGETS[this.targetLocaleId];
+    this.applyLocale(true);
+  }
 
   this.localizedElementsText =
     window.document.querySelectorAll("[data-localize-text]");
@@ -63,6 +72,11 @@ function LocaleScramble(){
     return getLocString(hash, this.targetLocale);
   }
 
+  this.setElemText = (e) => {
+    const hash = e.getAttribute("data-localize-text");
+    e.innerHTML = getLocString(hash, this.targetLocale);
+  }
+
   this.setElemAria = (e) => {
     const hash = e.getAttribute("data-localize-aria");
     e.setAttribute("aria-label", getLocString(hash, this.targetLocale));
@@ -73,14 +87,19 @@ function LocaleScramble(){
     e.setAttribute("content", getLocString(hash, this.targetLocale));
   }
 
-  this.applyLocale = () => {
+  this.applyLocale = (instant) => {
+    store.savePreference("locale", this.targetLocale);
     mainLoop.singleScramble.clearSequences();
-    mainLoop.singleScramble.sequence(
-      [...this.localizedElementsText], MIN_DURATION, MAX_DURATION,
-      baseStringFN, targetStringFN, true);
-
+    if (instant) {
+      this.localizedElementsText.forEach(this.setElemText);
+    } else {
+      mainLoop.singleScramble.sequence(
+        [...this.localizedElementsText], MIN_DURATION, MAX_DURATION,
+        baseStringFN, targetStringFN, true);
+    }
   }
-  insertLocaleSwitcher();
+
+  init();
 }
 
 export default LocaleScramble;

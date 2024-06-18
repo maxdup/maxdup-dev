@@ -8,9 +8,9 @@ import ScrollSnapping from './interactive/scrollSnapping.js';
 import SpaceBarScroll from './interactive/spaceBarScroll.js';
 import MouseMoveNudge from './interactive/mouseMoveNudge.js';
 import MouseSelection from './interactive/mouseSelection.js';
-import ThemeSelection from './interactive/themeSelection.js';
-import LocaleScramble from './interactive/localeScramble.js';
 import SingleScramble from './interactive/singleScramble.js';
+import LocaleScramble from './interactive/localeScramble.js';
+import ThemeSelection from './interactive/themeSelection.js';
 
 function MainLoop(){
 
@@ -122,17 +122,17 @@ function MainLoop(){
     this.scrollSnapping = new ScrollSnapping(this.sections);
     this.scrollFloating = new ScrollFloating(this.sections);
     this.spaceBarScroll = new SpaceBarScroll(this.sections);
-    this.themeSelection = new ThemeSelection();
-    this.localeScramble = new LocaleScramble();
     this.singleScramble = new SingleScramble();
+    this.localeScramble = new LocaleScramble();
+    this.themeSelection = new ThemeSelection();
 
     this.register(this.mouseMoveNudge);
     this.register(this.mouseSelection);
     this.register(this.scrollSnapping);
     this.register(this.scrollFloating);
     this.register(this.spaceBarScroll);
-    this.register(this.themeSelection);
     this.register(this.singleScramble);
+    this.register(this.themeSelection);
     if (this.scrollSections) {
       this.register(this.scrollSections);
     }
