@@ -23,14 +23,10 @@ $shade-values: [];
     @return unquote("var(#{$varname})");
 }
 
-@function hsla-str($scolor) {
-    @return unquote('hsla(#{color.hue($color) / 1deg}, #{color.saturation($color)}, #{lightness($color)})');
-}
-
 @function invert-lum($color, $percent){
-    $h: color.hue($color);
-    $s: color.saturation($color);
-    $l: 50% + (50% - color.lightness($color)) * $percent;
+    $h: color.channel($color, "hue", $space: hsl);
+    $s: color.channel($color, "saturation", $space: hsl);
+    $l: 50% + (50% - color.channel($color, "lightness", $space: hsl)) * $percent;
     $a: alpha($color);
     @return unquote('hsla(#{$h}, #{$s}, #{$l}, #{$a})');
 }
