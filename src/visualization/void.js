@@ -4,7 +4,7 @@ import debug_vsScript from "../shaders/debug.vert";
 import line_fsScript from "../shaders/line.frag";
 import sprite_fsScript from "../shaders/sprite.frag";
 
-import quickNoise from "quick-perlin-noise-js";
+import perlin from "./perlin.js";
 
 import { N, L } from "./config.js";
 const HN = Math.floor(N / 2);
@@ -152,12 +152,16 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens) {
         let sinZ =
           Math.sin(((x / N) * 1.25 - 0.125) * Math.PI) *
             Math.sin(((y / N) * 1.25 - 0.125) * Math.PI) *
-            2 -
-          0.7;
+            3 -
+          1.5;
+
         return [
           L * 0.02 * (-N / 2 + x),
           L * 0.02 * (-N / 2 + y),
-          sinZ + quickNoise.noise((x / N) * 20, (y / N) * 15, 0) * 0.25,
+          (sinZ * 4 +
+            perlin((x / N) * 20, (y / N) * 15, 0.2) +
+            perlin((x / N) * 20, (y / N) * 15, 0.8) * 1.5) /
+            4,
         ];
       },
     ).flat();
