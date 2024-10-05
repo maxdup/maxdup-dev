@@ -152,15 +152,15 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens) {
         let sinZ =
           Math.sin(((x / N) * 1.25 - 0.125) * Math.PI) *
             Math.sin(((y / N) * 1.25 - 0.125) * Math.PI) *
-            3 -
-          1.5;
+            2.75 -
+          1.25;
 
         return [
           L * 0.02 * (-N / 2 + x),
           L * 0.02 * (-N / 2 + y),
           (sinZ * 4 +
-            perlin((x / N) * 20, (y / N) * 15, 0.2) +
-            perlin((x / N) * 20, (y / N) * 15, 0.8) * 1.5) /
+            perlin((x / N) * 20, (y / N) * 15, 0.3) +
+            perlin((x / N) * 20, (y / N) * 15, 0.85) * 1.5) /
             4,
         ];
       },
