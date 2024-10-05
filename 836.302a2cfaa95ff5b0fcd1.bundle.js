@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[836],{836:function(n,i,t){t.r(i);var e=t(137),u=t(728);i.default=function(){return this.init=function(n,i){if(u.l.init(n,i),e.k6)throw new Error("WebGL_init_failure")},this.postMessage=function(n){u.l.run(n.msg,n.value)},this.exec=function(n,i){u.l.run(n,i)},this}}}]);
