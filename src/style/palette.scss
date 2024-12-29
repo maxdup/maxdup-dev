@@ -54,7 +54,7 @@ $end-accent: #c4aa3f;
 @mixin generate-palette($invert: 0%) {
     @each $shade in $shade-values {
         $si: list.nth($shade, 1);
-        $ai: list.nth($shade, 2); 
+        $ai: list.nth($shade, 2);
         $oi: list.nth($shade, 3);
         $s: hex-to-dec($si);
         $a: hex-to-dec($ai);
@@ -68,9 +68,9 @@ $end-accent: #c4aa3f;
         }
 
         $op: math.percentage(hex-to-frac($ai));
-        @if ($invert == 100%) {
-            $op: 100% - $op;
-        }
+        /* @if ($invert == 100%) { */
+        /*     $op: 100% - $op; */
+        /* } */
 
         #{$varname}: color-mix($sp, $op, $o);
     }
