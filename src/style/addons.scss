@@ -79,8 +79,8 @@
             height: 150%;
             width: 150%;
             background: radial-gradient(
-                base-color(0, 1) 30%,
-                base-color(0, 0) 50%
+                base-color(0, 0, 1) 30%,
+                base-color(0, 0, 0) 50%
             );
             @include theme-transition(background);
         }

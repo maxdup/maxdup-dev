@@ -3,7 +3,7 @@
 @import './constants';
 
 @mixin base-text() {
-    color: base-color(e);
+    color: base-color(e, 0);
     @include theme-transition(color);
 
     font-family: Tahoma, sans-serif;
@@ -26,6 +26,7 @@
 @mixin heading-text() {
     display: block;
     font-weight: bold;
+    color: base-color(a);
 }
 
 
@@ -66,13 +67,13 @@
 @mixin clickable-button-hover() {
     outline: none;
     animation-name: aberration-box-anim;
-    background: base-color(0, c);
+    background: base-color(0, 0, c);
 }
 
 @mixin clickable-button-focus() {
     outline: none;
     animation-name: aberration-box-anim;
-    background: base-color(0, c);
+    background: base-color(0, 0, c);
 }
 
 // Links Style

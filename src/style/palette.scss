@@ -8,6 +8,11 @@ $hex-chars: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a, b, c, d, e, f;
     @return (index($hex-chars, $n) - 1);
 }
 
+$start-color: #000000;
+$start-accent: #332614;
+$end-color: #ffffff;
+$end-accent: #c4aa3f;
+
 @function hex-to-rgb($s) {
     $n: hex-to-dec($s);
     $n: $n * 16 + $n;
@@ -20,24 +25,54 @@ $hex-chars: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a, b, c, d, e, f;
     @return $n;
 }
 
-@function color-compose($s, $a) {
+@function to-hex($color) {
+  @return to-string($color, 'hex');
+}
 
-    $ss: list.nth($hex-chars, $s + 1);
-    $aa: list.nth($hex-chars, $a + 1);
-    @return ##{$ss}#{$ss}#{$ss}#{$ss}#{$ss}#{$ss}#{$aa}#{$aa};
+@function color-as-hex($c) {
+    $r: math.floor(color.channel($c, "red", $space: rgb));
+    $g: math.floor(color.channel($c, "green", $space: rgb));
+    $b: math.floor(color.channel($c, "blue", $space: rgb));
+    $a: math.floor(color.channel($c, "alpha", $space: rgb) * 255);
+
+    $rr: #{list.nth($hex-chars, math.floor(math.div($r, 16)) + 1)}#{list.nth($hex-chars, ($r % 16) + 1)};
+    $gg: #{list.nth($hex-chars, math.floor(math.div($g, 16)) + 1)}#{list.nth($hex-chars, ($g % 16) + 1)};
+    $bb: #{list.nth($hex-chars, math.floor(math.div($b, 16)) + 1)}#{list.nth($hex-chars, ($b % 16) + 1)};
+    $aa: #{list.nth($hex-chars, math.floor(math.div($a, 16)) + 1)}#{list.nth($hex-chars, ($a % 16) + 1)};
+
+    @return ##{$rr}#{$gg}#{$bb}#{$aa};
+}
+
+@function color-mix($p, $a, $o) {
+    $cb: mix($end-color, $start-color, $p);
+    $ca: mix($end-accent, $start-accent, $p);
+    $c: mix($ca, $cb, $a);
+    $aa: list.nth($hex-chars, $o + 1);
+    @return color-as-hex(rgba($c, hex-to-frac($aa)));
 }
 
 @mixin generate-palette($invert: 0%) {
     @each $shade in $shade-values {
         $si: list.nth($shade, 1);
-        $ai: list.nth($shade, 2);
+        $ai: list.nth($shade, 2); 
+        $oi: list.nth($shade, 3);
         $s: hex-to-dec($si);
         $a: hex-to-dec($ai);
-        $varname: base-color-varname($si, $ai);
+        $o: hex-to-dec($oi);
+
+        $varname: base-color-varname($si, $ai, $oi);
+
+        $sp: math.percentage(hex-to-frac($si));
         @if ($invert == 100%) {
-            $s: 15 - $s;
+            $sp: 100% - $sp;
         }
-        #{$varname}: color-compose($s, $a);
+
+        $op: math.percentage(hex-to-frac($ai));
+        @if ($invert == 100%) {
+            $op: 100% - $op;
+        }
+
+        #{$varname}: color-mix($sp, $op, $o);
     }
 }
 
@@ -55,6 +90,10 @@ $hex-chars: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a, b, c, d, e, f;
             @if $vali == $valj {
                 $vali: hex-to-dec(list.nth(list.nth($list, $i), 2));
                 $valj: hex-to-dec(list.nth(list.nth($list, $j), 2));
+                @if $vali == $valj {
+                    $vali: hex-to-dec(list.nth(list.nth($list, $i), 3));
+                    $valj: hex-to-dec(list.nth(list.nth($list, $j), 3));
+                }
             }
             @if $vali > $valj {
                 $temp: list.nth($list, $i);
@@ -67,5 +106,3 @@ $hex-chars: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a, b, c, d, e, f;
     }
     @return $list;
 }
-
-$shade-values: sort($shade-values);

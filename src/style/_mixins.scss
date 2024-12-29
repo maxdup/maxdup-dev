@@ -9,16 +9,16 @@ $hex-chars: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a, b, c, d, e, f;
 $shade-register: [];
 $shade-values: [];
 
-@function base-color-varname($shade, $alpha){
-    @return '--base-' + $shade + $alpha;
+@function base-color-varname($shade, $accent, $alpha){
+    @return '--base-' + $shade + $accent + $alpha;
 }
 
-@function base-color($shade: f, $alpha: f){
-    $varname: base-color-varname($shade, $alpha);
+@function base-color($shade: f, $accent: 0, $alpha: f){
+    $varname: base-color-varname($shade, $accent, $alpha);
 
     @if not index($shade-register, $varname){
         $shade-register: list.append($shade-register, $varname) !global;
-        $shade-values: list.append($shade-values, ($shade, $alpha)) !global;
+        $shade-values: list.append($shade-values, ($shade, $accent, $alpha)) !global;
     }
     @return unquote("var(#{$varname})");
 }
@@ -66,7 +66,7 @@ $shade-values: [];
 
     &:focus,
     &:hover {
-        background: base-color(f,f) !important;
+        background: base-color(f, 0, f) !important;
         color: base-color(6) !important;
         text-decoration: underline;
         text-shadow: none !important;
@@ -99,7 +99,7 @@ $shade-values: [];
     &:focus,
     &:hover {
         color: base-color(f) !important;
-        background: base-color(f, 0) !important;
+        background: base-color(f, 0, 0) !important;
     }
 
     &:focus {
@@ -172,7 +172,7 @@ $shade-values: [];
 }
 
 @mixin frosted {
-    background: base-color(2, b);
+    background: base-color(2, 0, b);
     backdrop-filter: blur(25px);
 }
 
