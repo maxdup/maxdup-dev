@@ -79,8 +79,10 @@ const commonConfig = {
       },
     }),
     new CopyWebpackPlugin({
-      patterns: [{ from: "static", to: "static" }],
-      patterns: [{ from: "../deploy", to: "." }],
+      patterns: [
+        { from: "static", to: "static" },
+        { from: "../deploy", to: "." },
+      ],
     }),
   ],
 };
