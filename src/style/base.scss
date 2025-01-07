@@ -4,7 +4,7 @@
 // Base Style
 // ------------------------------------------
 
-body {
+body  {
     margin: 0;
     overflow-x: hidden;
     background: base-color(0);
@@ -169,10 +169,11 @@ body {
     a {
         margin-top: 0.5rem;
         padding: 0.1rem 0.2rem;
-        vertical-align: middle;
 
+        i {
+            display: contents;
+        }
         i:first-child {
-            vertical-align: middle;
             margin-right: 0.25rem;
         }
     }
