@@ -28,23 +28,18 @@
         ul {
             padding-left: 1rem;
             font-size: 1.25rem;
-            white-space: preserve-spaces
-        }
-
-        li {
-            display: inline-block;
+            display: inline-flex;
+            align-items: baseline;
+            flex-wrap: wrap;
         }
 
         li:not(:last-child)::after {
             content: ', ';
+            white-space: break-spaces;
         }
 
         h3 {
             font-size: 1.25rem;
-        }
-
-        >*:not(a) {
-            display: block;
         }
     }
 }
