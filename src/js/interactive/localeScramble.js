@@ -4,8 +4,7 @@ import store from '../store';
 const MIN_DURATION = 200;
 const MAX_DURATION = 1250;
 
-function LocaleScramble(){
-
+function LocaleScramble() {
   let init = () => {
     insertLocaleSwitcher();
 
@@ -17,13 +16,13 @@ function LocaleScramble(){
   };
 
   this.localizedElementsText = window.document.querySelectorAll(
-    '[data-localize-text]',
+    '[data-localize-text]'
   );
   this.localizedElementsAria = window.document.querySelectorAll(
-    '[data-localize-aria]',
+    '[data-localize-aria]'
   );
   this.localizedElementsContent = window.document.querySelectorAll(
-    '[data-localize-content]',
+    '[data-localize-content]'
   );
 
   let insertLocaleSwitcher = () => {
@@ -102,8 +101,21 @@ function LocaleScramble(){
         MAX_DURATION,
         baseStringFN,
         targetStringFN,
-        true,
+        true
       );
+    }
+
+    const element = document.getElementById('resume-href');
+    if (element && element.tagName === 'A') {
+      switch (this.targetLocale) {
+        case 'fr-CA':
+          element.href = 'static/Maxime-Dupuis-cv.pdf';
+          break;
+        case 'en-US':
+        default:
+          element.href = 'static/Maxime-Dupuis-resume.pdf';
+          break;
+      }
     }
   };
 
