@@ -101,10 +101,17 @@
     #locale-switch {
         display: none !important;
     }
+    #earths-curvature {
+        display: none !important;
+    }
+
+    #addons {
+        display: none !important;
+    }
 
     @page {
         // force portrait
-        //size: portrait;
+        //size: landscape;
     }
 }
 
