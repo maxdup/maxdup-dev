@@ -233,9 +233,10 @@ body::before {
     animation-name: none;
     mix-blend-mode: screen;
 
-    mask-image: $bg-noise;
     mask-repeat: repeat;
     mask-position: 0% 0%;
+    mask-size: 10%;
+    mask-mode: luminance;
 }
 
 @keyframes delayBackground {
