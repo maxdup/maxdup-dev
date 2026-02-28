@@ -1,4 +1,5 @@
-@import './palette';
+@use './mixins' as mixins;
+@use './palette' as palette;
 
 #addons {
     position: sticky;
@@ -44,10 +45,10 @@
     left: 3.5rem;
     font-weight: 800;
 
-    @include pipe-separated-ul();
+    @include mixins.pipe-separated-ul();
 
     a, button {
-        @include addon-button();
+        @include mixins.addon-button();
         cursor: pointer;
 
         font-size: 1rem;
@@ -61,7 +62,7 @@
     display: contents;
 
     button {
-        @include addon-button();
+        @include mixins.addon-button();
         @include addons-positioned();
         left: 0.5rem;
         font-size: 1.25rem;
@@ -79,15 +80,15 @@
             height: 150%;
             width: 150%;
             background: radial-gradient(
-                base-color(0, 0, 1) 30%,
-                base-color(0, 0, 0) 50%
+                palette.base-color(0, 0, 1) 30%,
+                palette.base-color(0, 0, 0) 50%
             );
-            @include theme-transition(background);
+            @include mixins.theme-transition(background);
         }
     }
 }
 
-@include media-mobile {
+@include mixins.media-mobile {
     #color-theme {
         height: 4rem;
         padding: 0.1rem;

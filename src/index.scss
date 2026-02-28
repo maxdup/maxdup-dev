@@ -1,23 +1,26 @@
-@use 'sass:color';
+@use './style/palette';
+@use './style/scaffold/reset';
+@use './style/scaffold';
 
-@import './style/constants';
-@import './style/mixins';
+@use './style/constants';
+@use './style/mixins';
 
-@import './style/styling';
-@import './style/scaffold/framework';
-@import './style/animations';
+@use './style/styling';
 
-@import './sections/nav/nav';
-@import './sections/main/main';
-@import './sections/trajectory/trajectory';
-@import './sections/skills/skills';
-@import './sections/where/where';
-@import './sections/foss/foss';
 
-@import './style/base';
+@use './style/animations';
 
-@import './style/addons';
-@import './style/theme';
-@import './style/locale';
+@use './sections/nav/nav';
+@use './sections/main/main';
+@use './sections/trajectory/trajectory';
+@use './sections/skills/skills';
+@use './sections/where/where';
+@use './sections/foss/foss';
 
-@import './style/print';
+@use './style/base';
+
+@use './style/addons';
+@use './style/locale';
+
+@use './style/color-scheme';
+@use './style/print';

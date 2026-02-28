@@ -1,25 +1,27 @@
+@use './mixins' as mixins;
+
 @keyframes aberration-text-large-anim {
-    0% { @include aberration-text(0); }
-    10% { @include aberration-text(4); }
-    40% { @include aberration-text(1); }
-    50% { @include aberration-text(2); }
-    60% { @include aberration-text(1); }
-    100% { @include aberration-text(0); }
+    0% { @include mixins.aberration-text(0); }
+    10% { @include mixins.aberration-text(4); }
+    40% { @include mixins.aberration-text(1); }
+    50% { @include mixins.aberration-text(2); }
+    60% { @include mixins.aberration-text(1); }
+    100% { @include mixins.aberration-text(0); }
 }
 
 @keyframes aberration-text-small-anim {
-    0% { @include aberration-text(0); }
-    10% { @include aberration-text(3); }
-    40% { @include aberration-text(1); }
-    50% { @include aberration-text(2); }
-    100% { @include aberration-text(1); }
+    0% { @include mixins.aberration-text(0); }
+    10% { @include mixins.aberration-text(3); }
+    40% { @include mixins.aberration-text(1); }
+    50% { @include mixins.aberration-text(2); }
+    100% { @include mixins.aberration-text(1); }
 }
 
 @keyframes aberration-box-anim {
-    0% { @include aberration-box(0); }
-    10% { @include aberration-box(2.5); }
-    40% { @include aberration-box(1.5); }
-    100% { @include aberration-box(2.5); }
+    0% { @include mixins.aberration-box(0); }
+    10% { @include mixins.aberration-box(2.5); }
+    40% { @include mixins.aberration-box(1.5); }
+    100% { @include mixins.aberration-box(2.5); }
 }
 
 @keyframes fadeInAnimation {

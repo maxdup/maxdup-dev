@@ -1,7 +1,9 @@
+@use '../../style/palette' as palette;
+@use '../../style/mixins' as mixins;
 #foss {
-    @include theme-transition(background, color);
-    color: base-color(0);
-    background: base-color(f);
+    @include mixins.theme-transition(background, color);
+    color: palette.base-color(0);
+    background: palette.base-color(f);
     text-align: center;
     min-height: 5.5rem;
     display: flex;
@@ -15,7 +17,7 @@
         width: 100%;
         max-width: 1200px;
 
-        @include media-desktop() {
+        @include mixins.media-desktop() {
             max-width: 800px;
         }
     }
@@ -52,7 +54,7 @@
     }
 }
 
-@include media-mobile-small() {
+@include mixins.media-mobile-small() {
     #foss .foss-text {
         flex-flow: column wrap;
         justify-content: flex-end;

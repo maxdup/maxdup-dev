@@ -1,7 +1,10 @@
+@use '../../style/mixins' as mixins;
+@use '../../style/palette' as palette;
+
 #where {
     #location.aside-blurb {
-        @include theme-transition(color);
-        color: base-color(c);
+        @include mixins.theme-transition(color);
+        color: palette.base-color(c);
         font-size: 2rem;
         line-height: 2rem;
         text-align: center;

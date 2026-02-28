@@ -1,5 +1,8 @@
 @use 'sass:math';
-@import './ul-addon';
+@use './ul-addon' as ul;
+@use '../../style/mixins' as mixins;
+@use '../../style/palette.scss' as palette;
+@use '../../style/constants.scss' as constants;
 
 $nav-height: 5.5rem;
 
@@ -26,7 +29,7 @@ $nav-height: 5.5rem;
 }
 
 a#home {
-    @include text-link-header();
+    @include mixins.text-link-header();
 }
 
 // ------------------------------------------
@@ -47,7 +50,7 @@ body>a#home {
     box-sizing: border-box;
     z-index: 11;
     pointer-events: all;
-    @include theme-transition(color);
+    @include mixins.theme-transition(color);
 
     h1 {
         display: inline-block;
@@ -69,10 +72,10 @@ body>a#home {
         right: -100vw;
         margin: auto;
         height: $nav-height;
-        @include frosted;
-        box-shadow: 0px 0px 30px base-color(0);
+        @include mixins.frosted;
+        box-shadow: 0px 0px 30px palette.base-color(0);
         box-sizing: border-box;
-        @include theme-transition(background, box-shadow, opacity);
+        @include mixins.theme-transition(background, box-shadow, opacity);
     }
 }
 
@@ -80,20 +83,20 @@ body>a#home,
 nav a {
     &:focus,
     &:hover {
-        color: base-color(f) !important;
+        color: palette.base-color(f) !important;
     }
 }
 
 
 @mixin ghost-home() {
-    color: base-color(4);
+    color: palette.base-color(4);
     &::after {
         opacity: 0;
     }
 }
 
 @mixin solid-home() {
-    color: base-color(c);
+    color: palette.base-color(c);
     &::after {
         opacity: 1;
     }
@@ -114,7 +117,7 @@ body.js-enabled {
     }
 }
 
-@include media-mobile() {
+@include mixins.media-mobile() {
     body.js-enabled {
         nav.open,
         nav:focus-within {
@@ -169,7 +172,7 @@ nav {
 }
 
 @mixin menu-container-mobile {
-    @include theme-transition(border-color, height);
+    @include mixins.theme-transition(border-color, height);
     overflow: hidden;
     height: 0rem;
     padding: 0;
@@ -195,7 +198,7 @@ nav {
         width: 7rem;
         text-align: center;
         padding: 0.75rem 1.5rem 0rem;
-        color: base-color(f);
+        color: palette.base-color(f);
         display: block;
         position: fixed;
         box-sizing: border-box;
@@ -205,7 +208,7 @@ nav {
         bottom: unset;
         opacity: 1 !important;
         pointer-events: auto !important;
-        @include theme-transition(color, background);
+        @include mixins.theme-transition(color, background);
     }
 
     &::before {
@@ -218,10 +221,10 @@ nav {
         right: 0rem;
         bottom: 0;
         width: auto !important;
-        background: base-color(2, 0, b);
+        background: palette.base-color(2, 0, b);
         backdrop-filter: blur(25px);
         box-shadow: 0px 5px 15px #100;
-        @include theme-transition(background);
+        @include mixins.theme-transition(background);
     }
 
     pointer-events: all;
@@ -251,7 +254,7 @@ nav {
         }
 
         &.mdi::after {
-            background: base-color(0);
+            background: palette.base-color(0);
             filter: invert(1);
         }
     }
@@ -283,7 +286,7 @@ nav {
     }
 
     a {
-        @include text-link-aberration();
+        @include mixins.text-link-aberration();
         padding-left: 0;
         padding-right: 0;
         font-size: 1.5rem;
@@ -295,15 +298,15 @@ nav {
 #nav-links {
     flex-grow: 1;
 
-    @include pipe-separated-ul();
+    @include mixins.pipe-separated-ul();
 
-    @include media-mobile-small() {
+    @include mixins.media-mobile-small() {
         max-width: 16rem;
         width: 100%;
     }
 
     a {
-        @include text-link-aberration();
+        @include mixins.text-link-aberration();
         line-height: 3rem;
         padding-top: 0;
         padding-bottom: 0;
@@ -314,8 +317,8 @@ nav {
         &:first-child { display: none; }
     }
 
-    @include media-mobile() {
-        @include ul-addon();
+    @include mixins.media-mobile() {
+        @include ul.ul-addon();
         min-width: 12rem;
         max-width: 16rem;
         vertical-align: bottom;
@@ -326,14 +329,14 @@ nav {
         display: inline-block;
         border-width: 1px;
         border-style: solid;
-        border-color: base-color(3);
+        border-color: palette.base-color(3);
         box-sizing: border-box;
         border-top: 0px;
         border-right: 0px;
         border-bottom: 0px;
 
         a {
-            @include boxy-link();
+            @include mixins.boxy-link();
             font-size: 1.5rem;
             line-height: 1;
         }
@@ -344,7 +347,7 @@ nav {
         }
 
         li.active a {
-            color: base-color(f);
+            color: palette.base-color(f);
         }
 
         li:not(:last-child)::after {
@@ -352,7 +355,7 @@ nav {
         }
     }
 
-    @include media-mobile-small() {
+    @include mixins.media-mobile-small() {
         max-width: none;
         width: 100%;
 
@@ -363,7 +366,7 @@ nav {
 }
 
 
-@include media-mobile() {
+@include mixins.media-mobile() {
     #main {
         height: 100vh !important;
     }
@@ -377,7 +380,7 @@ nav {
     }
 }
 
-@media only screen and (max-width: $transition-small) {
+@media only screen and (max-width: constants.$transition-small) {
     nav {
         @include menu-container-mobile-small;
     }
@@ -388,7 +391,7 @@ nav::after {
     font-size: 4rem;
 }
 
-@include media-mobile() {
+@include mixins.media-mobile() {
     body > a#home,
     nav.mdi::after {
         height: $nav-height;
@@ -403,7 +406,7 @@ nav::after {
     }
 }
 
-@include media-mobile-small() {
+@include mixins.media-mobile-small() {
 
     $scale: 0.75;
     $scaled-nav-height: $nav-height * $scale;

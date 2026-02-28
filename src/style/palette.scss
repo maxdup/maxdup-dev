@@ -1,17 +1,40 @@
 @use 'sass:list';
-@use "sass:math";
+@use 'sass:math';
 @use 'sass:color';
+@use 'sass:string';
 
 $hex-chars: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a, b, c, d, e, f;
 
 @function hex-to-dec($n) {
-    @return (index($hex-chars, $n) - 1);
+    @return (list.index($hex-chars, $n) - 1);
 }
 
 $start-color: #000000;
 $start-accent: #332614;
 $end-color: #ffffff;
 $end-accent: #c4aa3f;
+
+$accent1: hsla(146deg, 50%, 52%, 0.5);
+$accent2: hsla(0deg, 70%, 58%, 0.5);
+
+$hex-chars: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a, b, c, d, e, f;
+$shade-register: [];
+$shade-values: [];
+
+
+@function base-color-varname($shade, $accent, $alpha){
+    @return '--base-' + $shade + $accent + $alpha;
+}
+
+@function base-color($shade: f, $accent: 0, $alpha: f){
+    $varname: base-color-varname($shade, $accent, $alpha);
+
+    @if not list.index($shade-register, $varname){
+        $shade-register: list.append($shade-register, $varname) !global;
+        $shade-values: list.append($shade-values, ($shade, $accent, $alpha)) !global;
+    }
+    @return string.unquote("var(#{$varname})");
+}
 
 @function hex-to-rgb($s) {
     $n: hex-to-dec($s);
@@ -44,9 +67,9 @@ $end-accent: #c4aa3f;
 }
 
 @function color-mix($p, $a, $o) {
-    $cb: mix($end-color, $start-color, $p);
-    $ca: mix($end-accent, $start-accent, $p);
-    $c: mix($ca, $cb, $a);
+    $cb: color.mix($end-color, $start-color, $p);
+    $ca: color.mix($end-accent, $start-accent, $p);
+    $c: color.mix($ca, $cb, $a);
     $aa: list.nth($hex-chars, $o + 1);
     @return color-as-hex(rgba($c, hex-to-frac($aa)));
 }
@@ -76,33 +99,68 @@ $end-accent: #c4aa3f;
     }
 }
 
-@function sort($list) {
-    // Sort by shade or alpha
-    $len: list.length($list);
-    $sorted: false;
+/* @function sort($list) {
+   // Sort by shade or alpha
+   $len: list.length($list);
+   $sorted: false;
 
-    @while not $sorted {
-        $sorted: true;
-        @for $i from 1 to ($len - 1) {
-            $j: $i + 1;
-            $vali: hex-to-dec(list.nth(list.nth($list, $i), 1));
-            $valj: hex-to-dec(list.nth(list.nth($list, $j), 1));
-            @if $vali == $valj {
-                $vali: hex-to-dec(list.nth(list.nth($list, $i), 2));
-                $valj: hex-to-dec(list.nth(list.nth($list, $j), 2));
-                @if $vali == $valj {
-                    $vali: hex-to-dec(list.nth(list.nth($list, $i), 3));
-                    $valj: hex-to-dec(list.nth(list.nth($list, $j), 3));
-                }
-            }
-            @if $vali > $valj {
-                $temp: list.nth($list, $i);
-                $list: list.set-nth($list, $i, list.nth($list, $j));
-                $list: list.set-nth($list, $j, $temp);
-                $sorted: false;
-            }
-        }
-        $len: $len - 1;
+   @while not $sorted {
+   $sorted: true;
+   @for $i from 1 to ($len - 1) {
+   $j: $i + 1;
+   $vali: hex-to-dec(list.nth(list.nth($list, $i), 1));
+   $valj: hex-to-dec(list.nth(list.nth($list, $j), 1));
+   @if $vali == $valj {
+   $vali: hex-to-dec(list.nth(list.nth($list, $i), 2));
+   $valj: hex-to-dec(list.nth(list.nth($list, $j), 2));
+   @if $vali == $valj {
+   $vali: hex-to-dec(list.nth(list.nth($list, $i), 3));
+   $valj: hex-to-dec(list.nth(list.nth($list, $j), 3));
+   }
+   }
+   @if $vali > $valj {
+   $temp: list.nth($list, $i);
+   $list: list.set-nth($list, $i, list.nth($list, $j));
+   $list: list.set-nth($list, $j, $temp);
+   $sorted: false;
+   }
+   }
+   $len: $len - 1;
+   }
+   @return $list;
+   } */
+
+
+@function rgb-sort-key($item) {
+  $r: hex-to-dec(list.nth($item, 1));
+  $g: hex-to-dec(list.nth($item, 2));
+  $b: hex-to-dec(list.nth($item, 3));
+  @return $r * 65536 + $g * 256 + $b;
+}
+
+@function sort($list) {
+  $len: list.length($list);
+
+  @while $len > 1 {
+    $sorted: true;
+
+    @for $i from 1 through ($len - 1) {
+      $j: $i + 1;
+
+      $keyi: rgb-sort-key(list.nth($list, $i));
+      $keyj: rgb-sort-key(list.nth($list, $j));
+
+      @if $keyi > $keyj {
+        $temp: list.nth($list, $i);
+        $list: list.set-nth($list, $i, list.nth($list, $j));
+        $list: list.set-nth($list, $j, $temp);
+        $sorted: false;
+      }
     }
-    @return $list;
+
+    @if $sorted { @return $list; }
+    $len: $len - 1;
+  }
+
+  @return $list;
 }

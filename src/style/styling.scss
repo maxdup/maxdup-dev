@@ -1,21 +1,25 @@
-@import './scaffold/reset';
-@import './scaffold/defaults';
-@import './constants';
+@use './scaffold/reset';
+@forward "./scaffold/defaults" show clickable-button, clickable-button-active, input-hover, input-focus, textarea,  textarea-hover, textarea-focus, clickable-text-active;
+
+@use './mixins' as mixins;
+@use './palette' as palette;
+@use './constants' as constants;
+
 
 @mixin base-text() {
-    color: base-color(e, 0);
-    @include theme-transition(color);
+    color: palette.base-color(e, 0);
 
-    font-family: Tahoma, sans-serif;
+    font-family: "Inter", Tahoma, sans-serif;
     font-size: 18px;
 
-    @media only screen and (max-width: $transition-large) {
-        font-size: 15px;
+    @media only screen and (max-width: constants.$transition-large) {
+        &{ font-size: 15px; }
     }
 
-    @media only screen and (max-width: $transition-medium) {
-        font-size: 12px;
+    @media only screen and (max-width: constants.$transition-medium) {
+        &{ font-size: 12px; }
     }
+    @include mixins.theme-transition(color);
 }
 
 @mixin base-text-selected() {
@@ -34,11 +38,11 @@
     font-size: 1rem;
     line-height: 1rem;
     padding: 1rem;
-    border: 1px solid base-color(f);
+    border: 1px solid palette.base-color(f);
     border-radius: 6rem;
-    color: base-color(e);
-    background: base-color(0);
-    @include theme-transition(background, color, border);
+    color: palette.base-color(e);
+    background: palette.base-color(0);
+    @include mixins.theme-transition(background, color, border);
     text-decoration: none;
     vertical-align: middle;
     cursor: pointer;
@@ -66,29 +70,29 @@
 @mixin clickable-button-hover() {
     outline: none;
     animation-name: aberration-box-anim;
-    background: base-color(0, 0, c);
+    background: palette.base-color(0, 0, c);
 }
 
 @mixin clickable-button-focus() {
     outline: none;
     animation-name: aberration-box-anim;
-    background: base-color(0, 0, c);
+    background: palette.base-color(0, 0, c);
 }
 
 // Links Style
 @mixin clickable-text-neutral() {
-    color: base-color(e);
+    color: palette.base-color(e);
     display: inline-block;
     cursor: pointer;
-    @include theme-only-transition(background, color);
+    @include mixins.theme-only-transition(background, color);
     animation-duration: 1s;
     animation-fill-mode: forwards;
 }
 
 @mixin clickable-text-hover() {
     animation-name: aberration-box-anim;
-    background: base-color(f);
-    color: base-color(0);
+    background: palette.base-color(f);
+    color: palette.base-color(0);
 }
 
 @mixin clickable-text-focus() {
@@ -97,7 +101,7 @@
 
 // inputs style
 @mixin input-textarea-common() {
-    color: base-color(f);
+    color: palette.base-color(f);
     display: block;
     width: 100%;
     line-height: 1.25rem;
@@ -109,11 +113,11 @@
     background: transparent;
     background-color: transparent;
     box-sizing: border-box;
-    box-shadow: 0 0 0 1000px base-color(0) inset;
+    box-shadow: 0 0 0 1000px palette.base-color(0) inset;
     transition: background-color 99999s ease-in-out;
 
     &[autocomplete=off] {
-        box-shadow: 0 0 0 0 base-color(0) inset;
+        box-shadow: 0 0 0 0 palette.base-color(0) inset;
     }
 
     &:focus {
@@ -121,14 +125,14 @@
     }
 
     ::placeholder {
-        color: base-color(6);
+        color: palette.base-color(6);
     }
 }
 
 @mixin input-neutral() {
     height: 2rem;
     border-style: none;
-    border-bottom: 1px solid base-color(f);
+    border-bottom: 1px solid palette.base-color(f);
 }
 
 @mixin textarea-neutral() {

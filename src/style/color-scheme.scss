@@ -1,4 +1,6 @@
-@import './palette';
+@use './palette.scss' as palette;
+@use './mixins' as mixins;
+@use './constants.scss' as constants;
 
 //------------------------------------------------------------------------------
 // Theme Selection
@@ -33,7 +35,7 @@
     --themed-transition-speed: 0.3s;
     --only-themed-transition-speed: 0.0s;
 
-    @include generate-palette();
+    @include palette.generate-palette();
     #earths-curvature {
         animation: toDark var(--only-themed-transition-speed) linear forwards;
         transform-origin: bottom center;
@@ -42,12 +44,12 @@
     #addons::before,
     body:not(.gl-enabled)::after {
         filter: invert(0);
-        @include theme-transition(filter);
+        @include mixins.theme-transition(filter);
     }
 }
 
 :root.light-theme {
-    @include generate-palette(100%);
+    @include palette.generate-palette(100%);
     #earths-curvature {
         animation: toLight var(--only-themed-transition-speed) linear forwards;
         transform-origin: bottom center;

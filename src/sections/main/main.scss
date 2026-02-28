@@ -1,3 +1,5 @@
+@use '../../style/constants' as constants;
+@use '../../style/mixins' as mixins;
 #main {
     position: relative;
     display: flex;
@@ -13,7 +15,7 @@
         text-align: left;
         font-size: 24px;
 
-        @media (min-width: $transition-medium) {
+        @media (min-width: constants.$transition-medium) {
             font-size: 32px;
         }
 
@@ -42,7 +44,7 @@
     .scramble-stage-1,
     .scramble-stage-2,
     .scramble-stage-3 {
-        @include theme-transition(transform, opacity);
+        @include mixins.theme-transition(transform, opacity);
         transform: scale(1);
         opacity: 0;
         animation-fill-mode: forwards;

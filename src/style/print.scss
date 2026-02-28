@@ -1,3 +1,5 @@
+@use './palette' as palette;
+
 @media print {
 
     * {
@@ -138,6 +140,6 @@
 @media print {
     :root,
     :root.light-theme {
-        @include generate-palette(100%);
+        @include palette.generate-palette(100%);
     }
 }

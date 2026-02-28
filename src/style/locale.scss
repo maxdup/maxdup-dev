@@ -1,13 +1,14 @@
-@import './palette';
+@use './palette';
+@use './mixins' as mixins;
 
 #locale-switch {
     left: 3.5rem;
     font-weight: 800;
 
-    @include pipe-separated-ul();
+    @include mixins.pipe-separated-ul();
 
     a, button {
-        @include addon-button();
+        @include mixins.addon-button();
         cursor: pointer;
 
         font-size: 1rem;

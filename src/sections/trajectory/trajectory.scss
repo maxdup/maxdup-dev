@@ -1,4 +1,6 @@
 @use "sass:math";
+@use "../../style/mixins" as mixins;
+@use "../../style/palette" as palette;
 
 $g-width: 20vw;
 $g-height: 30vh;
@@ -24,7 +26,7 @@ $n-node: 5;
         position: absolute;
         top: 0;
         right: 7vw;
-        color: base-color(8);
+        color: palette.base-color(8);
         margin-right: -2.5rem;
     }
 
@@ -33,20 +35,20 @@ $n-node: 5;
     }
 
     @mixin graph-item() {
-        background: base-color(f);
-        color: base-color(f);
-        @include theme-transition(background, color, font-size, height, width);
+        background: palette.base-color(f);
+        color: palette.base-color(f);
+        @include mixins.theme-transition(background, color, font-size, height, width);
     }
 
     @mixin graph-item-state-active() {
-        background: base-color(f);
-        color: base-color(f);
+        background: palette.base-color(f);
+        color: palette.base-color(f);
         font-size: 3rem;
     }
 
     @mixin graph-item-state-inactive() {
-        background: base-color(8);
-        color: base-color(8);
+        background: palette.base-color(8);
+        color: palette.base-color(8);
         font-size: 2rem;
     }
 
@@ -114,7 +116,7 @@ $n-node: 5;
             display: block;
             width: 2px;
             height: 100vh;
-            background: base-color(8);
+            background: palette.base-color(8);
             position: absolute;
             left: 0;
             right: 0;

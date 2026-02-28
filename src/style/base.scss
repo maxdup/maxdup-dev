@@ -1,5 +1,9 @@
 @use 'sass:color';
 
+@use './mixins' as mixins;
+@use './palette' as palette;
+@use './constants' as constants;
+
 // ------------------------------------------
 // Base Style
 // ------------------------------------------
@@ -7,7 +11,7 @@
 body  {
     margin: 0;
     overflow-x: hidden;
-    background: base-color(0);
+    background: palette.base-color(0);
 
     opacity: 0;
     animation: fadeInAnimation ease 2s;
@@ -92,12 +96,12 @@ body  {
     max-width: 1600px;
     padding: 8rem 4rem;
 
-    @media only screen and (max-width: $transition-medium) {
+    @media only screen and (max-width: constants.$transition-medium) {
         max-width: 1300px;
         padding: 8rem 3rem;
     }
 
-    @media only screen and (max-width: $transition-small) {
+    @media only screen and (max-width: constants.$transition-small) {
         padding: 8rem 2rem;
     }
 }
@@ -134,7 +138,7 @@ body  {
     }
 }
 
-@media only screen and (max-width: $transition-medium) {
+@media only screen and (max-width: constants.$transition-medium) {
     body .main-blurb {
         width: 100%;
     }
@@ -253,29 +257,29 @@ body::before {
 @mixin backgrounds($pseudo, $invert) {
     #trajectory.container:#{$pseudo} {
         background: radial-gradient(circle at 60% 100%,
-                                    invert-lum(hsla(0, 33.33%, 10%, 0.73), $invert) 0%,
-                                    invert-lum(hsla(120, 20.93%, 8.43%, 0.53), $invert) 100%);
+        mixins.invert-lum(hsla(0, 33.33%, 10%, 0.73), $invert) 0%,
+        mixins.invert-lum(hsla(120, 20.93%, 8.43%, 0.53), $invert) 100%);
         background-attachment: fixed;
         mask-image: linear-gradient(155deg,
-                                    invert-lum(hsla(0, 0.0%, 0.0%, 0), $invert) 10%,
-                                    invert-lum(hsla(0, 0.0%, 0.0%, 1), $invert) 40%);
+        mixins.invert-lum(hsla(0, 0.0%, 0.0%, 0), $invert) 10%,
+        mixins.invert-lum(hsla(0, 0.0%, 0.0%, 1), $invert) 40%);
     }
 
     #skills.container:#{$pseudo} {
         background: radial-gradient(circle at 60% 100%,
-                                    invert-lum(hsla(0, 11.11%, 30%, 0.73), $invert) 0%,
-                                    invert-lum(hsla(120, 10.53%, 14.9%, 0.87), $invert) 100%);
+        mixins.invert-lum(hsla(0, 11.11%, 30%, 0.73), $invert) 0%,
+        mixins.invert-lum(hsla(120, 10.53%, 14.9%, 0.87), $invert) 100%);
         background-attachment: fixed;
         mask-image: radial-gradient(circle at bottom left,
-                                    invert-lum(hsla(0, 0.0%, 0.0%, 1), $invert),
-                                    invert-lum(hsla(0, 0.0%, 0.0%, 0.95), $invert) 40%,
-                                    invert-lum(hsla(0, 0.0%, 0.0%, 0.65), $invert) 100%);
+        mixins.invert-lum(hsla(0, 0.0%, 0.0%, 1), $invert),
+        mixins.invert-lum(hsla(0, 0.0%, 0.0%, 0.95), $invert) 40%,
+        mixins.invert-lum(hsla(0, 0.0%, 0.0%, 0.65), $invert) 100%);
     }
 
     #where.container:#{$pseudo} {
         background: radial-gradient(circle at 60% 100%,
-                                    invert-lum(hsla(0, 9.09%, 33.33%, 0.73), $invert) 0%,
-                                    invert-lum(hsla(120, 9.09%, 33.33%, 0.73), $invert) 100%);
+        mixins.invert-lum(hsla(0, 9.09%, 33.33%, 0.73), $invert) 0%,
+        mixins.invert-lum(hsla(120, 9.09%, 33.33%, 0.73), $invert) 100%);
         background-attachment: fixed;
     }
 }
@@ -286,7 +290,7 @@ body::before {
 :root {
     .container::before,
     .container::after {
-        @include theme-transition(opacity);
+        @include mixins.theme-transition(opacity);
     }
 
     .container::before {
