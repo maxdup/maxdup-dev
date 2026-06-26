@@ -7,6 +7,7 @@ import Grid from '../visualization/grid.js';
 import Nodes from '../visualization/nodes.js';
 import Roads from '../visualization/roads.js';
 import Sheens from '../visualization/sheens.js';
+import Synapses from '../visualization/synapses.js';
 
 const WORKER_MSGS = {
   initialize: 0,
@@ -33,8 +34,10 @@ function AgnosticWorker(){
   let sheens = new Sheens();
   let nodes = new Nodes();
   let roads = new Roads();
+  let synapses = new Synapses();
 
-  let v = new Void(scene, camera, ticker, waves, grid, nodes, roads, sheens);
+  let v = new Void(
+    scene, camera, ticker, waves, grid, nodes, roads, sheens, synapses);
 
   this.init = (canvas3D, canvas2D) => {
     v.initWebGL(canvas3D);

@@ -1,8 +1,10 @@
 import main_vsScript from "../shaders/main.vert";
 import debug_vsScript from "../shaders/debug.vert";
+import synapse_vsScript from "../shaders/synapse.vert";
 
 import line_fsScript from "../shaders/line.frag";
 import sprite_fsScript from "../shaders/sprite.frag";
+import synapse_fsScript from "../shaders/synapse.frag";
 
 import perlin from "./perlin.js";
 
@@ -26,12 +28,17 @@ let debugProgram = null;
 let xaLoc = [];
 let xuLoc = [];
 
+let synapseProgram = null;
+let saLoc = [];
+let suLoc = [];
+
 let mtlTexture = null;
 
 let staticBuffer;
 let bakedBuffer;
 let dynamicBuffer;
 let debugBuffer;
+let synapseBuffer;
 
 let sheenData;
 let heightData;
@@ -40,7 +47,7 @@ let heightDataLookupTable;
 //let DEBUG = true;
 let DEBUG = false;
 
-function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens) {
+function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens, synapses) {
   this.scene = scene;
   this.camera = camera;
   this.ticker = ticker;
@@ -49,6 +56,7 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens) {
   this.nodes = nodes;
   this.roads = roads;
   this.sheens = sheens;
+  this.synapses = synapses;
 
   this.grid.offset = this.waves.len;
   this.nodes.offset = this.waves.len + this.grid.len;
@@ -86,6 +94,7 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens) {
   this.initShaders = () => {
     dotProgram = gl.createProgram();
     lineProgram = gl.createProgram();
+    synapseProgram = gl.createProgram();
     debugProgram = gl.createProgram();
 
     let main_vs = gl.createShader(gl.VERTEX_SHADER);
@@ -119,6 +128,24 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens) {
 
     gl.linkProgram(dotProgram);
     gl.linkProgram(lineProgram);
+
+    // Synapse sparks — own program, own (high) attribute slots so its buffer
+    // bindings never clobber the dot/line attributes (0..3).
+    let synapse_vs = gl.createShader(gl.VERTEX_SHADER);
+    let synapse_fs = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(synapse_vs, synapse_vsScript);
+    gl.shaderSource(synapse_fs, synapse_fsScript);
+    gl.compileShader(synapse_vs);
+    gl.compileShader(synapse_fs);
+    gl.attachShader(synapseProgram, synapse_vs);
+    gl.attachShader(synapseProgram, synapse_fs);
+    gl.bindAttribLocation(synapseProgram, 6, "position");
+    gl.bindAttribLocation(synapseProgram, 7, "intensity");
+    gl.linkProgram(synapseProgram);
+
+    if (DEBUG && !gl.getProgramParameter(synapseProgram, gl.LINK_STATUS)) {
+      console.log(gl.getProgramInfoLog(synapseProgram));
+    }
 
     if (DEBUG) {
       if (!gl.getProgramParameter(lineProgram, gl.LINK_STATUS)) {
@@ -426,9 +453,35 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens) {
       );
     }
 
+    let loadSynapseBuffer = () => {
+      this.synapses.init(this.nodes);
+
+      synapseBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, synapseBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, this.synapses.data, gl.DYNAMIC_DRAW);
+
+      const stride = 4 * Float32Array.BYTES_PER_ELEMENT;
+
+      saLoc[0] = 6; // position (x, height, y) — bound via bindAttribLocation
+      gl.enableVertexAttribArray(saLoc[0]);
+      gl.vertexAttribPointer(saLoc[0], 3, gl.FLOAT, false, stride, 0);
+
+      saLoc[1] = 7; // intensity
+      gl.enableVertexAttribArray(saLoc[1]);
+      gl.vertexAttribPointer(
+        saLoc[1],
+        1,
+        gl.FLOAT,
+        false,
+        stride,
+        3 * Float32Array.BYTES_PER_ELEMENT,
+      );
+    };
+
     loadStaticBuffer();
     loadBakedBuffer();
     loadDynamicBuffer();
+    loadSynapseBuffer();
 
     // Dots
     gl.useProgram(dotProgram);
@@ -439,6 +492,11 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens) {
     // Lines
     gl.useProgram(lineProgram);
     glSetUniforms(lineProgram, luLoc);
+
+    // Synapses
+    gl.useProgram(synapseProgram);
+    suLoc[0] = gl.getUniformLocation(synapseProgram, "mvpMatrix");
+    suLoc[1] = gl.getUniformLocation(synapseProgram, "screenScale");
 
     // Debug
     if (DEBUG) {
@@ -493,6 +551,11 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens) {
       this.scene.update(this.ticker.timeDelta);
       this.sheens.update(this.ticker.timeDelta);
       this.waves.update(this.ticker.fixedTimeDelta);
+      this.synapses.update(
+        this.ticker.timeDelta,
+        this.scene.nodeness,
+        this.waves.heights,
+      );
 
       // ingest sheens
       packSheens(sheenData);
@@ -527,6 +590,22 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens) {
         this.grid.offset,
         this.grid.len + this.roads.len + this.nodes.len,
       );
+
+      // Synapses — additive glow on top of the network
+      if (this.synapses.count > 0) {
+        gl.useProgram(synapseProgram);
+        gl.bindBuffer(gl.ARRAY_BUFFER, synapseBuffer);
+        gl.bufferSubData(
+          gl.ARRAY_BUFFER,
+          0,
+          this.synapses.data.subarray(0, this.synapses.count * 4),
+        );
+
+        gl.uniformMatrix4fv(suLoc[0], false, this.camera.mvpMatrix);
+        gl.uniform1f(suLoc[1], this.camera.renderHeight);
+
+        gl.drawArrays(gl.POINTS, 0, this.synapses.count);
+      }
 
       if (DEBUG) {
         gl.useProgram(debugProgram);
