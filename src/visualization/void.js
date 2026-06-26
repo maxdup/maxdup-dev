@@ -182,18 +182,24 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens) {
     canvas2D.height = mtlBitmap.height;
     ctx2D.drawImage(mtlBitmap, 0, 0, mtlBitmap.width, mtlBitmap.height);
 
+    // Read the whole texture back once, then sample from the in-memory
+    // pixel buffer. The previous version issued one getImageData(x,y,1,1)
+    // readback per grid point (N*N of them) on the load path.
+    const texWidth = canvas2D.width;
+    const texHeight = canvas2D.height;
+    const pixels = ctx2D.getImageData(0, 0, texWidth, texHeight).data;
+
     return Array.from(
       { length: N * N }, // [x1, y1, x2, y2, x3, y3, ...]
       (_, xy) => {
         let x = Math.floor(xy / N);
         let y = xy % N;
 
-        let texCoordX = (x / N) * canvas2D.width;
-        let texCoordY = (y / N) * canvas2D.height;
+        let texCoordX = Math.floor((x / N) * texWidth);
+        let texCoordY = Math.floor((y / N) * texHeight);
+        let i = (texCoordY * texWidth + texCoordX) * 4;
 
-        const imageData = ctx2D.getImageData(texCoordX, texCoordY, 1, 1);
-
-        return [imageData.data[1] / 256, imageData.data[2] / 256];
+        return [pixels[i + 1] / 256, pixels[i + 2] / 256];
       },
     ).flat();
   };
@@ -294,8 +300,7 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens) {
 
   this.initBuffers = () => {
     function glSetUniforms(p, uLoc) {
-      uLoc[0] = gl.getUniformLocation(p, "pjMatrix");
-      uLoc[1] = gl.getUniformLocation(p, "mvMatrix");
+      uLoc[0] = gl.getUniformLocation(p, "mvpMatrix");
       uLoc[2] = gl.getUniformLocation(p, "screenScale");
       uLoc[3] = gl.getUniformLocation(p, "sheens");
 
@@ -494,8 +499,7 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens) {
       updateHeightBuffer(heightData, heightDataLookupTable);
 
       let glUpdateUniforms = (uLoc) => {
-        gl.uniformMatrix4fv(uLoc[0], false, this.camera.pjMatrix);
-        gl.uniformMatrix4fv(uLoc[1], false, this.camera.mvMatrix);
+        gl.uniformMatrix4fv(uLoc[0], false, this.camera.mvpMatrix);
         gl.uniform1f(uLoc[2], this.camera.renderHeight);
         gl.uniform2fv(uLoc[3], sheenData);
 

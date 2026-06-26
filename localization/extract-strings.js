@@ -15,12 +15,6 @@ function readJSON() {
   }
 }
 
-function readHTML(compiler) {
-  const { outputPath } = compiler;
-  const indexHtmlPath = outputPath + '/index.html';
-  return fs.readFileSync(indexHtmlPath, 'utf8');
-}
-
 function writeJSON(registry) {
   const locFileJSON = JSON.stringify(registry, Object.keys(registry).sort(), 4);
   fs.writeFileSync(`./localization/locStrings.json`, locFileJSON);
@@ -123,34 +117,6 @@ class ExtractLocStrings {
     const { RawSource } = webpack.sources;
 
     compiler.hooks.compilation.tap('ExtractLocStrings', (compilation) => {
-      compilation.hooks.optimizeAssets.tapAsync(
-        'ModifyHtmlPlugin',
-        async (data, callback) => {
-          // extract strings, write json base.
-          try {
-            const htmlContent = readHTML(compiler);
-            const htmlDom = createDom(htmlContent);
-            const jsonStrings = readJSON();
-            const sourceStrings = extractSourceStrings(htmlDom);
-            const registry = mergeSourceStrings(
-              sourceStrings,
-              jsonStrings,
-              this.locales,
-              this.baseLocale,
-            );
-            writeJSON(registry);
-            DEBUG && console.log('---Extract strings---');
-            DEBUG &&
-              console.log(
-                ' - ',
-                Object.keys(registry).length + ' entries extracted',
-              );
-          } catch (error) {
-            console.error('Could not load js', error);
-          }
-          callback(null, data);
-        },
-      );
       HtmlWebpackPlugin.getHooks(compilation).alterAssetTags.tapAsync(
         'ExtractLocString',
         (data, callback) => {
@@ -178,10 +144,35 @@ class ExtractLocStrings {
       HtmlWebpackPlugin.getHooks(compilation).afterTemplateExecution.tapAsync(
         'ExtractLocString',
         (data, callback) => {
-          // inject html tags with hashes
-          const htmlDom = createDom(data.html);
-          hashDom(htmlDom);
-          data.html = htmlDom.serialize();
+          // Read the freshly-rendered HTML straight from memory. This works
+          // under webpack-dev-server, which serves from memory and never
+          // writes build/index.html to disk (the old disk read threw ENOENT).
+          try {
+            const htmlDom = createDom(data.html);
+
+            // extract source strings + (re)write the base JSON registry.
+            // hashDom only rewrites the data-localize-* marker attributes,
+            // so extracting before or after hashing yields the same strings.
+            const sourceStrings = extractSourceStrings(htmlDom);
+            const registry = mergeSourceStrings(
+              sourceStrings,
+              readJSON(),
+              this.locales,
+              this.baseLocale,
+            );
+            writeJSON(registry);
+            DEBUG &&
+              console.log(
+                '---Extract strings---\n - ',
+                Object.keys(registry).length + ' entries extracted',
+              );
+
+            // inject html tags with hashes
+            hashDom(htmlDom);
+            data.html = htmlDom.serialize();
+          } catch (error) {
+            console.error('ExtractLocStrings failed', error);
+          }
           callback(null, data);
         },
       );

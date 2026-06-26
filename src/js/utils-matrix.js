@@ -15,6 +15,21 @@ export function perspectiveMatrix(fovy, aspect, near, far){
   return p;
 }
 
+export function matrixMultiply(a, b){
+  // column-major 4x4 product: a * b
+  let out = new Array(16).fill(0);
+  for (let c = 0; c < 4; c++){
+    for (let r = 0; r < 4; r++){
+      let sum = 0;
+      for (let k = 0; k < 4; k++){
+        sum += a[k*4 + r] * b[c*4 + k];
+      }
+      out[c*4 + r] = sum;
+    }
+  }
+  return out;
+}
+
 export function identityMatrix(length){
   let ident = new Array(Math.pow(length, 2)).fill(0);
   for (let i = 0; i < length; i++){

@@ -1,5 +1,4 @@
-uniform mat4 pjMatrix;
-uniform mat4 mvMatrix;
+uniform mat4 mvpMatrix;
 uniform float screenScale;
 
 uniform vec2 sheens[6];
@@ -84,7 +83,7 @@ void main()
 
   // POSITION
   float z = height + gridHeightOffset + nodeHeightOffset + topoHeightOffset;
-  gl_Position = pjMatrix * mvMatrix * vec4(position.x, z, position.y, 1.0);
+  gl_Position = mvpMatrix * vec4(position.x, z, position.y, 1.0);
 
   // POINT SIZE
   float agnosticPointSize = mix(minPSize, maxPSize, min(z * 5.0, 1.0));
@@ -92,8 +91,6 @@ void main()
   gl_PointSize = isDotted * max(agnosticPointSize + nodeRadiusOffset, topoDotSize) * scale;
 
   // COLORS
-  float minZ = vec4(pjMatrix * mvMatrix * vec4(0.0, 0.0, 0.0, 1.0)).z;
-  float maxZ = vec4(pjMatrix * mvMatrix * vec4(-maxDist, 0.0, -maxDist, 1.0)).z;
   float fog = 1.0 - gridness * fogged(gl_Position.z);
 
   vec3 vdist = vec3(distToVec(position.xy, sheens[1], sheens[0]),

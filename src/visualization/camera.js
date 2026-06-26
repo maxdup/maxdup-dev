@@ -1,6 +1,7 @@
 import {
   matrixRotate,
   matrixTranslate,
+  matrixMultiply,
   identityMatrix,
   perspectiveMatrix,
 } from '../js/utils-matrix.js';
@@ -9,6 +10,7 @@ function Camera(){
   let initMatrix = matrixTranslate(identityMatrix(4), [-0.5, 0, -6]);
   this.pjMatrix = null;
   this.mvMatrix = initMatrix;
+  this.mvpMatrix = null;
 
   this.viewWidth = null;
   this.viewHeight = null;
@@ -74,6 +76,16 @@ function Camera(){
       this.mvMatrix, this.yaw + this.yawOffset, [0,1,0]);
     this.mvMatrix = matrixRotate(
       this.mvMatrix, this.roll, [0,0,1])
+    _updateMVP();
+  }
+
+  let _updateMVP = () => {
+    // Combine projection and view on the CPU so the vertex shader does a
+    // single mat4*vec4 instead of pjMatrix * mvMatrix * vec4 per vertex.
+    // pjMatrix is null until the first resize sets it.
+    if (this.pjMatrix){
+      this.mvpMatrix = matrixMultiply(this.pjMatrix, this.mvMatrix);
+    }
   }
 
   let _onRenderSizeChanged = () => {
@@ -83,6 +95,7 @@ function Camera(){
 
   let _onAspectRatioChanged = () => {
     this.pjMatrix = perspectiveMatrix(45, this.aspectRatio, 0.1, 1000.0);
+    _updateMVP();
   }
 
   this.offset = 0;
