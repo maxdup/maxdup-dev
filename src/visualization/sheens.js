@@ -18,9 +18,17 @@ function sheensToString(){
   return sheensStr.join();
 }
 
-const SHEEN_COLORS = [[1.0, 0.0, 0.2],
-                      [0.2, 0.8, 0.4],
-                      [1.0, 1.0, 1.0]];
+// The red & green sheens read too saturated at full strength; pull them most
+// of the way toward their own brightness (0 = full colour, 1 = grey).
+const DESATURATION = 0.75;
+function desaturate(color, amount){
+  let lum = 0.2126 * color[0] + 0.7152 * color[1] + 0.0722 * color[2];
+  return color.map((c) => c + (lum - c) * amount);
+}
+
+const SHEEN_COLORS = [desaturate([1.0, 0.0, 0.2], DESATURATION), // red
+                      desaturate([0.2, 0.8, 0.4], DESATURATION), // green
+                      [1.0, 1.0, 1.0]];                          // white
 
 const SHEENS_STR = sheensToString();
 

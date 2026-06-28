@@ -7,6 +7,7 @@ import sprite_fsScript from "../shaders/sprite.frag";
 import synapse_fsScript from "../shaders/synapse.frag";
 
 import perlin from "./perlin.js";
+import Pulse from "./pulse.js";
 
 import { N, L } from "./config.js";
 const HN = Math.floor(N / 2);
@@ -29,8 +30,13 @@ let xaLoc = [];
 let xuLoc = [];
 
 let synapseProgram = null;
-let saLoc = [];
 let suLoc = [];
+
+// particle (synapse / traffic) tints — kept below the static node brightness
+const SYNAPSE_COLOR = [0.3, 0.47, 0.55]; // muted cyan
+const TRAFFIC_COLOR = [0.6, 0.42, 0.2];  // warm amber
+const SYNAPSE_SIZE = 1.5;
+const TRAFFIC_SIZE = 0.6; // cars read much smaller than synapse sparks
 
 let mtlTexture = null;
 
@@ -39,6 +45,7 @@ let bakedBuffer;
 let dynamicBuffer;
 let debugBuffer;
 let synapseBuffer;
+let trafficBuffer;
 
 let sheenData;
 let heightData;
@@ -47,7 +54,8 @@ let heightDataLookupTable;
 //let DEBUG = true;
 let DEBUG = false;
 
-function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens, synapses) {
+function Void(
+  scene, camera, ticker, waves, grid, nodes, roads, sheens, synapses, traffic) {
   this.scene = scene;
   this.camera = camera;
   this.ticker = ticker;
@@ -57,6 +65,10 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens, synapses
   this.roads = roads;
   this.sheens = sheens;
   this.synapses = synapses;
+  this.traffic = traffic;
+  this.pulse = new Pulse(); // signal sweep down the mountain, message-triggered
+
+  let baseTopoArray = null; // per-grid-point [tx, ty], shared with traffic
 
   this.grid.offset = this.waves.len;
   this.nodes.offset = this.waves.len + this.grid.len;
@@ -216,7 +228,7 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens, synapses
     const texHeight = canvas2D.height;
     const pixels = ctx2D.getImageData(0, 0, texWidth, texHeight).data;
 
-    return Array.from(
+    baseTopoArray = Array.from(
       { length: N * N }, // [x1, y1, x2, y2, x3, y3, ...]
       (_, xy) => {
         let x = Math.floor(xy / N);
@@ -229,6 +241,7 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens, synapses
         return [pixels[i + 1] / 256, pixels[i + 2] / 256];
       },
     ).flat();
+    return baseTopoArray;
   };
 
   let buildHeightBuffer = () => {
@@ -334,6 +347,9 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens, synapses
       uLoc[4] = gl.getUniformLocation(p, "nodeness");
       uLoc[5] = gl.getUniformLocation(p, "gridness");
       uLoc[6] = gl.getUniformLocation(p, "toponess");
+      uLoc[7] = gl.getUniformLocation(p, "sweepHeight");
+      uLoc[8] = gl.getUniformLocation(p, "sweepIntensity");
+      uLoc[9] = gl.getUniformLocation(p, "sheenness");
     }
 
     let loadStaticBuffer = () => {
@@ -401,6 +417,9 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens, synapses
         vertexBakedSize,
         vertexTopoOff,
       );
+
+      // topology is now available — build the road paths for the dots
+      this.traffic.init(this.roads, baseTopoArray);
     };
 
     let loadDynamicBuffer = () => {
@@ -453,35 +472,37 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens, synapses
       );
     }
 
-    let loadSynapseBuffer = () => {
+    // synapses and traffic are the same kind of particle system: world-space
+    // points drawn by synapseProgram. They never share the screen (different
+    // scenes), so they share attribute slots 6/7 — re-pointed per draw.
+    let loadParticleBuffers = () => {
       this.synapses.init(this.nodes);
 
       synapseBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, synapseBuffer);
       gl.bufferData(gl.ARRAY_BUFFER, this.synapses.data, gl.DYNAMIC_DRAW);
 
+      trafficBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, trafficBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, this.traffic.data, gl.DYNAMIC_DRAW);
+
+      gl.enableVertexAttribArray(6); // position (x, height, y)
+      gl.enableVertexAttribArray(7); // intensity
+
+      // Point slots 6/7 at a real buffer now. drawParticles() re-points them
+      // per draw, but it bails when a system has 0 particles — and an *enabled*
+      // attribute array with no buffer bound makes every drawArrays (dots,
+      // lines) fail with INVALID_OPERATION until the first particle appears.
       const stride = 4 * Float32Array.BYTES_PER_ELEMENT;
-
-      saLoc[0] = 6; // position (x, height, y) — bound via bindAttribLocation
-      gl.enableVertexAttribArray(saLoc[0]);
-      gl.vertexAttribPointer(saLoc[0], 3, gl.FLOAT, false, stride, 0);
-
-      saLoc[1] = 7; // intensity
-      gl.enableVertexAttribArray(saLoc[1]);
+      gl.vertexAttribPointer(6, 3, gl.FLOAT, false, stride, 0);
       gl.vertexAttribPointer(
-        saLoc[1],
-        1,
-        gl.FLOAT,
-        false,
-        stride,
-        3 * Float32Array.BYTES_PER_ELEMENT,
-      );
+        7, 1, gl.FLOAT, false, stride, 3 * Float32Array.BYTES_PER_ELEMENT);
     };
 
     loadStaticBuffer();
     loadBakedBuffer();
     loadDynamicBuffer();
-    loadSynapseBuffer();
+    loadParticleBuffers();
 
     // Dots
     gl.useProgram(dotProgram);
@@ -493,10 +514,12 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens, synapses
     gl.useProgram(lineProgram);
     glSetUniforms(lineProgram, luLoc);
 
-    // Synapses
+    // Particles (synapses + traffic)
     gl.useProgram(synapseProgram);
     suLoc[0] = gl.getUniformLocation(synapseProgram, "mvpMatrix");
     suLoc[1] = gl.getUniformLocation(synapseProgram, "screenScale");
+    suLoc[2] = gl.getUniformLocation(synapseProgram, "sparkColor");
+    suLoc[3] = gl.getUniformLocation(synapseProgram, "sparkSize");
 
     // Debug
     if (DEBUG) {
@@ -556,6 +579,12 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens, synapses
         this.scene.nodeness,
         this.waves.heights,
       );
+      this.traffic.update(
+        this.ticker.timeDelta,
+        this.scene.toponess,
+        this.waves.heights,
+      );
+      this.pulse.update(this.ticker.timeDelta);
 
       // ingest sheens
       packSheens(sheenData);
@@ -569,6 +598,9 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens, synapses
         gl.uniform1f(uLoc[4], this.scene.nodeness);
         gl.uniform1f(uLoc[5], this.scene.gridness);
         gl.uniform1f(uLoc[6], this.scene.toponess);
+        gl.uniform1f(uLoc[7], this.pulse.height);
+        gl.uniform1f(uLoc[8], this.pulse.intensity);
+        gl.uniform1f(uLoc[9], this.scene.sheenness);
       };
 
       // Dots
@@ -591,21 +623,33 @@ function Void(scene, camera, ticker, waves, grid, nodes, roads, sheens, synapses
         this.grid.len + this.roads.len + this.nodes.len,
       );
 
-      // Synapses — additive glow on top of the network
-      if (this.synapses.count > 0) {
+      // Particles — solid dots traveling along edges (synapses) or roads
+      // (traffic). Both use synapseProgram and share attribute slots 6/7.
+      let drawParticles = (system, buffer, color, size) => {
+        if (system.count <= 0) { return; }
         gl.useProgram(synapseProgram);
-        gl.bindBuffer(gl.ARRAY_BUFFER, synapseBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
         gl.bufferSubData(
           gl.ARRAY_BUFFER,
           0,
-          this.synapses.data.subarray(0, this.synapses.count * 4),
+          system.data.subarray(0, system.count * 4),
         );
+
+        const stride = 4 * Float32Array.BYTES_PER_ELEMENT;
+        gl.vertexAttribPointer(6, 3, gl.FLOAT, false, stride, 0);
+        gl.vertexAttribPointer(
+          7, 1, gl.FLOAT, false, stride, 3 * Float32Array.BYTES_PER_ELEMENT);
 
         gl.uniformMatrix4fv(suLoc[0], false, this.camera.mvpMatrix);
         gl.uniform1f(suLoc[1], this.camera.renderHeight);
+        gl.uniform3fv(suLoc[2], color);
+        gl.uniform1f(suLoc[3], size);
 
-        gl.drawArrays(gl.POINTS, 0, this.synapses.count);
-      }
+        gl.drawArrays(gl.POINTS, 0, system.count);
+      };
+
+      drawParticles(this.synapses, synapseBuffer, SYNAPSE_COLOR, SYNAPSE_SIZE);
+      drawParticles(this.traffic, trafficBuffer, TRAFFIC_COLOR, TRAFFIC_SIZE);
 
       if (DEBUG) {
         gl.useProgram(debugProgram);

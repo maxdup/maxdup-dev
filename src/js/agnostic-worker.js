@@ -8,6 +8,7 @@ import Nodes from '../visualization/nodes.js';
 import Roads from '../visualization/roads.js';
 import Sheens from '../visualization/sheens.js';
 import Synapses from '../visualization/synapses.js';
+import Traffic from '../visualization/traffic.js';
 
 const WORKER_MSGS = {
   initialize: 0,
@@ -22,6 +23,7 @@ const WORKER_MSGS = {
   loseCTX: 9,
   setCamOffset: 10,
   setCamAngle: 11,
+  signal: 12,
 }
 
 function AgnosticWorker(){
@@ -35,9 +37,11 @@ function AgnosticWorker(){
   let nodes = new Nodes();
   let roads = new Roads();
   let synapses = new Synapses();
+  let traffic = new Traffic();
 
   let v = new Void(
-    scene, camera, ticker, waves, grid, nodes, roads, sheens, synapses);
+    scene, camera, ticker, waves, grid, nodes, roads, sheens, synapses,
+    traffic);
 
   this.init = (canvas3D, canvas2D) => {
     v.initWebGL(canvas3D);
@@ -75,6 +79,9 @@ function AgnosticWorker(){
     case WORKER_MSGS.setScene:
       scene.target(value.name,
                    value.speed);
+      break;
+    case WORKER_MSGS.signal:
+      v.pulse.trigger();
       break;
     case WORKER_MSGS.setFPS:
       ticker.setFPS(value);

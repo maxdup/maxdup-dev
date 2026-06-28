@@ -1,7 +1,7 @@
 precision mediump float;
 varying float vIntensity;
 
-const vec3 sparkColor = vec3(0.30, 0.47, 0.55); // muted cyan, kept below node brightness
+uniform vec3 sparkColor; // set per particle system, kept below node brightness
 
 float circle(in vec2 coord){
   // solid disc with a thin antialiased rim

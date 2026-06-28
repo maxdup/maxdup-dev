@@ -81,20 +81,33 @@
             <div class="floating-aside-blurb">
               <i class="mdi mdi-bxs-flag-alt"></i>
 
+              <!-- Responsive switchback path. Geometry lives in the viewBox so
+                   it scales with no JS; JS only triggers the draw-on reveal. -->
+              <svg id="trajectory-path" viewBox="0 0 100 100"
+                   preserveAspectRatio="none" aria-hidden="true">
+                <defs>
+                  <!-- wipe rect: scaled from the base side to reveal the solid
+                       stroke as a fill-in (oversized so the stroke isn't
+                       clipped at the path's end points) -->
+                  <clipPath id="trajectory-clip" clipPathUnits="userSpaceOnUse">
+                    <rect class="trajectory-wipe"
+                          x="-3" y="-3" width="106" height="106" />
+                  </clipPath>
+                </defs>
+                <!-- ordered base (bottom-left) -> summit (top-right) so the
+                     wipe climbs toward the flag -->
+                <polyline points="0,100 30,75 45,50 80,25 100,0"
+                          vector-effect="non-scaling-stroke"
+                          clip-path="url(#trajectory-clip)" />
+              </svg>
+
               <ol id="trajectory-graph">
+                <!-- summit (path's topmost point) — emits the signal pulse -->
+                <li class="graph-node"><span class="summit-beacon"></span></li>
                 <li class="graph-node"></li>
-                <li class="graph-node">
-                  <div class="graph-node-line"></div>
-                </li>
-                <li class="graph-node">
-                  <div class="graph-node-line"></div>
-                </li>
-                <li class="graph-node">
-                  <div class="graph-node-line"></div>
-                </li>
-                <li class="graph-node">
-                  <div class="graph-node-line"></div>
-                </li>
+                <li class="graph-node"></li>
+                <li class="graph-node"></li>
+                <li class="graph-node"></li>
               </ol>
             </div>
           </div>

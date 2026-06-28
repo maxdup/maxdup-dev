@@ -98,40 +98,48 @@ $n-node: 5;
         &:hover.graph-node-text {
             @include graph-item-state-active();
         }
-
-        .graph-node-line {
-            content: '';
-            display: block;
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            overflow: hidden;
-            width: 0;
-            height: 0;
-            z-index: 1;
-        }
-
-        .graph-node-line::before {
-            content: '';
-            display: block;
-            width: 2px;
-            height: 100vh;
-            background: palette.base-color(8);
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            top: 0;
-            margin: auto;
-            transform: var(--line-angle);
-            transform-origin: 50% 50%;
-        }
-
-        &:first-child .graph-node-line {
-            content: none;
-        }
-
     }
+}
+
+// Switchback connector path. Geometry is in the SVG viewBox (responsive with
+// no JS); preserveAspectRatio="none" stretches it onto the percentage-placed
+// nodes, and non-scaling-stroke keeps the line crisp under that stretch.
+#trajectory-path {
+    position: absolute;
+    top: 7rem;
+    right: 7vw;
+    width: $g-width;
+    height: $g-height;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 1;
+
+    polyline {
+        fill: none;
+        stroke: palette.base-color(8);
+        stroke-width: 2px;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        @include mixins.theme-transition(stroke);
+    }
+
+    .trajectory-wipe {
+        // no-JS default: fully revealed, so the line is solid without JS
+        transform: scaleX(1);
+        transform-box: fill-box;
+        transform-origin: left; // grow from the base (left) toward the summit
+    }
+}
+
+// JS enhancement only: `.armed` collapses the wipe (so the line stays solid &
+// fully shown when JS is off), `.drawn` (toggled on scroll-in) fills it in.
+#trajectory.armed #trajectory-path .trajectory-wipe {
+    transform: scaleX(0);
+    transition: transform 1.9s ease;
+}
+
+#trajectory.armed.drawn #trajectory-path .trajectory-wipe {
+    transform: scaleX(1);
 }
 
 #trajectory-graph {
@@ -167,11 +175,52 @@ $n-node: 5;
         &:nth-child(#{$i}) {
             top: ($i - 1) * math.div(100%, $n-node - 1);
             left: 100% - ($i - 1) * math.div(100%, $n-node - 1) + $offset;
-
-            .graph-node-line {
-                height: math.div($g-height, 100) * 25;
-                width: math.div($g-width, 100) * (25 - offset-for($i) + offset-for($i - 1));
-            }
         }
     }
+}
+
+// --- Signal pulse ----------------------------------------------------------
+// Emitted from the summit (the path's topmost point) the instant the line
+// finishes filling — `.signaling` is added by JS at that moment, in sync with
+// the canvas sweep down the mountain. One big ring (::before, once) then a
+// slow, subtle repeat (::after, looping with a long quiet gap).
+.summit-beacon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+
+    // rings centred on the node point (the node <li> is zero-size, placed at
+    // the summit, so 0,0 here is the dot's centre). Width/height are animated
+    // rather than transform:scale so the border stays a constant thin stroke
+    // as the ring grows — scaling would fatten it.
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        border: 1px solid palette.base-color(8);
+        transform: translate(-50%, -50%); // keep centred on the node as it grows
+        opacity: 0;
+    }
+}
+
+@keyframes summit-pulse-big {
+    0%   { width: 0.5rem; height: 0.5rem; opacity: 1; }
+    100% { width: 48rem;  height: 48rem;  opacity: 0; }
+}
+
+@keyframes summit-pulse-soft {
+    0%   { width: 0.5rem; height: 0.5rem; opacity: 0.85; }
+    14%  { width: 30rem;  height: 30rem;  opacity: 0; }
+    100% { width: 30rem;  height: 30rem;  opacity: 0; }
+}
+
+#trajectory.signaling .summit-beacon {
+    &::before { animation: summit-pulse-big 0.9s ease-out both; }
+    &::after  { animation: summit-pulse-soft 6.6s ease-out 0.9s infinite; }
 }
