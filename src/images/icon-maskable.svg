@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Maskable icon source: opaque dark tile with the mark scaled to ~60% and
+     centered, keeping it inside Android's adaptive-icon safe zone (inner 80%).
+     Self-contained so the masked/bleed area is filled. -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+	 width="2125.984px" height="2125.984px" viewBox="0 0 2125.984 2125.984" xml:space="preserve">
+  <rect width="2125.984" height="2125.984" fill="#000"/>
+  <g transform="translate(425.197, 425.197) scale(0.6)">
+    <path fill="#dce0df" d="M1871.598,1657.598l-808.5-1402.48L866.682,595.414L748.291,390.355L637.82,454.134L793.045,722.99
+      l-539.447,934.608h1079.043l155.574,269.461l110.469-63.779l-118.75-205.682H1871.598z M987.598,551.597l588,1020.001h-145.316
+      L914.795,678.75L987.598,551.597z M403.598,1571.598l437.859-764.756l441.531,764.756H403.598z"/>
+  </g>
+</svg>

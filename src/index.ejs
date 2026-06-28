@@ -1,8 +1,23 @@
 <!Doctype html>
-<html lang="en">
+<html lang="en" class="no-js">
   <head>
     <title>Maxime Dupuis</title>
     <meta charset="utf-8">
+    <script>
+      // Decide WebGL support before first paint so capable clients never
+      // fetch the static background.webp fallback (gated by html:not(.gl-ok)).
+      // Optimistic: if real WebGL init later fails, run2D() removes .gl-ok.
+      (function () {
+        var h = document.documentElement;
+        h.className = h.className.replace("no-js", "js");
+        try {
+          var c = document.createElement("canvas");
+          if (c.getContext("webgl2") || c.getContext("webgl")) {
+            h.classList.add("gl-ok");
+          }
+        } catch (e) {}
+      })();
+    </script>
     <meta name="viewport" content="width=device-width,initial-scale=1">
 
     <!-- Twitter Card data -->
@@ -20,7 +35,13 @@
     <!-- Metadata -->
     <meta name="description" content="Montréal based web developer" data-localize-content>
     <meta name="keywords" content="programming, development, developer, web, website, maxdup">
+    <!-- Icons: adaptive SVG for modern browsers, .ico fallback for the rest,
+         one apple-touch-icon for iOS, manifest (192/512/maskable) for PWA. -->
     <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#333">
   </head>
   <body id="maxdup">
     <div id="main">

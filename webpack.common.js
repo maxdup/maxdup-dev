@@ -6,7 +6,6 @@ const dirBuild = path.join(__dirname, "build");
 
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ExtractLocStrings = require("./localization/extract-strings.js");
 
@@ -70,14 +69,10 @@ const commonConfig = {
       chunks: ["index"],
       baseUrl: "https://maxdup.dev",
     }),
-    new FaviconsWebpackPlugin({
-      logo: path.join(dirSrc, "./images/favicon.svg"),
-      mode: "webapp",
-      favicons: {
-        background: "#000",
-        theme_color: "#333",
-      },
-    }),
+    // Icons + manifest are a hand-maintained minimal set (favicon.ico,
+    // apple-touch-icon-180, icon-192/512, icon-maskable-512). They live in
+    // deploy/ and are copied to the site root below; link tags are in
+    // index.ejs. Regenerate with scripts/gen-icons.js after changing the SVG.
     new CopyWebpackPlugin({
       patterns: [
         { from: "static", to: "static" },

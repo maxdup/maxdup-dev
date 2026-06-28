@@ -2,6 +2,10 @@ node_modules/
 build/
 coverage/
 
+# Generated PWA icons (built from src/images/icon*.svg via `npm run icons`)
+deploy/*.png
+deploy/favicon.ico
+
 *.tar.gz
 
 *~

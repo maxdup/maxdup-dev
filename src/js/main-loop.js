@@ -110,6 +110,9 @@ function MainLoop(){
       cs[i].parentNode.removeChild(cs[i]);
     }
     document.body.classList.remove('gl-enabled');
+    // The inline probe optimistically set .gl-ok and suppressed the static
+    // background fallback. WebGL init actually failed, so reinstate it.
+    document.documentElement.classList.remove('gl-ok');
 
     this.tick();
   }

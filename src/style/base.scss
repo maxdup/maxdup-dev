@@ -201,7 +201,7 @@ $bg-glow: radial-gradient(circle at 10% 30%,
 
 canvas,
 body::before,
-body:not(.gl-enabled)::after {
+html:not(.gl-ok) body::after {
     display: block;
     height: 100vh;
     position: fixed;
@@ -215,7 +215,7 @@ canvas {
     z-index: -11;
 }
 
-body:not(.gl-enabled)::after {
+html:not(.gl-ok) body::after {
     content: '';
     z-index: -11;
     background-image: $bg-image;
@@ -314,7 +314,7 @@ body::before {
         opacity: 0;
     }
 
-    body:not(.gl-enabled)::after {
+    html:not(.gl-ok) body::after {
         filter: invert(1);
     }
 

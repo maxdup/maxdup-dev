@@ -42,7 +42,7 @@
     }
 
     #addons::before,
-    body:not(.gl-enabled)::after {
+    html:not(.gl-ok) body::after {
         filter: invert(0);
         @include mixins.theme-transition(filter);
     }
@@ -56,7 +56,7 @@
     }
 
     #addons::before
-    body:not(.gl-enabled)::after {
+    html:not(.gl-ok) body::after {
         filter: invert(1);
     }
 

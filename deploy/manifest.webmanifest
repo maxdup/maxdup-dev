@@ -1,0 +1,18 @@
+{
+  "name": "Maxime Dupuis",
+  "short_name": "maxdup",
+  "description": "Montréal based web developer",
+  "lang": "en-US",
+  "dir": "auto",
+  "display": "standalone",
+  "orientation": "any",
+  "scope": "/",
+  "start_url": "/?homescreen=1",
+  "background_color": "#000",
+  "theme_color": "#333",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
